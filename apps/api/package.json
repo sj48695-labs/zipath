@@ -22,12 +22,12 @@
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
     "typeorm": "^0.3.20",
-    "zod": "^3.22.0"
+    "zod": "^3.22.0",
+    "@types/node": "^20.11.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.3.0",
     "@types/express": "^4.17.0",
-    "@types/node": "^20.11.0",
     "typescript": "^5.3.0",
     "@zipath/config": "*"
   }
