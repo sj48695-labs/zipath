@@ -107,6 +107,17 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="border-t px-4 py-8 text-center text-sm text-muted-foreground">
         <p>Zipath - 부동산 입문자를 위한 올인원 가이드</p>
+        <p className="mt-2">
+          본 서비스에서 제공하는 모든 정보는 참고용이며, 법적 효력이 없습니다.
+        </p>
+        <div className="mt-3 flex justify-center gap-4">
+          <Link href="/privacy" className="hover:text-foreground">
+            개인정보처리방침
+          </Link>
+          <Link href="/terms" className="hover:text-foreground">
+            이용약관
+          </Link>
+        </div>
       </footer>
     </div>
   );
