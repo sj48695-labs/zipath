@@ -44,6 +44,7 @@
 - **DB**: Neon PostgreSQL (영구 무료, 512MB)
 - **프론트 배포**: Vercel (영구 무료)
 - **백엔드 배포**: Render (영구 무료, 콜드 스타트 있음)
+- **파일 스토리지 (향후)**: Cloudflare R2 (10GB 무료, 전송 비용 없음)
 - **향후 앱**: Expo (React Native)
 
 ## 레포 구조
