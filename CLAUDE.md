@@ -41,9 +41,9 @@
 - **프론트**: Next.js + TypeScript
 - **백엔드**: NestJS + TypeScript
 - **ORM**: TypeORM (NestJS 공식 지원)
-- **DB**: PostgreSQL
-- **프론트 배포**: Vercel
-- **백엔드 배포**: Railway
+- **DB**: Neon PostgreSQL (영구 무료, 512MB)
+- **프론트 배포**: Vercel (영구 무료)
+- **백엔드 배포**: Render (영구 무료, 콜드 스타트 있음)
 - **향후 앱**: Expo (React Native)
 
 ## 레포 구조
@@ -54,6 +54,7 @@ zipath/ (모노레포)
 │   ├── web/              ← Next.js 프론트
 │   └── api/              ← NestJS 백엔드
 └── packages/
+    ├── db/               ← TypeORM 엔티티 + DataSource
     ├── ui/               ← 공통 컴포넌트
     ├── types/            ← 공통 타입
     └── config/           ← 공통 설정
@@ -76,6 +77,18 @@ zipath/ (모노레포)
 6. 공공API 연동 (청약홈부터)
 7. 청약 자격 시뮬레이션 구현
 8. 실거래가 조회 구현
+
+## 데이터 정리 정책 (512MB 제한 대응)
+
+| 대상 | 기준 필드 | 삭제 조건 |
+|------|----------|----------|
+| 실거래가 캐시 | `fetchedAt` | 3개월 경과 |
+| 공공분양 공고 | `endDate` | 마감 후 6개월 경과 |
+| 유저 데이터 | `lastActiveAt` | 1년 미접속 |
+
+- 매주 일요일 새벽 3시 크론잡 자동 실행 (`CleanupService`)
+- 비회원도 시뮬레이션 사용 가능 (User 테이블 email nullable)
+- SSO 대비: `provider` + `providerId` 필드 (Google, Kakao, Naver)
 
 ## 수익화 계획
 

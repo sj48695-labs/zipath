@@ -1,3 +1,15 @@
+// 유저
+export type SsoProvider = "google" | "kakao" | "naver";
+
+export interface UserProfile {
+  id: number;
+  email: string | null;
+  nickname: string | null;
+  provider: SsoProvider | null;
+  createdAt: string;
+  lastActiveAt: string;
+}
+
 // 청약 시뮬레이션
 export interface SubscriptionSimulationInput {
   age: number;

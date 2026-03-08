@@ -1,2 +1,7 @@
-export { PrismaClient } from "@prisma/client";
-export type * from "@prisma/client";
+export { AppDataSource, entities } from "./data-source";
+export { User } from "./entities/user.entity";
+export { RealPriceCache } from "./entities/real-price-cache.entity";
+export { Announcement } from "./entities/announcement.entity";
+export { SubscriptionCriteria } from "./entities/subscription-criteria.entity";
+export { ChecklistTemplate } from "./entities/checklist-template.entity";
+export { ChecklistItem } from "./entities/checklist-item.entity";

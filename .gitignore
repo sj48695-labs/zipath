@@ -33,9 +33,10 @@ yarn-error.log*
 # turbo
 .turbo
 
-# prisma
-packages/db/prisma/*.db
-packages/db/prisma/migrations/
+# typeorm / db build output
+packages/db/src/**/*.js
+packages/db/src/**/*.d.ts
+packages/db/dist/
 
 # IDE
 .idea/

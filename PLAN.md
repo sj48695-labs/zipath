@@ -8,7 +8,7 @@
 |------|------|
 | 타겟 | 월세/전세/매매 첫 계약자 |
 | 목표 | 부동산 초보자가 계약 전 필요한 모든 정보를 한 곳에서 확인 |
-| 배포 | 프론트 Vercel / 백엔드 Railway |
+| 배포 | 프론트 Vercel / 백엔드 Render / DB Neon PostgreSQL |
 
 ---
 
@@ -21,7 +21,7 @@ zipath/                          # Turborepo 모노레포
 │   └── api/                     # NestJS + TypeScript
 ├── packages/
 │   ├── ui/                      # 공유 UI 컴포넌트 (shadcn/ui 기반)
-│   ├── db/                      # Prisma 스키마 + 클라이언트
+│   ├── db/                      # TypeORM 엔티티 + DataSource
 │   ├── types/                   # 공유 타입 정의
 │   └── config/                  # 공유 설정 (ESLint, TSConfig)
 ├── turbo.json
@@ -51,7 +51,7 @@ zipath/                          # Turborepo 모노레포
 - **설명**: 월세/전세/매매 유형별 계약 시 확인사항 체크리스트
 - **프론트**: 체크리스트 UI (진행률 표시, 로컬 저장)
 - **백엔드**: 체크리스트 템플릿 API (`GET /api/checklist/:type`)
-- **DB 테이블**: `checklist_templates`, `checklist_items`
+- **DB 테이블**: `checklist_template`, `checklist_item`
 
 ### Phase 2: 데이터 연동
 
@@ -60,83 +60,70 @@ zipath/                          # Turborepo 모노레포
 - **외부 API**: 국토교통부 실거래가 API
 - **프론트**: 검색 + 지역별/기간별 필터 + 차트 시각화
 - **백엔드**: 외부 API 프록시 + 캐싱 (`GET /api/real-price/search`)
-- **DB 테이블**: `real_price_cache` (API 응답 캐시)
+- **DB 테이블**: `real_price_cache` (API 응답 캐시, 3개월 후 자동 삭제)
 
 #### 3-5. 공공분양 공고 분석
 - **설명**: 공공분양 공고를 파싱하여 주요 정보 요약 제공
 - **외부 API**: 한국토지주택공사(LH), 청약홈 데이터
 - **프론트**: 공고 목록 + 상세 보기 + 필터링
 - **백엔드**: 공고 크롤링/파싱 + 저장 (`GET /api/announcements`)
-- **DB 테이블**: `announcements`, `announcement_details`
+- **DB 테이블**: `announcement` (마감 후 6개월 지나면 자동 삭제)
 
 ---
 
-## 4. DB 스키마 (Prisma)
+## 4. DB 스키마 (TypeORM)
 
-```prisma
-// 청약 기준
-model SubscriptionCriteria {
-  id          Int      @id @default(autoincrement())
-  type        String   // 1순위, 2순위, 특별공급 등
-  minAge      Int?
-  maxIncome   Int?     // 만원 단위
-  minHomeless Int?     // 무주택 기간(월)
-  region      String?
-  description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+### User (SSO 대비, 비회원 지원)
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | PK, auto | |
+| email | string, nullable, unique | 비회원은 null |
+| nickname | string, nullable | |
+| provider | string, nullable | google, kakao, naver (SSO) |
+| providerId | string, nullable, unique | SSO provider의 유저 ID |
+| lastActiveAt | timestamp | 1년 미접속 시 삭제 기준 |
+| createdAt | timestamp | |
+| updatedAt | timestamp | |
 
-// 체크리스트 템플릿
-model ChecklistTemplate {
-  id    Int              @id @default(autoincrement())
-  type  String           // rent, jeonse, buy
-  title String
-  items ChecklistItem[]
-}
+### SubscriptionCriteria (청약 기준)
+| 컬럼 | 타입 | 설명 |
+|------|------|------|
+| id | PK, auto | |
+| type | string | 1순위, 2순위, 특별공급 |
+| minAge | int, nullable | |
+| maxIncome | int, nullable | 만원 단위 |
+| minHomeless | int, nullable | 무주택 기간(월) |
+| region | string, nullable | |
+| description | text, nullable | |
 
-model ChecklistItem {
-  id         Int               @id @default(autoincrement())
-  templateId Int
-  template   ChecklistTemplate @relation(fields: [templateId], references: [id])
-  order      Int
-  content    String
-  category   String?           // 서류, 현장확인, 계약조건 등
-  isRequired Boolean           @default(true)
-}
+### ChecklistTemplate + ChecklistItem
+- 월세/전세/매매 유형별 체크리스트 템플릿
+- 1:N 관계 (template → items)
 
-// 실거래가 캐시
-model RealPriceCache {
-  id        Int      @id @default(autoincrement())
-  regionCode String
-  dealType   String  // 매매, 전세, 월세
-  yearMonth  String
-  data       Json
-  fetchedAt  DateTime @default(now())
+### RealPriceCache
+- regionCode + dealType + yearMonth 복합 유니크
+- jsonb 타입으로 API 응답 저장
+- 3개월 후 자동 삭제
 
-  @@unique([regionCode, dealType, yearMonth])
-}
-
-// 공공분양 공고
-model Announcement {
-  id            Int      @id @default(autoincrement())
-  title         String
-  organization  String   // LH, SH 등
-  region        String
-  supplyType    String   // 공공분양, 국민임대 등
-  startDate     DateTime
-  endDate       DateTime
-  detailUrl     String?
-  summary       String?
-  rawData       Json?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-}
-```
+### Announcement
+- 공공분양 공고 데이터
+- endDate 기준 마감 후 6개월 경과 시 자동 삭제
 
 ---
 
-## 5. API 엔드포인트 설계
+## 5. 데이터 정리 정책
+
+Neon 무료 512MB 제한 대응, `CleanupService` 크론잡 (매주 일요일 03:00):
+
+| 대상 | 기준 필드 | 삭제 조건 |
+|------|----------|----------|
+| 실거래가 캐시 | `fetchedAt` | 3개월 경과 |
+| 공공분양 공고 | `endDate` | 마감 후 6개월 경과 |
+| 유저 데이터 | `lastActiveAt` | 1년 미접속 |
+
+---
+
+## 6. API 엔드포인트 설계
 
 | Method | Endpoint | 설명 |
 |--------|----------|------|
@@ -149,7 +136,17 @@ model Announcement {
 
 ---
 
-## 6. 프론트엔드 페이지 구조
+## 7. 배포 전략
+
+| 서비스 | 플랫폼 | 비용 | 비고 |
+|--------|--------|------|------|
+| 프론트 (Next.js) | Vercel | 영구 무료 | GitHub push 시 자동 배포 |
+| 백엔드 (NestJS) | Render | 영구 무료 | 15분 미사용 시 슬립 (콜드 스타트) |
+| DB (PostgreSQL) | Neon | 영구 무료 | 512MB, 비활성 시 일시정지 |
+
+---
+
+## 8. 프론트엔드 페이지 구조
 
 ```
 apps/web/app/
@@ -171,22 +168,9 @@ apps/web/app/
 
 ---
 
-## 7. 이번 세션 구현 범위
+## 9. 향후 확장 고려사항
 
-빈 리포지토리이므로 **프로젝트 초기 세팅**에 집중:
-
-1. **Turborepo 모노레포 구조** 생성
-2. **Next.js 웹 앱** 기본 세팅 (App Router, Tailwind, shadcn/ui)
-3. **NestJS API 앱** 기본 세팅
-4. **Prisma 스키마** 정의 (위 DB 설계 반영)
-5. **공유 패키지** 구성 (types, ui, config)
-6. **랜딩 페이지** 기본 UI
-
----
-
-## 8. 향후 확장 고려사항
-
-- 사용자 인증 (NextAuth.js)
+- 사용자 인증 (SSO: Google, Kakao, Naver)
 - 마이페이지 (저장한 체크리스트, 관심 공고)
 - 알림 기능 (새 공고, 청약 일정)
 - PWA 지원 (모바일 최적화)

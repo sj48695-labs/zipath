@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: zipath-api
+    runtime: docker
+    dockerfilePath: ./apps/api/Dockerfile
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATA_GO_KR_API_KEY
+        sync: false
+      - key: NODE_ENV
+        value: production
