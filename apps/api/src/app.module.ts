@@ -7,6 +7,7 @@ import { SubscriptionModule } from "./subscription/subscription.module";
 import { LoanModule } from "./loan/loan.module";
 import { ChecklistModule } from "./checklist/checklist.module";
 import { CleanupModule } from "./cleanup/cleanup.module";
+import { HealthModule } from "./health/health.module";
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { CleanupModule } from "./cleanup/cleanup.module";
     LoanModule,
     ChecklistModule,
     CleanupModule,
+    HealthModule,
   ],
 })
 export class AppModule {}
