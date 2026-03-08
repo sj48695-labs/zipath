@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-interface SimulationInput {
+export interface SimulationInput {
   age: number;
   income: number;
   homelessMonths: number;

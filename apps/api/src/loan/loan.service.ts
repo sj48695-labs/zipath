@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-interface LoanInput {
+export interface LoanInput {
   annualIncome: number;
   existingDebt: number;
   housePrice: number;
