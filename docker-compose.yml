@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: zipath-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: zipath
+      POSTGRES_USER: zipath
+      POSTGRES_PASSWORD: zipath
+    volumes:
+      - zipath-data:/var/lib/postgresql/data
+
+volumes:
+  zipath-data:
