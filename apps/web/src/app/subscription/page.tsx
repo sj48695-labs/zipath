@@ -2,43 +2,53 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { fetchApi, ApiError } from "@/lib/api";
+
+interface SimulationResult {
+  type: string;
+  eligible: boolean;
+  reason: string;
+}
+
+interface SimulationResponse {
+  results: SimulationResult[];
+  message: string;
+}
 
 export default function SubscriptionPage() {
   const [form, setForm] = useState({ age: "", income: "", homelessMonths: "" });
-  const [result, setResult] = useState<{
-    results: { type: string; eligible: boolean; reason: string }[];
-    message: string;
-  } | null>(null);
+  const [result, setResult] = useState<SimulationResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: API 연동 후 교체
-    const input = {
-      age: Number(form.age),
-      income: Number(form.income),
-      homelessMonths: Number(form.homelessMonths),
-    };
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
-    // 임시 클라이언트 사이드 로직
-    const results = [];
-    if (input.age >= 19 && input.homelessMonths >= 24 && input.income <= 6000) {
-      results.push({ type: "1순위 일반", eligible: true, reason: "기본 자격 충족" });
-    } else {
-      results.push({ type: "1순위 일반", eligible: false, reason: "조건 미충족" });
+    try {
+      const data = await fetchApi<SimulationResponse>(
+        "/subscription/simulate",
+        {
+          method: "POST",
+          body: JSON.stringify({
+            age: Number(form.age),
+            income: Number(form.income),
+            homelessMonths: Number(form.homelessMonths),
+          }),
+        },
+      );
+      setResult(data);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+      }
+    } finally {
+      setLoading(false);
     }
-    if (input.income <= 7000) {
-      results.push({ type: "특별공급 (신혼부부)", eligible: true, reason: "소득 기준 충족" });
-    }
-    if (input.income <= 6000) {
-      results.push({ type: "특별공급 (생애최초)", eligible: true, reason: "무주택 + 소득 기준 충족" });
-    }
-
-    setResult({
-      results,
-      message: results.some((r) => r.eligible)
-        ? "청약 가능한 유형이 있습니다!"
-        : "현재 조건으로는 청약 자격이 부족합니다.",
-    });
   };
 
   return (
@@ -93,11 +103,18 @@ export default function SubscriptionPage() {
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            disabled={loading}
+            className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            자격 확인하기
+            {loading ? "확인 중..." : "자격 확인하기"}
           </button>
         </form>
+
+        {error && (
+          <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
 
         {result && (
           <div className="mt-8 rounded-lg border p-6">

@@ -2,6 +2,22 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { fetchApi, ApiError } from "@/lib/api";
+
+interface LoanResult {
+  maxLoanAmount: number;
+  monthlyPayment: number;
+  maxByLtv: number;
+  maxByDsr: number;
+  annualRate: string;
+  loanTermYears: number;
+  dsrRatio: string;
+  ltvRatio: string;
+}
+
+interface LoanResponse {
+  result: LoanResult;
+}
 
 export default function LoanPage() {
   const [form, setForm] = useState({
@@ -9,50 +25,35 @@ export default function LoanPage() {
     existingDebt: "",
     housePrice: "",
   });
-  const [result, setResult] = useState<{
-    maxLoanAmount: number;
-    monthlyPayment: number;
-    maxByLtv: number;
-    maxByDsr: number;
-  } | null>(null);
+  const [result, setResult] = useState<LoanResult | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const income = Number(form.annualIncome);
-    const debt = Number(form.existingDebt);
-    const price = Number(form.housePrice);
+    setLoading(true);
+    setError(null);
+    setResult(null);
 
-    const ltvRatio = 0.7;
-    const dsrLimit = 0.4;
-    const annualRate = 0.04;
-    const months = 360;
-    const monthlyRate = annualRate / 12;
-
-    const maxByLtv = price * ltvRatio;
-    const annualCapacity = income * dsrLimit;
-    const existingRepayment = debt > 0 ? debt / 10 : 0;
-    const available = annualCapacity - existingRepayment;
-
-    const maxByDsr =
-      available > 0
-        ? (available / 12) *
-          ((Math.pow(1 + monthlyRate, months) - 1) /
-            (monthlyRate * Math.pow(1 + monthlyRate, months)))
-        : 0;
-
-    const maxLoan = Math.max(0, Math.min(maxByLtv, maxByDsr));
-    const monthly =
-      maxLoan > 0
-        ? (maxLoan * monthlyRate * Math.pow(1 + monthlyRate, months)) /
-          (Math.pow(1 + monthlyRate, months) - 1)
-        : 0;
-
-    setResult({
-      maxLoanAmount: Math.round(maxLoan),
-      monthlyPayment: Math.round(monthly),
-      maxByLtv: Math.round(maxByLtv),
-      maxByDsr: Math.round(Math.max(0, maxByDsr)),
-    });
+    try {
+      const data = await fetchApi<LoanResponse>("/loan/calculate", {
+        method: "POST",
+        body: JSON.stringify({
+          annualIncome: Number(form.annualIncome),
+          existingDebt: Number(form.existingDebt),
+          housePrice: Number(form.housePrice),
+        }),
+      });
+      setResult(data.result);
+    } catch (err) {
+      if (err instanceof ApiError) {
+        setError(err.message);
+      } else {
+        setError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatMoney = (n: number) => n.toLocaleString("ko-KR");
@@ -109,11 +110,18 @@ export default function LoanPage() {
           </div>
           <button
             type="submit"
-            className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            disabled={loading}
+            className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            계산하기
+            {loading ? "계산 중..." : "계산하기"}
           </button>
         </form>
+
+        {error && (
+          <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6">
+            <p className="text-sm text-red-600">{error}</p>
+          </div>
+        )}
 
         {result && (
           <div className="mt-8 rounded-lg border p-6">
@@ -130,16 +138,16 @@ export default function LoanPage() {
                 <p className="text-2xl font-bold">{formatMoney(result.monthlyPayment)}만원</p>
               </div>
               <div className="rounded-md border p-4">
-                <p className="text-sm text-muted-foreground">LTV 기준 한도 (70%)</p>
+                <p className="text-sm text-muted-foreground">LTV 기준 한도 ({result.ltvRatio})</p>
                 <p className="font-semibold">{formatMoney(result.maxByLtv)}만원</p>
               </div>
               <div className="rounded-md border p-4">
-                <p className="text-sm text-muted-foreground">DSR 기준 한도 (40%)</p>
+                <p className="text-sm text-muted-foreground">DSR 기준 한도 ({result.dsrRatio})</p>
                 <p className="font-semibold">{formatMoney(result.maxByDsr)}만원</p>
               </div>
             </div>
             <p className="mt-4 text-xs text-muted-foreground">
-              * 연이율 4.0%, 원리금균등상환 30년 기준 산출. 실제 대출 조건은 금융기관에 따라 다릅니다.
+              * 연이율 {result.annualRate}, 원리금균등상환 {result.loanTermYears}년 기준 산출. 실제 대출 조건은 금융기관에 따라 다릅니다.
             </p>
           </div>
         )}

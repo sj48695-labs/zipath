@@ -1,6 +1,25 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  OnModuleInit,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { ChecklistTemplate, ChecklistItem } from "@zipath/db";
 
-const checklists: Record<string, { title: string; items: { category: string; content: string; isRequired: boolean }[] }> = {
+interface ChecklistSeedItem {
+  category: string;
+  content: string;
+  isRequired: boolean;
+}
+
+interface ChecklistSeed {
+  title: string;
+  items: ChecklistSeedItem[];
+}
+
+const SEED_DATA: Record<string, ChecklistSeed> = {
   rent: {
     title: "월세 계약 체크리스트",
     items: [
@@ -49,12 +68,72 @@ const checklists: Record<string, { title: string; items: { category: string; con
 };
 
 @Injectable()
-export class ChecklistService {
-  getByType(type: string) {
-    const checklist = checklists[type];
-    if (!checklist) {
-      throw new NotFoundException(`체크리스트 유형 '${type}'을 찾을 수 없습니다. (rent, jeonse, buy 중 선택)`);
+export class ChecklistService implements OnModuleInit {
+  private readonly logger = new Logger(ChecklistService.name);
+
+  constructor(
+    @InjectRepository(ChecklistTemplate)
+    private readonly templateRepo: Repository<ChecklistTemplate>,
+    @InjectRepository(ChecklistItem)
+    private readonly itemRepo: Repository<ChecklistItem>,
+  ) {}
+
+  async onModuleInit() {
+    try {
+      const count = await this.templateRepo.count();
+      if (count > 0) return;
+
+      this.logger.log("체크리스트 시드 데이터 삽입 시작...");
+
+      for (const [type, seed] of Object.entries(SEED_DATA)) {
+        const template = this.templateRepo.create({ type, title: seed.title });
+        const saved = await this.templateRepo.save(template);
+
+        const items = seed.items.map((item, index) =>
+          this.itemRepo.create({
+            templateId: saved.id,
+            order: index + 1,
+            content: item.content,
+            category: item.category,
+            isRequired: item.isRequired,
+          }),
+        );
+        await this.itemRepo.save(items);
+      }
+
+      this.logger.log("체크리스트 시드 데이터 삽입 완료");
+    } catch (err) {
+      this.logger.warn("체크리스트 시드 삽입 실패 — fallback 데이터 사용", err);
     }
-    return checklist;
+  }
+
+  async getByType(type: string) {
+    try {
+      const template = await this.templateRepo.findOne({
+        where: { type },
+        relations: ["items"],
+      });
+
+      if (template) {
+        const sortedItems = template.items
+          .sort((a, b) => a.order - b.order)
+          .map((item) => ({
+            category: item.category ?? "",
+            content: item.content,
+            isRequired: item.isRequired,
+          }));
+        return { title: template.title, items: sortedItems };
+      }
+    } catch {
+      this.logger.warn("DB 조회 실패 — fallback 데이터 사용");
+    }
+
+    const fallback = SEED_DATA[type];
+    if (!fallback) {
+      throw new NotFoundException(
+        `체크리스트 유형 '${type}'을 찾을 수 없습니다. (rent, jeonse, buy 중 선택)`,
+      );
+    }
+    return fallback;
   }
 }
