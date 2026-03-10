@@ -123,7 +123,9 @@ export default function RealPricePage() {
         return;
       }
 
+      // 백엔드 RealPriceResponse 포맷 지원 + 기존 공공API 포맷 fallback
       const items =
+        data?.trades ??
         data?.response?.body?.items?.item ??
         data?.body?.items?.item ??
         [];

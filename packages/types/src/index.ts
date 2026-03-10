@@ -67,3 +67,34 @@ export interface Checklist {
   title: string;
   items: ChecklistItem[];
 }
+
+// 실거래가
+export type DealType = "매매" | "전세" | "월세";
+
+export interface RealPriceSearchInput {
+  regionCode: string;
+  yearMonth: string; // YYYYMM
+  dealType?: DealType;
+}
+
+export interface RealPriceTrade {
+  aptNm: string;
+  dealAmount: string;
+  buildYear: string;
+  dealYear: string;
+  dealMonth: string;
+  dealDay: string;
+  excluUseAr: string;
+  floor: string;
+  umdNm: string;
+  jibun: string;
+  roadNm: string;
+}
+
+export interface RealPriceResponse {
+  trades: RealPriceTrade[];
+  totalCount: number;
+  cached: boolean;
+  regionCode: string;
+  yearMonth: string;
+}
