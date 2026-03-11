@@ -250,35 +250,78 @@ Implemented by DevLoop auto-development system."
 
   # 빌드 확인 (로컬)
   info "빌드 확인 중..."
-  if ! (cd "$REPO_ROOT" && npx turbo build 2>&1 | tee -a "$LOG_FILE"); then
+  local build_output
+  build_output=$(cd "$REPO_ROOT" && npx turbo build 2>&1) || true
+
+  if echo "$build_output" | grep -q "ERROR\|Failed"; then
     err "빌드 실패! error 이슈를 생성합니다."
     create_error_issue "빌드 실패: #$issue_num $issue_title" \
-      "브랜치 $branch 에서 빌드가 실패했습니다.\n\n$(cd "$REPO_ROOT" && npx turbo build 2>&1 | tail -30)"
+      "브랜치 \`$branch\` 에서 빌드가 실패했습니다.\n\n\`\`\`\n$(echo "$build_output" | tail -30)\n\`\`\`"
+    echo "$build_output" >> "$LOG_FILE"
+    git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
     return 1
   fi
 
-  # main에 머지
-  info "main 브랜치에 머지 중..."
-  git -C "$REPO_ROOT" checkout "$MAIN_BRANCH"
-  git -C "$REPO_ROOT" merge "$branch" --no-edit
+  echo "$build_output" >> "$LOG_FILE"
+  ok "빌드 성공"
 
-  # main 푸시
-  for retry in 1 2 3 4; do
-    if git -C "$REPO_ROOT" push origin "$MAIN_BRANCH" 2>/dev/null; then
-      break
+  # PR 생성 (직접 머지 대신)
+  info "Pull Request 생성 중..."
+  local pr_url
+  pr_url=$(gh pr create --repo "$REPO" \
+    --base "$MAIN_BRANCH" \
+    --head "$branch" \
+    --title "feat: resolve #$issue_num - $issue_title" \
+    --body "## Summary
+이슈 #$issue_num 자동 구현
+
+## Changes
+$issue_title
+
+## DevLoop
+- 브랜치: \`$branch\`
+- 커밋: \`$(git -C "$REPO_ROOT" log -1 --format='%h %s')\`
+- 빌드: 통과
+
+Closes #$issue_num" 2>&1) || true
+
+  if [[ -n "$pr_url" ]] && echo "$pr_url" | grep -q "http"; then
+    ok "PR 생성 완료: $pr_url"
+
+    # 자동 머지 시도 (--auto는 branch protection 있을 때, --merge는 직접 머지)
+    if gh pr merge "$pr_url" --repo "$REPO" --merge --delete-branch 2>/dev/null; then
+      ok "PR 자동 머지 완료"
+      # 로컬 main 업데이트
+      git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
+      git -C "$REPO_ROOT" pull origin "$MAIN_BRANCH" 2>/dev/null || true
+    else
+      info "PR 자동 머지 불가 — 수동 리뷰 후 머지해주세요: $pr_url"
+      git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
     fi
-    sleep $((2 ** retry))
-  done
+  else
+    warn "PR 생성 실패 — 직접 머지를 시도합니다."
+    # PR 생성 실패 시 fallback: 직접 머지
+    git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
+    git -C "$REPO_ROOT" merge "$branch" --no-edit 2>/dev/null
 
-  # 이슈 닫기
-  gh issue close "$issue_num" --repo "$REPO" \
-    --comment "DevLoop에 의해 자동 구현 완료.
+    for retry in 1 2 3 4; do
+      if git -C "$REPO_ROOT" push origin "$MAIN_BRANCH" 2>/dev/null; then
+        break
+      fi
+      sleep $((2 ** retry))
+    done
+
+    # 이슈 닫기 (PR이 없으니 수동으로)
+    gh issue close "$issue_num" --repo "$REPO" \
+      --comment "DevLoop에 의해 자동 구현 완료.
 브랜치: \`$branch\`
-커밋: $(git -C "$REPO_ROOT" log -1 --format='%h %s')" 2>/dev/null
+커밋: \`$(git -C "$REPO_ROOT" log -1 --format='%h %s')\`" 2>/dev/null
+  fi
 
-  ok "이슈 #$issue_num 완료! ✓"
+  ok "이슈 #$issue_num 처리 완료! ✓"
 
-  # 브랜치 정리
+  # 로컬 브랜치 정리
+  git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
   git -C "$REPO_ROOT" branch -d "$branch" 2>/dev/null || true
 }
 

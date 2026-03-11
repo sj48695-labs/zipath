@@ -1,6 +1,6 @@
 # DevLoop - 자동 개발 루프 시스템 (GitHub Edition)
 
-GitHub 이슈 기반으로 Claude Code가 자동으로 코드를 구현하는 시스템.
+GitHub 이슈 기반으로 Claude Code가 자동으로 코드를 구현하고 PR을 생성하는 시스템.
 
 ## 전체 흐름
 
