@@ -10,6 +10,24 @@ export interface UserProfile {
   lastActiveAt: string;
 }
 
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    id: number;
+    email: string | null;
+    nickname: string | null;
+    provider: string | null;
+  };
+}
+
+export interface OAuthLoginInput {
+  provider: SsoProvider;
+  providerId: string;
+  email: string | null;
+  nickname: string | null;
+}
+
 // 청약 시뮬레이션
 export interface SubscriptionSimulationInput {
   age: number;
