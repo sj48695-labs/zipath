@@ -8,13 +8,13 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ChecklistTemplate, ChecklistItem } from "@zipath/db";
 
-interface ChecklistSeedItem {
+export interface ChecklistSeedItem {
   category: string;
   content: string;
   isRequired: boolean;
 }
 
-interface ChecklistSeed {
+export interface ChecklistSeed {
   title: string;
   items: ChecklistSeedItem[];
 }
