@@ -41,3 +41,8 @@ packages/db/dist/
 # IDE
 .idea/
 .vscode/
+
+# devloop
+.devloop
+scripts/dev-loop.log
+scripts/.stop
