@@ -9,6 +9,7 @@ import { ChecklistModule } from "./checklist/checklist.module";
 import { CleanupModule } from "./cleanup/cleanup.module";
 import { HealthModule } from "./health/health.module";
 import { RealPriceModule } from "./real-price/real-price.module";
+import { GlossaryModule } from "./glossary/glossary.module";
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { RealPriceModule } from "./real-price/real-price.module";
     CleanupModule,
     HealthModule,
     RealPriceModule,
+    GlossaryModule,
   ],
 })
 export class AppModule {}

@@ -98,3 +98,19 @@ export interface RealPriceResponse {
   regionCode: string;
   yearMonth: string;
 }
+
+// 부동산 용어
+export interface GlossaryTerm {
+  term: string;
+  definition: string;
+  category: string;
+  example?: string;
+}
+
+export type GlossaryCategory =
+  | "등기"
+  | "계약"
+  | "대출"
+  | "청약"
+  | "세금"
+  | "기타";
