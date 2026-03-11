@@ -1,7 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  ScatterChart,
+  Scatter,
+} from "recharts";
 
 const REGIONS = [
   { code: "11110", name: "서울 종로구" },
@@ -104,8 +115,39 @@ export default function RealPricePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "chart">("table");
 
   const monthOptions = getMonthOptions();
+
+  // 법정동별 평균 가격
+  const avgByDong = useMemo(() => {
+    const map = new Map<string, { total: number; count: number }>();
+    for (const t of trades) {
+      const amount = parseInt(t.dealAmount?.replace(/,/g, "").trim() || "0", 10);
+      if (!amount || !t.umdNm) continue;
+      const prev = map.get(t.umdNm) || { total: 0, count: 0 };
+      map.set(t.umdNm, { total: prev.total + amount, count: prev.count + 1 });
+    }
+    return Array.from(map.entries())
+      .map(([name, { total, count }]) => ({
+        name,
+        avg: Math.round(total / count),
+        count,
+      }))
+      .sort((a, b) => b.avg - a.avg)
+      .slice(0, 10);
+  }, [trades]);
+
+  // 면적별 가격 분포 (scatter)
+  const areaVsPrice = useMemo(() => {
+    return trades
+      .map((t) => ({
+        area: parseFloat(t.excluUseAr) || 0,
+        price: parseInt(t.dealAmount?.replace(/,/g, "").trim() || "0", 10),
+        name: t.aptNm,
+      }))
+      .filter((d) => d.area > 0 && d.price > 0);
+  }, [trades]);
 
   async function handleSearch() {
     setLoading(true);
@@ -219,6 +261,89 @@ export default function RealPricePage() {
         )}
 
         {!loading && trades.length > 0 && (
+          <>
+            <div className="mb-4 flex gap-2">
+              <button
+                onClick={() => setViewMode("table")}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                  viewMode === "table"
+                    ? "bg-primary text-primary-foreground"
+                    : "border hover:bg-accent"
+                }`}
+              >
+                테이블
+              </button>
+              <button
+                onClick={() => setViewMode("chart")}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                  viewMode === "chart"
+                    ? "bg-primary text-primary-foreground"
+                    : "border hover:bg-accent"
+                }`}
+              >
+                차트
+              </button>
+            </div>
+
+            {viewMode === "chart" && (
+              <div className="space-y-8">
+                {/* 법정동별 평균 가격 */}
+                {avgByDong.length > 0 && (
+                  <div className="rounded-lg border bg-card p-4">
+                    <h3 className="mb-4 text-sm font-semibold">법정동별 평균 거래가격 (만원)</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <BarChart data={avgByDong} layout="vertical" margin={{ left: 60 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis type="number" tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`} />
+                        <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12 }} />
+                        <Tooltip
+                          formatter={(value: unknown) => [`${Number(value).toLocaleString()}만원`, "평균가"]}
+                          labelFormatter={(label: unknown) => String(label)}
+                        />
+                        <Bar dataKey="avg" fill="hsl(221, 83%, 53%)" radius={[0, 4, 4, 0]} />
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+
+                {/* 면적 vs 가격 산점도 */}
+                {areaVsPrice.length > 0 && (
+                  <div className="rounded-lg border bg-card p-4">
+                    <h3 className="mb-4 text-sm font-semibold">전용면적별 거래가격 분포</h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <ScatterChart margin={{ bottom: 20 }}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis
+                          type="number"
+                          dataKey="area"
+                          name="면적"
+                          unit="m²"
+                          tick={{ fontSize: 12 }}
+                        />
+                        <YAxis
+                          type="number"
+                          dataKey="price"
+                          name="가격"
+                          tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`}
+                          tick={{ fontSize: 12 }}
+                        />
+                        <Tooltip
+                          formatter={(value: unknown, name: unknown) => {
+                            const v = Number(value);
+                            const n = String(name);
+                            if (n === "가격") return [`${v.toLocaleString()}만원`, n];
+                            return [`${v}m²`, n];
+                          }}
+                        />
+                        <Scatter data={areaVsPrice} fill="hsl(221, 83%, 53%)" fillOpacity={0.6} />
+                      </ScatterChart>
+                    </ResponsiveContainer>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {viewMode === "table" && (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
@@ -254,6 +379,8 @@ export default function RealPricePage() {
               총 {trades.length}건 (최대 50건 표시)
             </p>
           </div>
+            )}
+          </>
         )}
       </main>
     </div>
