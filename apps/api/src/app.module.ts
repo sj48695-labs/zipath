@@ -11,6 +11,7 @@ import { HealthModule } from "./health/health.module";
 import { RealPriceModule } from "./real-price/real-price.module";
 import { GlossaryModule } from "./glossary/glossary.module";
 import { AuthModule } from "./auth/auth.module";
+import { AnnouncementModule } from "./announcement/announcement.module";
 
 @Module({
   imports: [
@@ -38,6 +39,7 @@ import { AuthModule } from "./auth/auth.module";
     RealPriceModule,
     GlossaryModule,
     AuthModule,
+    AnnouncementModule,
   ],
 })
 export class AppModule {}
