@@ -46,4 +46,8 @@ packages/db/dist/
 # devloop
 .devloop
 scripts/dev-loop.log
+scripts/batch-workflow.log
 scripts/.stop
+
+# claude
+.claude/
