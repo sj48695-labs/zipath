@@ -11,7 +11,7 @@ interface ChecklistItem {
   tip?: string;
 }
 
-interface ContractChecklist {
+export interface ContractChecklist {
   contractType: string;
   title: string;
   description: string;
