@@ -14,6 +14,7 @@ import {
   Scatter,
 } from "recharts";
 import MonthlyPriceTrendChart from "./_components/MonthlyPriceTrendChart";
+import AreaFilter from "./_components/AreaFilter";
 
 const REGIONS = [
   { code: "11110", name: "서울 종로구" },
@@ -105,6 +106,11 @@ interface MonthlyPriceSummaryItem {
   tradeCount: number;
 }
 
+interface AreaRange {
+  min?: number;
+  max?: number;
+}
+
 type ViewMode = "table" | "chart" | "trend";
 
 function getMonthOptions() {
@@ -127,6 +133,7 @@ export default function RealPricePage() {
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
+  const [areaFilter, setAreaFilter] = useState<AreaRange>({});
 
   // Trend-related state
   const [trendFromMonth, setTrendFromMonth] = useState(() => getMonthOptions()[5].value);
@@ -173,9 +180,14 @@ export default function RealPricePage() {
     setError(null);
     setSearched(true);
     try {
-      const res = await fetch(
-        `/api/real-price?LAWD_CD=${regionCode}&DEAL_YMD=${dealYmd}&numOfRows=50`
-      );
+      const params = new URLSearchParams({
+        LAWD_CD: regionCode,
+        DEAL_YMD: dealYmd,
+        numOfRows: "50",
+      });
+      if (areaFilter.min !== undefined) params.set("minArea", String(areaFilter.min));
+      if (areaFilter.max !== undefined) params.set("maxArea", String(areaFilter.max));
+      const res = await fetch(`/api/real-price?${params.toString()}`);
       const data = await res.json();
 
       if (data.error) {
@@ -363,6 +375,13 @@ export default function RealPricePage() {
             </>
           )}
         </div>
+
+        {/* Area filter */}
+        {viewMode !== "trend" && (
+          <div className="mb-8">
+            <AreaFilter onFilterChange={setAreaFilter} />
+          </div>
+        )}
 
         {/* Trend view */}
         {viewMode === "trend" && (
