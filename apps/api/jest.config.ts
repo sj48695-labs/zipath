@@ -1,24 +1,19 @@
 import type { Config } from "jest";
 
 const config: Config = {
-  moduleFileExtensions: ["ts", "js", "json"],
-  rootDir: "src",
+  moduleFileExtensions: ["js", "json", "ts"],
+  rootDir: ".",
   testRegex: ".*\\.spec\\.ts$",
   transform: {
-    "^.+\\.ts$": [
-      "ts-jest",
-      {
-        tsconfig: {
-          rootDir: undefined,
-        },
-      },
-    ],
+    "^.+\\.(t|j)s$": "ts-jest",
   },
-  transformIgnorePatterns: [],
+  collectCoverageFrom: ["src/**/*.service.ts"],
+  coverageDirectory: "./coverage",
   testEnvironment: "node",
   moduleNameMapper: {
-    "^@zipath/db$": "<rootDir>/../../../packages/db/src/index.ts",
-    "^@/(.*)$": "<rootDir>/$1",
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "^@zipath/types$": "<rootDir>/../../packages/types/src/index.ts",
+    "^@zipath/db$": "<rootDir>/../../packages/db/src/index.ts",
   },
 };
 

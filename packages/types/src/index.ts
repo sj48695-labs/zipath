@@ -10,6 +10,24 @@ export interface UserProfile {
   lastActiveAt: string;
 }
 
+export interface AuthTokens {
+  accessToken: string;
+  refreshToken: string;
+  user: {
+    id: number;
+    email: string | null;
+    nickname: string | null;
+    provider: string | null;
+  };
+}
+
+export interface OAuthLoginInput {
+  provider: SsoProvider;
+  providerId: string;
+  email: string | null;
+  nickname: string | null;
+}
+
 // 청약 시뮬레이션
 export interface SubscriptionSimulationInput {
   age: number;
@@ -67,3 +85,50 @@ export interface Checklist {
   title: string;
   items: ChecklistItem[];
 }
+
+// 실거래가
+export type DealType = "매매" | "전세" | "월세";
+
+export interface RealPriceSearchInput {
+  regionCode: string;
+  yearMonth: string; // YYYYMM
+  dealType?: DealType;
+}
+
+export interface RealPriceTrade {
+  aptNm: string;
+  dealAmount: string;
+  buildYear: string;
+  dealYear: string;
+  dealMonth: string;
+  dealDay: string;
+  excluUseAr: string;
+  floor: string;
+  umdNm: string;
+  jibun: string;
+  roadNm: string;
+}
+
+export interface RealPriceResponse {
+  trades: RealPriceTrade[];
+  totalCount: number;
+  cached: boolean;
+  regionCode: string;
+  yearMonth: string;
+}
+
+// 부동산 용어
+export interface GlossaryTerm {
+  term: string;
+  definition: string;
+  category: string;
+  example?: string;
+}
+
+export type GlossaryCategory =
+  | "등기"
+  | "계약"
+  | "대출"
+  | "청약"
+  | "세금"
+  | "기타";

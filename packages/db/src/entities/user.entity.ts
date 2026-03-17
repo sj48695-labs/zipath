@@ -11,16 +11,16 @@ export class User {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ type: "varchar", unique: true, nullable: true })
   email!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   nickname!: string | null;
 
-  @Column({ nullable: true })
+  @Column({ type: "varchar", nullable: true })
   provider!: string | null; // 'google', 'kakao', 'naver' 등 (SSO 대비)
 
-  @Column({ nullable: true, unique: true })
+  @Column({ type: "varchar", nullable: true, unique: true })
   providerId!: string | null; // SSO provider의 유저 ID
 
   @CreateDateColumn()

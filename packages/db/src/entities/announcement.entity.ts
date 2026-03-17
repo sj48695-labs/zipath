@@ -29,7 +29,7 @@ export class Announcement {
   @Column({ type: "timestamp" })
   endDate!: Date;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: "varchar" })
   detailUrl!: string | null;
 
   @Column({ nullable: true, type: "text" })

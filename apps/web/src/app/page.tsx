@@ -31,6 +31,12 @@ const features = [
     href: "/announcements",
     icon: "📢",
   },
+  {
+    title: "부동산 용어 사전",
+    description: "갑구, 을구, 근저당... 어려운 부동산 용어를 쉽게 설명해드려요.",
+    href: "/glossary",
+    icon: "📖",
+  },
 ];
 
 export default function HomePage() {
