@@ -14,6 +14,7 @@ import { z } from "zod";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./google-auth.guard";
 import { KakaoAuthGuard } from "./kakao-auth.guard";
+import { NaverAuthGuard } from "./naver-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Public } from "./public.decorator";
 
@@ -90,7 +91,33 @@ export class AuthController {
     const frontendUrl =
       this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
 
-    // 프론트엔드로 토큰을 쿼리 파라미터로 전달
+    const redirectUrl = new URL("/auth/callback", frontendUrl);
+    redirectUrl.searchParams.set("accessToken", tokens.accessToken);
+    redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
+
+    res.redirect(redirectUrl.toString());
+  }
+
+  /** Naver OAuth 로그인 시작 */
+  @Public()
+  @UseGuards(NaverAuthGuard)
+  @Get("naver")
+  naverLogin(): void {
+    // NaverAuthGuard가 Naver OAuth 페이지로 리다이렉트
+  }
+
+  /** Naver OAuth 콜백 */
+  @Public()
+  @UseGuards(NaverAuthGuard)
+  @Get("naver/callback")
+  async naverCallback(
+    @Request() req: { user: OAuthUser },
+    @Res() res: Response,
+  ): Promise<void> {
+    const tokens = await this.authService.validateOAuthLogin(req.user);
+    const frontendUrl =
+      this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
+
     const redirectUrl = new URL("/auth/callback", frontendUrl);
     redirectUrl.searchParams.set("accessToken", tokens.accessToken);
     redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
