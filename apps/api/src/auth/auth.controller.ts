@@ -13,10 +13,11 @@ import { Response } from "express";
 import { z } from "zod";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./google-auth.guard";
+import { KakaoAuthGuard } from "./kakao-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Public } from "./public.decorator";
 
-interface GoogleOAuthUser {
+interface OAuthUser {
   provider: string;
   providerId: string;
   email: string | null;
@@ -54,7 +55,35 @@ export class AuthController {
   @UseGuards(GoogleAuthGuard)
   @Get("google/callback")
   async googleCallback(
-    @Request() req: { user: GoogleOAuthUser },
+    @Request() req: { user: OAuthUser },
+    @Res() res: Response,
+  ): Promise<void> {
+    const tokens = await this.authService.validateOAuthLogin(req.user);
+    const frontendUrl =
+      this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
+
+    // 프론트엔드로 토큰을 쿼리 파라미터로 전달
+    const redirectUrl = new URL("/auth/callback", frontendUrl);
+    redirectUrl.searchParams.set("accessToken", tokens.accessToken);
+    redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
+
+    res.redirect(redirectUrl.toString());
+  }
+
+  /** Kakao OAuth 로그인 시작 */
+  @Public()
+  @UseGuards(KakaoAuthGuard)
+  @Get("kakao")
+  kakaoLogin(): void {
+    // KakaoAuthGuard가 Kakao OAuth 페이지로 리다이렉트
+  }
+
+  /** Kakao OAuth 콜백 */
+  @Public()
+  @UseGuards(KakaoAuthGuard)
+  @Get("kakao/callback")
+  async kakaoCallback(
+    @Request() req: { user: OAuthUser },
     @Res() res: Response,
   ): Promise<void> {
     const tokens = await this.authService.validateOAuthLogin(req.user);
