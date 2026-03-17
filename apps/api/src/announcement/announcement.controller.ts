@@ -1,5 +1,16 @@
-import { Controller, Get, Param, Query, ParseIntPipe, NotFoundException } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Param,
+  Query,
+  Body,
+  ParseIntPipe,
+  NotFoundException,
+  BadRequestException,
+} from "@nestjs/common";
 import { AnnouncementService } from "./announcement.service";
+import { matchRequestSchema } from "./dto/match-request.dto";
 
 @Controller("announcements")
 export class AnnouncementController {
@@ -25,6 +36,28 @@ export class AnnouncementController {
   @Get(":id")
   async findOne(@Param("id", ParseIntPipe) id: number) {
     const result = await this.announcementService.findOne(id);
+    if (!result) {
+      throw new NotFoundException("공고를 찾을 수 없습니다.");
+    }
+    return result;
+  }
+
+  @Post(":id/match")
+  async matchAnnouncement(
+    @Param("id", ParseIntPipe) id: number,
+    @Body() body: unknown,
+  ) {
+    const parsed = matchRequestSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(
+        parsed.error.issues.map((i) => i.message).join(", "),
+      );
+    }
+
+    const result = await this.announcementService.matchAnnouncement(
+      id,
+      parsed.data,
+    );
     if (!result) {
       throw new NotFoundException("공고를 찾을 수 없습니다.");
     }
