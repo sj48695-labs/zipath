@@ -7,6 +7,7 @@ import { User } from "@zipath/db";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { GoogleStrategy } from "./google.strategy";
+import { KakaoStrategy } from "./kakao.strategy";
 import { JwtStrategy } from "./jwt.strategy";
 
 @Module({
@@ -24,7 +25,7 @@ import { JwtStrategy } from "./jwt.strategy";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, GoogleStrategy],
+  providers: [AuthService, JwtStrategy, GoogleStrategy, KakaoStrategy],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
