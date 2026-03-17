@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import {
   BarChart,
   Bar,
@@ -13,6 +13,7 @@ import {
   ScatterChart,
   Scatter,
 } from "recharts";
+import MonthlyPriceTrendChart from "./_components/MonthlyPriceTrendChart";
 
 const REGIONS = [
   { code: "11110", name: "서울 종로구" },
@@ -96,6 +97,16 @@ interface Trade {
   roadNm: string;
 }
 
+interface MonthlyPriceSummaryItem {
+  yearMonth: string;
+  avgPrice: number;
+  minPrice: number;
+  maxPrice: number;
+  tradeCount: number;
+}
+
+type ViewMode = "table" | "chart" | "trend";
+
 function getMonthOptions() {
   const options: { value: string; label: string }[] = [];
   const now = new Date();
@@ -115,7 +126,15 @@ export default function RealPricePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
-  const [viewMode, setViewMode] = useState<"table" | "chart">("table");
+  const [viewMode, setViewMode] = useState<ViewMode>("table");
+
+  // Trend-related state
+  const [trendFromMonth, setTrendFromMonth] = useState(() => getMonthOptions()[5].value);
+  const [trendToMonth, setTrendToMonth] = useState(() => getMonthOptions()[0].value);
+  const [trendData, setTrendData] = useState<MonthlyPriceSummaryItem[]>([]);
+  const [trendLoading, setTrendLoading] = useState(false);
+  const [trendError, setTrendError] = useState<string | null>(null);
+  const [trendSearched, setTrendSearched] = useState(false);
 
   const monthOptions = getMonthOptions();
 
@@ -180,6 +199,36 @@ export default function RealPricePage() {
     }
   }
 
+  const handleTrendSearch = useCallback(async () => {
+    if (trendFromMonth > trendToMonth) {
+      setTrendError("시작월이 종료월보다 이후입니다.");
+      return;
+    }
+    setTrendLoading(true);
+    setTrendError(null);
+    setTrendSearched(true);
+    try {
+      const res = await fetch(
+        `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`
+      );
+      const data = await res.json();
+
+      if (data.error) {
+        setTrendError(data.error);
+        setTrendData([]);
+        return;
+      }
+
+      const monthly: MonthlyPriceSummaryItem[] = data?.monthly ?? [];
+      setTrendData(monthly);
+    } catch {
+      setTrendError("추이 데이터를 불러오는 데 실패했습니다.");
+      setTrendData([]);
+    } finally {
+      setTrendLoading(false);
+    }
+  }, [regionCode, trendFromMonth, trendToMonth]);
+
   return (
     <div className="min-h-screen">
       <header className="border-b">
@@ -201,6 +250,31 @@ export default function RealPricePage() {
           국토교통부 아파트 매매 실거래가 데이터를 조회합니다.
         </p>
 
+        {/* View mode tabs */}
+        <div className="mb-4 flex gap-2">
+          {(["table", "chart", "trend"] as const).map((mode) => {
+            const labels: Record<ViewMode, string> = {
+              table: "테이블",
+              chart: "차트",
+              trend: "월별 추이",
+            };
+            return (
+              <button
+                key={mode}
+                onClick={() => setViewMode(mode)}
+                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
+                  viewMode === mode
+                    ? "bg-primary text-primary-foreground"
+                    : "border hover:bg-accent"
+                }`}
+              >
+                {labels[mode]}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Search controls - single month for table/chart, date range for trend */}
         <div className="mb-8 flex flex-wrap items-end gap-4 rounded-lg border bg-card p-4">
           <div className="flex-1 min-w-[200px]">
             <label className="mb-1 block text-sm font-medium">지역</label>
@@ -216,169 +290,216 @@ export default function RealPricePage() {
               ))}
             </select>
           </div>
-          <div className="min-w-[160px]">
-            <label className="mb-1 block text-sm font-medium">계약월</label>
-            <select
-              value={dealYmd}
-              onChange={(e) => setDealYmd(e.target.value)}
-              className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
-            >
-              {monthOptions.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <button
-            onClick={handleSearch}
-            disabled={loading}
-            className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {loading ? "조회 중..." : "조회"}
-          </button>
+
+          {viewMode === "trend" ? (
+            <>
+              <div className="min-w-[160px]">
+                <label className="mb-1 block text-sm font-medium">시작월</label>
+                <select
+                  value={trendFromMonth}
+                  onChange={(e) => setTrendFromMonth(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                >
+                  {monthOptions.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="min-w-[160px]">
+                <label className="mb-1 block text-sm font-medium">종료월</label>
+                <select
+                  value={trendToMonth}
+                  onChange={(e) => setTrendToMonth(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                >
+                  {monthOptions.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={handleTrendSearch}
+                disabled={trendLoading}
+                className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              >
+                {trendLoading ? "조회 중..." : "추이 조회"}
+              </button>
+            </>
+          ) : (
+            <>
+              <div className="min-w-[160px]">
+                <label className="mb-1 block text-sm font-medium">계약월</label>
+                <select
+                  value={dealYmd}
+                  onChange={(e) => setDealYmd(e.target.value)}
+                  className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
+                >
+                  {monthOptions.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                onClick={handleSearch}
+                disabled={loading}
+                className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+              >
+                {loading ? "조회 중..." : "조회"}
+              </button>
+            </>
+          )}
         </div>
 
-        {loading && (
-          <div className="flex justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-            <p className="font-medium text-red-800">{error}</p>
-            <p className="mt-2 text-sm text-red-600">
-              data.go.kr API 키가 설정되어 있는지 확인해주세요.
-            </p>
-          </div>
-        )}
-
-        {!loading && !error && searched && trades.length === 0 && (
-          <div className="rounded-lg border p-6 text-center text-muted-foreground">
-            해당 조건의 거래 데이터가 없습니다.
-          </div>
-        )}
-
-        {!loading && trades.length > 0 && (
+        {/* Trend view */}
+        {viewMode === "trend" && (
           <>
-            <div className="mb-4 flex gap-2">
-              <button
-                onClick={() => setViewMode("table")}
-                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
-                  viewMode === "table"
-                    ? "bg-primary text-primary-foreground"
-                    : "border hover:bg-accent"
-                }`}
-              >
-                테이블
-              </button>
-              <button
-                onClick={() => setViewMode("chart")}
-                className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
-                  viewMode === "chart"
-                    ? "bg-primary text-primary-foreground"
-                    : "border hover:bg-accent"
-                }`}
-              >
-                차트
-              </button>
-            </div>
+            {trendError && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+                <p className="font-medium text-red-800">{trendError}</p>
+                <p className="mt-2 text-sm text-red-600">
+                  data.go.kr API 키가 설정되어 있는지 확인해주세요.
+                </p>
+              </div>
+            )}
+            {!trendError && !trendSearched && !trendLoading && (
+              <div className="rounded-lg border p-6 text-center text-muted-foreground">
+                지역과 기간을 선택한 후 &quot;추이 조회&quot; 버튼을 눌러주세요.
+              </div>
+            )}
+            {(trendSearched || trendLoading) && (
+              <MonthlyPriceTrendChart data={trendData} loading={trendLoading} />
+            )}
+          </>
+        )}
 
-            {viewMode === "chart" && (
-              <div className="space-y-8">
-                {/* 법정동별 평균 가격 */}
-                {avgByDong.length > 0 && (
-                  <div className="rounded-lg border bg-card p-4">
-                    <h3 className="mb-4 text-sm font-semibold">법정동별 평균 거래가격 (만원)</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <BarChart data={avgByDong} layout="vertical" margin={{ left: 60 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis type="number" tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`} />
-                        <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12 }} />
-                        <Tooltip
-                          formatter={(value: unknown) => [`${Number(value).toLocaleString()}만원`, "평균가"]}
-                          labelFormatter={(label: unknown) => String(label)}
-                        />
-                        <Bar dataKey="avg" fill="hsl(221, 83%, 53%)" radius={[0, 4, 4, 0]} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
-
-                {/* 면적 vs 가격 산점도 */}
-                {areaVsPrice.length > 0 && (
-                  <div className="rounded-lg border bg-card p-4">
-                    <h3 className="mb-4 text-sm font-semibold">전용면적별 거래가격 분포</h3>
-                    <ResponsiveContainer width="100%" height={300}>
-                      <ScatterChart margin={{ bottom: 20 }}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis
-                          type="number"
-                          dataKey="area"
-                          name="면적"
-                          unit="m²"
-                          tick={{ fontSize: 12 }}
-                        />
-                        <YAxis
-                          type="number"
-                          dataKey="price"
-                          name="가격"
-                          tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`}
-                          tick={{ fontSize: 12 }}
-                        />
-                        <Tooltip
-                          formatter={(value: unknown, name: unknown) => {
-                            const v = Number(value);
-                            const n = String(name);
-                            if (n === "가격") return [`${v.toLocaleString()}만원`, n];
-                            return [`${v}m²`, n];
-                          }}
-                        />
-                        <Scatter data={areaVsPrice} fill="hsl(221, 83%, 53%)" fillOpacity={0.6} />
-                      </ScatterChart>
-                    </ResponsiveContainer>
-                  </div>
-                )}
+        {/* Single month views (table / chart) */}
+        {viewMode !== "trend" && (
+          <>
+            {loading && (
+              <div className="flex justify-center py-20">
+                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
               </div>
             )}
 
-            {viewMode === "table" && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b bg-secondary/30 text-left">
-                  <th className="px-3 py-3 font-medium">아파트</th>
-                  <th className="px-3 py-3 font-medium">법정동</th>
-                  <th className="px-3 py-3 font-medium text-right">거래금액</th>
-                  <th className="px-3 py-3 font-medium text-right">전용면적</th>
-                  <th className="px-3 py-3 font-medium text-right">층</th>
-                  <th className="px-3 py-3 font-medium text-right">건축년도</th>
-                  <th className="px-3 py-3 font-medium">거래일</th>
-                </tr>
-              </thead>
-              <tbody>
-                {trades.map((t, i) => (
-                  <tr key={i} className="border-b hover:bg-secondary/10">
-                    <td className="px-3 py-3 font-medium">{t.aptNm}</td>
-                    <td className="px-3 py-3 text-muted-foreground">{t.umdNm}</td>
-                    <td className="px-3 py-3 text-right font-medium text-primary">
-                      {t.dealAmount?.trim()}만원
-                    </td>
-                    <td className="px-3 py-3 text-right">{t.excluUseAr}m²</td>
-                    <td className="px-3 py-3 text-right">{t.floor}층</td>
-                    <td className="px-3 py-3 text-right">{t.buildYear}</td>
-                    <td className="px-3 py-3 text-muted-foreground">
-                      {t.dealYear}.{t.dealMonth}.{t.dealDay}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="mt-4 text-xs text-muted-foreground">
-              총 {trades.length}건 (최대 50건 표시)
-            </p>
-          </div>
+            {error && (
+              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+                <p className="font-medium text-red-800">{error}</p>
+                <p className="mt-2 text-sm text-red-600">
+                  data.go.kr API 키가 설정되어 있는지 확인해주세요.
+                </p>
+              </div>
+            )}
+
+            {!loading && !error && searched && trades.length === 0 && (
+              <div className="rounded-lg border p-6 text-center text-muted-foreground">
+                해당 조건의 거래 데이터가 없습니다.
+              </div>
+            )}
+
+            {!loading && trades.length > 0 && (
+              <>
+                {viewMode === "chart" && (
+                  <div className="space-y-8">
+                    {/* 법정동별 평균 가격 */}
+                    {avgByDong.length > 0 && (
+                      <div className="rounded-lg border bg-card p-4">
+                        <h3 className="mb-4 text-sm font-semibold">법정동별 평균 거래가격 (만원)</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <BarChart data={avgByDong} layout="vertical" margin={{ left: 60 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis type="number" tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`} />
+                            <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12 }} />
+                            <Tooltip
+                              formatter={(value: unknown) => [`${Number(value).toLocaleString()}만원`, "평균가"]}
+                              labelFormatter={(label: unknown) => String(label)}
+                            />
+                            <Bar dataKey="avg" fill="hsl(221, 83%, 53%)" radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+
+                    {/* 면적 vs 가격 산점도 */}
+                    {areaVsPrice.length > 0 && (
+                      <div className="rounded-lg border bg-card p-4">
+                        <h3 className="mb-4 text-sm font-semibold">전용면적별 거래가격 분포</h3>
+                        <ResponsiveContainer width="100%" height={300}>
+                          <ScatterChart margin={{ bottom: 20 }}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis
+                              type="number"
+                              dataKey="area"
+                              name="면적"
+                              unit="m²"
+                              tick={{ fontSize: 12 }}
+                            />
+                            <YAxis
+                              type="number"
+                              dataKey="price"
+                              name="가격"
+                              tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`}
+                              tick={{ fontSize: 12 }}
+                            />
+                            <Tooltip
+                              formatter={(value: unknown, name: unknown) => {
+                                const v = Number(value);
+                                const n = String(name);
+                                if (n === "가격") return [`${v.toLocaleString()}만원`, n];
+                                return [`${v}m²`, n];
+                              }}
+                            />
+                            <Scatter data={areaVsPrice} fill="hsl(221, 83%, 53%)" fillOpacity={0.6} />
+                          </ScatterChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {viewMode === "table" && (
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b bg-secondary/30 text-left">
+                          <th className="px-3 py-3 font-medium">아파트</th>
+                          <th className="px-3 py-3 font-medium">법정동</th>
+                          <th className="px-3 py-3 font-medium text-right">거래금액</th>
+                          <th className="px-3 py-3 font-medium text-right">전용면적</th>
+                          <th className="px-3 py-3 font-medium text-right">층</th>
+                          <th className="px-3 py-3 font-medium text-right">건축년도</th>
+                          <th className="px-3 py-3 font-medium">거래일</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {trades.map((t, i) => (
+                          <tr key={i} className="border-b hover:bg-secondary/10">
+                            <td className="px-3 py-3 font-medium">{t.aptNm}</td>
+                            <td className="px-3 py-3 text-muted-foreground">{t.umdNm}</td>
+                            <td className="px-3 py-3 text-right font-medium text-primary">
+                              {t.dealAmount?.trim()}만원
+                            </td>
+                            <td className="px-3 py-3 text-right">{t.excluUseAr}m²</td>
+                            <td className="px-3 py-3 text-right">{t.floor}층</td>
+                            <td className="px-3 py-3 text-right">{t.buildYear}</td>
+                            <td className="px-3 py-3 text-muted-foreground">
+                              {t.dealYear}.{t.dealMonth}.{t.dealDay}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                    <p className="mt-4 text-xs text-muted-foreground">
+                      총 {trades.length}건 (최대 50건 표시)
+                    </p>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}

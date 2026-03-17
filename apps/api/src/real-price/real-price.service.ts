@@ -3,7 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { RealPriceCache } from "@zipath/db";
-import type { RealPriceTrade } from "@zipath/types";
+import type { RealPriceTrade, MonthlyPriceSummary } from "@zipath/types";
 
 @Injectable()
 export class RealPriceService {
@@ -74,6 +74,59 @@ export class RealPriceService {
       regionCode,
       yearMonth,
     };
+  }
+
+  async searchRange(regionCode: string, fromMonth: string, toMonth: string) {
+    const months = this.generateMonthRange(fromMonth, toMonth);
+    const results = await Promise.all(
+      months.map((m) => this.search(regionCode, m)),
+    );
+
+    const monthly: MonthlyPriceSummary[] = results.map((r) => {
+      const prices = r.trades
+        .map((t) => parseInt(t.dealAmount?.replace(/,/g, "").trim() || "0", 10))
+        .filter((p) => p > 0);
+
+      const avg =
+        prices.length > 0
+          ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+          : 0;
+      const min = prices.length > 0 ? Math.min(...prices) : 0;
+      const max = prices.length > 0 ? Math.max(...prices) : 0;
+
+      return {
+        yearMonth: r.yearMonth,
+        avgPrice: avg,
+        minPrice: min,
+        maxPrice: max,
+        tradeCount: prices.length,
+      };
+    });
+
+    return {
+      regionCode,
+      fromMonth,
+      toMonth,
+      monthly,
+    };
+  }
+
+  private generateMonthRange(from: string, to: string): string[] {
+    const months: string[] = [];
+    let year = parseInt(from.slice(0, 4), 10);
+    let month = parseInt(from.slice(4, 6), 10);
+    const toYear = parseInt(to.slice(0, 4), 10);
+    const toMonth = parseInt(to.slice(4, 6), 10);
+
+    while (year < toYear || (year === toYear && month <= toMonth)) {
+      months.push(`${year}${String(month).padStart(2, "0")}`);
+      month++;
+      if (month > 12) {
+        month = 1;
+        year++;
+      }
+    }
+    return months;
   }
 
   private async fetchFromApi(
