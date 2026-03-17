@@ -144,7 +144,7 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       exception.stack,
     );
 
-    const driverError = exception.driverError as Record<string, unknown> | undefined;
+    const driverError = exception.driverError as unknown as Record<string, unknown> | undefined;
     const pgCode = driverError?.code as string | undefined;
 
     // PostgreSQL unique violation
