@@ -2,7 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [develop]
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
 
 permissions:
   contents: write
@@ -32,13 +34,17 @@ jobs:
       - name: Build apps
         run: npx turbo build
 
-      - name: Test
-        run: npm test -w @zipath/api -- --passWithNoTests
+      - name: Unit tests
+        run: npm test -w @zipath/api
+
+      - name: E2E tests
+        run: npm run test:e2e -w @zipath/api
 
   auto-merge:
     name: Auto Merge
     needs: ci
     runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
 
     steps:
       - name: Merge PR
