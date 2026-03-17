@@ -245,7 +245,15 @@ export default function RealPricePage() {
       </header>
 
       <main className="mx-auto max-w-5xl px-4 py-8">
-        <h1 className="mb-2 text-3xl font-bold">실거래가 조회</h1>
+        <div className="mb-2 flex items-center justify-between">
+          <h1 className="text-3xl font-bold">실거래가 조회</h1>
+          <Link
+            href="/real-price/compare"
+            className="rounded-lg border px-4 py-2 text-sm font-medium hover:bg-accent"
+          >
+            지역 간 비교 &rarr;
+          </Link>
+        </div>
         <p className="mb-8 text-muted-foreground">
           국토교통부 아파트 매매 실거래가 데이터를 조회합니다.
         </p>
