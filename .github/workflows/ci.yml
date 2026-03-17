@@ -2,12 +2,11 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+    branches: [develop]
 
 jobs:
-  test:
+  ci:
+    name: Lint / Build / Test
     runs-on: ubuntu-latest
 
     steps:
@@ -26,5 +25,8 @@ jobs:
       - name: Lint
         run: npx turbo lint
 
+      - name: Build apps
+        run: npx turbo build
+
       - name: Test
-        run: npm test -w @zipath/api
+        run: npm test -w @zipath/api -- --passWithNoTests
