@@ -14,6 +14,7 @@ import { RealPriceModule } from "./real-price/real-price.module";
 import { GlossaryModule } from "./glossary/glossary.module";
 import { AuthModule } from "./auth/auth.module";
 import { AnnouncementModule } from "./announcement/announcement.module";
+import { ContractAnalysisModule } from "./contract-analysis/contract-analysis.module";
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { AnnouncementModule } from "./announcement/announcement.module";
     GlossaryModule,
     AuthModule,
     AnnouncementModule,
+    ContractAnalysisModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },
