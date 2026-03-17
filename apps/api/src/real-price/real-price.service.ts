@@ -17,7 +17,7 @@ export class RealPriceService {
     private readonly config: ConfigService,
   ) {}
 
-  async search(regionCode: string, yearMonth: string) {
+  async search(regionCode: string, yearMonth: string, minArea?: number, maxArea?: number) {
     const dealType = "매매";
 
     // 1. DB 캐시 확인
@@ -28,9 +28,10 @@ export class RealPriceService {
     if (cached) {
       this.logger.log(`Cache hit: ${regionCode}/${yearMonth}`);
       const trades = cached.data as unknown as RealPriceTrade[];
+      const filtered = this.filterByArea(trades, minArea, maxArea);
       return {
-        trades,
-        totalCount: trades.length,
+        trades: filtered,
+        totalCount: filtered.length,
         cached: true,
         regionCode,
         yearMonth,
@@ -67,9 +68,10 @@ export class RealPriceService {
       }
     }
 
+    const filtered = this.filterByArea(trades, minArea, maxArea);
     return {
-      trades,
-      totalCount: trades.length,
+      trades: filtered,
+      totalCount: filtered.length,
       cached: false,
       regionCode,
       yearMonth,
@@ -109,6 +111,23 @@ export class RealPriceService {
       toMonth,
       monthly,
     };
+  }
+
+  private filterByArea(
+    trades: RealPriceTrade[],
+    minArea?: number,
+    maxArea?: number,
+  ): RealPriceTrade[] {
+    if (minArea === undefined && maxArea === undefined) {
+      return trades;
+    }
+    return trades.filter((trade) => {
+      const area = parseFloat(String(trade.excluUseAr ?? "0"));
+      if (isNaN(area)) return false;
+      if (minArea !== undefined && area < minArea) return false;
+      if (maxArea !== undefined && area > maxArea) return false;
+      return true;
+    });
   }
 
   private generateMonthRange(from: string, to: string): string[] {

@@ -7,6 +7,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const regionCode = searchParams.get("LAWD_CD");
   const dealYmd = searchParams.get("DEAL_YMD");
+  const minArea = searchParams.get("minArea");
+  const maxArea = searchParams.get("maxArea");
 
   if (!regionCode || !dealYmd) {
     return NextResponse.json(
@@ -16,8 +18,15 @@ export async function GET(request: Request) {
   }
 
   try {
+    const params = new URLSearchParams({
+      regionCode,
+      yearMonth: dealYmd,
+    });
+    if (minArea) params.set("minArea", minArea);
+    if (maxArea) params.set("maxArea", maxArea);
+
     const res = await fetch(
-      `${API_BASE}/real-price/search?regionCode=${regionCode}&yearMonth=${dealYmd}`,
+      `${API_BASE}/real-price/search?${params.toString()}`,
     );
 
     if (!res.ok) {
