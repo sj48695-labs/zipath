@@ -33,6 +33,9 @@ yarn-error.log*
 # turbo
 .turbo
 
+# typescript build info
+*.tsbuildinfo
+
 # typeorm / db build output
 packages/db/src/**/*.js
 packages/db/src/**/*.d.ts
