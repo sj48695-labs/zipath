@@ -6,7 +6,10 @@ const simulateSchema = z.object({
   age: z.number().int().min(0).max(150),
   income: z.number().min(0),
   homelessMonths: z.number().int().min(0),
+  dependents: z.number().int().min(0).optional(),
   region: z.string().optional(),
+  isMarried: z.boolean().optional(),
+  isFirstHome: z.boolean().optional(),
 });
 
 @Controller("subscription")

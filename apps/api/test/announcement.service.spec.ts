@@ -321,13 +321,14 @@ describe("AnnouncementService", () => {
         expect(first!.eligible).toBe(false);
       });
 
-      it("should include 특별공급 (신혼부부) when income <= 7000", async () => {
+      it("should include 특별공급 (신혼부부) when married and income <= 7000", async () => {
         const announcement = makeAnnouncement();
         announcementRepo.findOne.mockResolvedValue(announcement);
 
         const result = await service.matchAnnouncement(1, {
           ...baseInput,
           income: 7000,
+          isMarried: true,
         });
 
         const newlywed = result!.results.find((r) =>
@@ -337,11 +338,14 @@ describe("AnnouncementService", () => {
         expect(newlywed!.eligible).toBe(true);
       });
 
-      it("should include 특별공급 (생애최초) when income <= 6000", async () => {
+      it("should include 특별공급 (생애최초) when isFirstHome and income <= 6000", async () => {
         const announcement = makeAnnouncement();
         announcementRepo.findOne.mockResolvedValue(announcement);
 
-        const result = await service.matchAnnouncement(1, baseInput);
+        const result = await service.matchAnnouncement(1, {
+          ...baseInput,
+          isFirstHome: true,
+        });
 
         const firstLife = result!.results.find((r) =>
           r.criterion.includes("생애최초"),
