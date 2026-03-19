@@ -117,6 +117,21 @@ export interface RealPriceResponse {
   yearMonth: string;
 }
 
+export interface MonthlyPriceSummary {
+  yearMonth: string;
+  avgPrice: number;
+  minPrice: number;
+  maxPrice: number;
+  tradeCount: number;
+}
+
+export interface RealPriceTrendResponse {
+  regionCode: string;
+  fromMonth: string;
+  toMonth: string;
+  monthly: MonthlyPriceSummary[];
+}
+
 // 부동산 용어
 export interface GlossaryTerm {
   term: string;

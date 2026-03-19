@@ -6,11 +6,24 @@ import {
   BadRequestException,
   UseGuards,
   Request,
+  Res,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { Response } from "express";
 import { z } from "zod";
 import { AuthService } from "./auth.service";
+import { GoogleAuthGuard } from "./google-auth.guard";
+import { KakaoAuthGuard } from "./kakao-auth.guard";
+import { NaverAuthGuard } from "./naver-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Public } from "./public.decorator";
+
+interface OAuthUser {
+  provider: string;
+  providerId: string;
+  email: string | null;
+  nickname: string | null;
+}
 
 const oauthLoginSchema = z.object({
   provider: z.enum(["google", "kakao", "naver"]),
@@ -25,7 +38,92 @@ const refreshSchema = z.object({
 
 @Controller("auth")
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  /** Google OAuth 로그인 시작 */
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get("google")
+  googleLogin(): void {
+    // GoogleAuthGuard가 Google OAuth 페이지로 리다이렉트
+  }
+
+  /** Google OAuth 콜백 */
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  @Get("google/callback")
+  async googleCallback(
+    @Request() req: { user: OAuthUser },
+    @Res() res: Response,
+  ): Promise<void> {
+    const tokens = await this.authService.validateOAuthLogin(req.user);
+    const frontendUrl =
+      this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
+
+    // 프론트엔드로 토큰을 쿼리 파라미터로 전달
+    const redirectUrl = new URL("/auth/callback", frontendUrl);
+    redirectUrl.searchParams.set("accessToken", tokens.accessToken);
+    redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
+
+    res.redirect(redirectUrl.toString());
+  }
+
+  /** Kakao OAuth 로그인 시작 */
+  @Public()
+  @UseGuards(KakaoAuthGuard)
+  @Get("kakao")
+  kakaoLogin(): void {
+    // KakaoAuthGuard가 Kakao OAuth 페이지로 리다이렉트
+  }
+
+  /** Kakao OAuth 콜백 */
+  @Public()
+  @UseGuards(KakaoAuthGuard)
+  @Get("kakao/callback")
+  async kakaoCallback(
+    @Request() req: { user: OAuthUser },
+    @Res() res: Response,
+  ): Promise<void> {
+    const tokens = await this.authService.validateOAuthLogin(req.user);
+    const frontendUrl =
+      this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
+
+    const redirectUrl = new URL("/auth/callback", frontendUrl);
+    redirectUrl.searchParams.set("accessToken", tokens.accessToken);
+    redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
+
+    res.redirect(redirectUrl.toString());
+  }
+
+  /** Naver OAuth 로그인 시작 */
+  @Public()
+  @UseGuards(NaverAuthGuard)
+  @Get("naver")
+  naverLogin(): void {
+    // NaverAuthGuard가 Naver OAuth 페이지로 리다이렉트
+  }
+
+  /** Naver OAuth 콜백 */
+  @Public()
+  @UseGuards(NaverAuthGuard)
+  @Get("naver/callback")
+  async naverCallback(
+    @Request() req: { user: OAuthUser },
+    @Res() res: Response,
+  ): Promise<void> {
+    const tokens = await this.authService.validateOAuthLogin(req.user);
+    const frontendUrl =
+      this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
+
+    const redirectUrl = new URL("/auth/callback", frontendUrl);
+    redirectUrl.searchParams.set("accessToken", tokens.accessToken);
+    redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
+
+    res.redirect(redirectUrl.toString());
+  }
 
   /** OAuth 콜백에서 받은 프로필로 로그인/회원가입 */
   @Public()

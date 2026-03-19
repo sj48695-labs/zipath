@@ -142,7 +142,12 @@ export default function AnnouncementsPage() {
                           </span>
                         )}
                       </div>
-                      <h3 className="text-lg font-semibold">{item.title}</h3>
+                      <Link
+                        href={`/announcements/${item.id}`}
+                        className="text-lg font-semibold hover:text-primary hover:underline"
+                      >
+                        {item.title}
+                      </Link>
                       {item.summary && (
                         <p className="mt-1 text-sm text-muted-foreground">
                           {item.summary}
