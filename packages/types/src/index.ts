@@ -33,7 +33,10 @@ export interface SubscriptionSimulationInput {
   age: number;
   income: number; // 만원 단위
   homelessMonths: number;
+  dependents?: number; // 부양가족 수
   region?: string;
+  isMarried?: boolean; // 혼인 여부
+  isFirstHome?: boolean; // 생애최초 여부
 }
 
 export interface SubscriptionResult {
@@ -42,9 +45,19 @@ export interface SubscriptionResult {
   reason: string;
 }
 
+export interface SubscriptionPointBreakdown {
+  category: string;
+  score: number;
+  maxScore: number;
+  description: string;
+}
+
 export interface SubscriptionSimulationResponse {
   input: SubscriptionSimulationInput;
   results: SubscriptionResult[];
+  points: SubscriptionPointBreakdown[];
+  totalPoints: number;
+  maxPoints: number;
   message: string;
 }
 
@@ -147,3 +160,61 @@ export type GlossaryCategory =
   | "청약"
   | "세금"
   | "기타";
+
+// 등기부등본
+export type RegistryRiskLevel = "safe" | "caution" | "danger";
+
+export interface RegistryOwnership {
+  order: number;
+  type: string; // 소유권이전, 소유권보존 등
+  holder: string;
+  date: string;
+  cause: string; // 매매, 상속, 증여 등
+}
+
+export interface RegistryRightItem {
+  order: number;
+  type: string; // 근저당권, 전세권, 가압류, 가처분 등
+  holder: string;
+  amount: string | null;
+  date: string;
+  riskLevel: RegistryRiskLevel;
+  explanation: string; // 쉬운 설명
+}
+
+export interface RegistryAnalysis {
+  address: string;
+  analysisDate: string;
+  overallRisk: RegistryRiskLevel;
+  riskSummary: string;
+  gap: {
+    items: RegistryOwnership[];
+    summary: string;
+  };
+  eul: {
+    items: RegistryRightItem[];
+    summary: string;
+  };
+  warnings: string[];
+  tips: string[];
+  disclaimer: string;
+}
+
+// 결제
+export type PaymentStatus = "pending" | "confirmed" | "failed" | "cancelled";
+export type ProductType = "contract-analysis" | "real-price-report" | "premium-monthly";
+
+export interface PaymentProduct {
+  id: string;
+  name: string;
+  price: number;
+}
+
+export interface PaymentRecord {
+  id: number;
+  userId: number;
+  amount: number;
+  productType: string;
+  status: PaymentStatus;
+  paidAt: string;
+}

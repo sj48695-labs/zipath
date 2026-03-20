@@ -16,6 +16,8 @@ import { AuthModule } from "./auth/auth.module";
 import { AnnouncementModule } from "./announcement/announcement.module";
 import { ContractAnalysisModule } from "./contract-analysis/contract-analysis.module";
 import { NotificationModule } from "./notification/notification.module";
+import { RegistryModule } from "./registry/registry.module";
+import { PaymentModule } from "./payment/payment.module";
 
 @Module({
   imports: [
@@ -50,6 +52,8 @@ import { NotificationModule } from "./notification/notification.module";
     AnnouncementModule,
     ContractAnalysisModule,
     NotificationModule,
+    RegistryModule,
+    PaymentModule,
   ],
   providers: [
     { provide: APP_GUARD, useClass: ThrottlerGuard },

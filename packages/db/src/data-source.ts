@@ -8,6 +8,7 @@ import { ChecklistTemplate } from "./entities/checklist-template.entity";
 import { ChecklistItem } from "./entities/checklist-item.entity";
 import { NotificationPreference } from "./entities/notification-preference.entity";
 import { Notification } from "./entities/notification.entity";
+import { Payment } from "./entities/payment.entity";
 
 export const entities = [
   User,
@@ -18,6 +19,7 @@ export const entities = [
   ChecklistItem,
   NotificationPreference,
   Notification,
+  Payment,
 ];
 
 export const AppDataSource = new DataSource({

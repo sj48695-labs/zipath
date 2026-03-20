@@ -34,7 +34,10 @@ interface MatchFormData {
   age: string;
   income: string;
   homelessMonths: string;
+  dependents: string;
   region: string;
+  isMarried: boolean;
+  isFirstHome: boolean;
 }
 
 export default function AnnouncementDetailPage() {
@@ -51,7 +54,10 @@ export default function AnnouncementDetailPage() {
     age: "",
     income: "",
     homelessMonths: "",
+    dependents: "",
     region: "",
+    isMarried: false,
+    isFirstHome: false,
   });
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [matchLoading, setMatchLoading] = useState(false);
@@ -120,6 +126,9 @@ export default function AnnouncementDetailPage() {
         age,
         income,
         homelessMonths,
+        dependents: formData.dependents ? parseInt(formData.dependents, 10) : 0,
+        isMarried: formData.isMarried,
+        isFirstHome: formData.isFirstHome,
       };
       if (formData.region.trim()) {
         body.region = formData.region.trim();
@@ -357,6 +366,25 @@ export default function AnnouncementDetailPage() {
                   </div>
                   <div>
                     <label
+                      htmlFor="dependents"
+                      className="mb-1 block text-sm font-medium"
+                    >
+                      부양가족 수{" "}
+                      <span className="text-muted-foreground">(선택)</span>
+                    </label>
+                    <input
+                      id="dependents"
+                      name="dependents"
+                      type="number"
+                      min="0"
+                      placeholder="본인 제외"
+                      value={formData.dependents}
+                      onChange={handleInputChange}
+                      className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                  <div>
+                    <label
                       htmlFor="region"
                       className="mb-1 block text-sm font-medium"
                     >
@@ -373,6 +401,37 @@ export default function AnnouncementDetailPage() {
                       className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
                     />
                   </div>
+                </div>
+
+                <div className="flex flex-wrap gap-6">
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={formData.isMarried}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          isMarried: e.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    혼인 상태
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={formData.isFirstHome}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          isFirstHome: e.target.checked,
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-gray-300"
+                    />
+                    생애최초 주택 구입
+                  </label>
                 </div>
 
                 <button

@@ -245,25 +245,24 @@ export class AnnouncementService {
     input: MatchRequestDto,
   ): MatchCriterionResult[] {
     const results: MatchCriterionResult[] = [];
+    const { age, income, homelessMonths, dependents = 0, isMarried = false, isFirstHome = false, region } = input;
 
-    // 지역 매칭 확인
-    const regionMatch =
-      !input.region || announcement.region === input.region;
+    const regionMatch = !region || announcement.region === region;
 
     // 1순위 일반
-    if (input.age >= 19 && input.homelessMonths >= 24 && input.income <= 6000) {
+    if (age >= 19 && homelessMonths >= 24 && income <= 6000) {
       results.push({
         criterion: "1순위 일반",
         eligible: regionMatch,
         reason: regionMatch
           ? "기본 자격 충족"
-          : `지역 불일치 (공고: ${announcement.region}, 입력: ${input.region})`,
+          : `지역 불일치 (공고: ${announcement.region}, 입력: ${region})`,
       });
     } else {
       const reasons: string[] = [];
-      if (input.age < 19) reasons.push("만 19세 미만");
-      if (input.homelessMonths < 24) reasons.push("무주택 기간 24개월 미만");
-      if (input.income > 6000) reasons.push("소득 기준 초과");
+      if (age < 19) reasons.push("만 19세 미만");
+      if (homelessMonths < 24) reasons.push("무주택 기간 24개월 미만");
+      if (income > 6000) reasons.push("소득 기준 초과");
       results.push({
         criterion: "1순위 일반",
         eligible: false,
@@ -271,23 +270,60 @@ export class AnnouncementService {
       });
     }
 
+    // 2순위
+    if (age >= 19) {
+      results.push({
+        criterion: "2순위",
+        eligible: regionMatch,
+        reason: regionMatch ? "만 19세 이상 신청 가능 (당첨 확률 낮음)" : "지역 불일치",
+      });
+    }
+
     // 특별공급 - 신혼부부
-    if (input.income <= 7000) {
+    if (isMarried && income <= 7000) {
       results.push({
         criterion: "특별공급 (신혼부부)",
         eligible: regionMatch,
-        reason: regionMatch ? "소득 기준 충족" : `지역 불일치`,
+        reason: regionMatch ? "소득 기준 충족" : "지역 불일치",
+      });
+    } else if (isMarried) {
+      results.push({
+        criterion: "특별공급 (신혼부부)",
+        eligible: false,
+        reason: `소득 기준 초과 (${income}만원 > 7,000만원)`,
       });
     }
 
     // 특별공급 - 생애최초
-    if (input.homelessMonths >= 0 && input.income <= 6000) {
+    if (isFirstHome && income <= 6000) {
       results.push({
         criterion: "특별공급 (생애최초)",
         eligible: regionMatch,
-        reason: regionMatch
-          ? "무주택 + 소득 기준 충족"
-          : `지역 불일치`,
+        reason: regionMatch ? "무주택 + 소득 기준 충족" : "지역 불일치",
+      });
+    } else if (isFirstHome) {
+      results.push({
+        criterion: "특별공급 (생애최초)",
+        eligible: false,
+        reason: `소득 기준 초과 (${income}만원 > 6,000만원)`,
+      });
+    }
+
+    // 특별공급 - 다자녀
+    if (dependents >= 3) {
+      results.push({
+        criterion: "특별공급 (다자녀)",
+        eligible: regionMatch,
+        reason: regionMatch ? `미성년 자녀 ${dependents}명 (3명 이상)` : "지역 불일치",
+      });
+    }
+
+    // 특별공급 - 노부모부양
+    if (dependents > 0 && age >= 25 && homelessMonths >= 36) {
+      results.push({
+        criterion: "특별공급 (노부모부양)",
+        eligible: regionMatch,
+        reason: regionMatch ? "만 25세 이상, 무주택 3년 이상, 부양가족 있음" : "지역 불일치",
       });
     }
 
