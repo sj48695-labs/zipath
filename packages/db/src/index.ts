@@ -5,3 +5,6 @@ export { Announcement } from "./entities/announcement.entity";
 export { SubscriptionCriteria } from "./entities/subscription-criteria.entity";
 export { ChecklistTemplate } from "./entities/checklist-template.entity";
 export { ChecklistItem } from "./entities/checklist-item.entity";
+export { NotificationPreference } from "./entities/notification-preference.entity";
+export { Notification } from "./entities/notification.entity";
+export { Payment } from "./entities/payment.entity";

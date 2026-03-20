@@ -9,6 +9,7 @@ const config: Config = {
   },
   collectCoverageFrom: ["src/**/*.service.ts"],
   coverageDirectory: "./coverage",
+  transformIgnorePatterns: [],
   testEnvironment: "node",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",

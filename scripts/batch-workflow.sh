@@ -1,0 +1,473 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+# =============================================================================
+# DevLoop batch-workflow.sh
+# plan_by_claude.md → 이슈 일괄생성 → 브랜치/PR 병렬생성 → 순차 머지
+#
+# Usage:
+#   ./scripts/batch-workflow.sh create-issues          # Step 1: 이슈 생성
+#   ./scripts/batch-workflow.sh create-branches [phase] # Step 2: 브랜치+PR 생성
+#   ./scripts/batch-workflow.sh merge [phase]           # Step 3: PR 순차 머지
+#   ./scripts/batch-workflow.sh run [phase]             # Step 1+2+3 한번에
+#   ./scripts/batch-workflow.sh status                  # 현재 상태 확인
+# =============================================================================
+
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+PLAN_FILE="$REPO_ROOT/plan_by_claude.md"
+DEVLOOP_FILE="$REPO_ROOT/.devloop"
+LOG_FILE="$REPO_ROOT/scripts/batch-workflow.log"
+MAIN_BRANCH="main"
+MAX_PARALLEL=4
+
+# 색상
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+
+info()   { echo -e "${BLUE}[$(date +%H:%M:%S)]${NC} $1" | tee -a "$LOG_FILE"; }
+ok()     { echo -e "${GREEN}[$(date +%H:%M:%S)]${NC} $1" | tee -a "$LOG_FILE"; }
+warn()   { echo -e "${YELLOW}[$(date +%H:%M:%S)]${NC} $1" | tee -a "$LOG_FILE"; }
+err()    { echo -e "${RED}[$(date +%H:%M:%S)]${NC} $1" | tee -a "$LOG_FILE"; }
+header() { echo -e "${CYAN}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}" | tee -a "$LOG_FILE"; }
+
+# =============================================================================
+# 환경 체크
+# =============================================================================
+check_env() {
+  if [[ ! -f "$PLAN_FILE" ]]; then
+    err "plan_by_claude.md가 없습니다."
+    exit 1
+  fi
+
+  if [[ -f "$DEVLOOP_FILE" ]]; then
+    source "$DEVLOOP_FILE"
+  fi
+
+  REPO="${GITHUB_REPO:-}"
+  if [[ -z "$REPO" ]]; then
+    # .devloop 없으면 gh repo view로 추출
+    REPO=$(gh repo view --json nameWithOwner -q '.nameWithOwner' 2>/dev/null || true)
+  fi
+
+  if [[ -z "$REPO" ]]; then
+    err "GitHub repo를 감지할 수 없습니다. gh auth login 또는 setup.sh를 실행하세요."
+    exit 1
+  fi
+
+  info "Repo: $REPO"
+}
+
+# =============================================================================
+# plan_by_claude.md 파싱 → Task 목록 추출
+# 출력: JSON 배열 [{phase, task_id, title, body}, ...]
+# =============================================================================
+parse_plan() {
+  local filter_phase="${1:-}"
+
+  python3 -c "
+import re, json, sys
+
+with open('$PLAN_FILE', 'r') as f:
+    content = f.read()
+
+tasks = []
+current_phase = ''
+current_phase_num = ''
+
+for line in content.split('\n'):
+    # Phase 헤더
+    phase_match = re.match(r'^# (Phase \d+):?\s*(.*)', line)
+    if phase_match:
+        current_phase_num = re.search(r'\d+', phase_match.group(1)).group()
+        current_phase = phase_match.group(0).lstrip('# ').strip()
+        continue
+
+    # Task 헤더
+    task_match = re.match(r'^## Task (\d+\.\d+):?\s*(.*)', line)
+    if task_match:
+        task_id = task_match.group(1)
+        title = task_match.group(2).strip()
+        tasks.append({
+            'phase': current_phase_num,
+            'phase_name': current_phase,
+            'task_id': task_id,
+            'title': title,
+            'body_lines': []
+        })
+        continue
+
+    # Body 라인 (현재 Task에 추가)
+    if tasks and line.strip():
+        if not line.startswith('#'):
+            tasks[-1]['body_lines'].append(line)
+
+# body 조립
+for t in tasks:
+    t['body'] = '\n'.join(t['body_lines'])
+    del t['body_lines']
+
+# Phase 필터
+filter_phase = '$filter_phase'
+if filter_phase:
+    tasks = [t for t in tasks if t['phase'] == filter_phase]
+
+print(json.dumps(tasks, ensure_ascii=False))
+"
+}
+
+# =============================================================================
+# Step 1: 이슈 일괄 생성
+# =============================================================================
+create_issues() {
+  local filter_phase="${1:-}"
+
+  header
+  info "Step 1: 이슈 일괄 생성"
+  header
+
+  local tasks
+  tasks=$(parse_plan "$filter_phase")
+  local count
+  count=$(echo "$tasks" | jq length)
+
+  if [[ "$count" == "0" ]]; then
+    warn "생성할 Task가 없습니다."
+    return 0
+  fi
+
+  info "${count}개 Task 이슈 생성 시작..."
+
+  local created=0
+  local skipped=0
+
+  for i in $(seq 0 $((count - 1))); do
+    local task_id title body phase_name
+    task_id=$(echo "$tasks" | jq -r ".[$i].task_id")
+    title=$(echo "$tasks" | jq -r ".[$i].title")
+    body=$(echo "$tasks" | jq -r ".[$i].body")
+    phase_name=$(echo "$tasks" | jq -r ".[$i].phase_name")
+
+    local full_title="[Task $task_id] $title"
+
+    # 중복 체크
+    local existing
+    existing=$(gh issue list --repo "$REPO" --search "\"$full_title\"" --json number -q '.[0].number // empty' 2>/dev/null || true)
+
+    if [[ -n "$existing" ]]; then
+      warn "  Skip (이미 존재): #$existing $full_title"
+      ((skipped++))
+      continue
+    fi
+
+    local issue_body="## $phase_name
+
+$body
+
+---
+*Generated by batch-workflow from plan_by_claude.md*"
+
+    local issue_url
+    issue_url=$(gh issue create --repo "$REPO" \
+      --title "$full_title" \
+      --label "task" \
+      --body "$issue_body" 2>&1) || {
+      err "  이슈 생성 실패: $full_title"
+      continue
+    }
+
+    ok "  Created: $full_title → $issue_url"
+    ((created++))
+  done
+
+  echo ""
+  ok "이슈 생성 완료: ${created}개 생성, ${skipped}개 스킵"
+}
+
+# =============================================================================
+# Step 2: 브랜치 + PR 병렬 생성
+# =============================================================================
+create_branches() {
+  local filter_phase="${1:-}"
+
+  header
+  info "Step 2: 브랜치 + PR 병렬 생성"
+  header
+
+  # task 라벨이 있는 open 이슈 가져오기
+  local issues
+  issues=$(gh issue list --repo "$REPO" \
+    --state open \
+    --label "task" \
+    --json number,title,body \
+    --limit 100 \
+    -q '.' 2>/dev/null)
+
+  # Phase 필터
+  if [[ -n "$filter_phase" ]]; then
+    issues=$(echo "$issues" | jq --arg p "Phase $filter_phase" '[.[] | select(.title | contains($p) or (. | test("\\[Task '"$filter_phase"'\\.")))]')
+  fi
+
+  local count
+  count=$(echo "$issues" | jq length)
+
+  if [[ "$count" == "0" ]]; then
+    warn "처리할 이슈가 없습니다."
+    return 0
+  fi
+
+  info "${count}개 이슈에 대해 브랜치/PR 생성..."
+
+  # main 최신화
+  git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
+  git -C "$REPO_ROOT" pull origin "$MAIN_BRANCH" 2>/dev/null || true
+
+  local pids=()
+  local issue_nums=()
+
+  for i in $(seq 0 $((count - 1))); do
+    local issue_num issue_title
+    issue_num=$(echo "$issues" | jq -r ".[$i].number")
+    issue_title=$(echo "$issues" | jq -r ".[$i].title")
+
+    local branch="devloop/issue-${issue_num}"
+
+    # 이미 PR이 있는지 체크
+    local existing_pr
+    existing_pr=$(gh pr list --repo "$REPO" --head "$branch" --json number -q '.[0].number // empty' 2>/dev/null || true)
+
+    if [[ -n "$existing_pr" ]]; then
+      warn "  Skip (PR 이미 존재): #$issue_num → PR #$existing_pr"
+      continue
+    fi
+
+    # 백그라운드에서 브랜치 생성 + 빈 커밋 + 푸시 + PR 생성
+    (
+      git -C "$REPO_ROOT" branch "$branch" "$MAIN_BRANCH" 2>/dev/null || true
+
+      # worktree로 격리된 환경에서 작업
+      local worktree_dir="/tmp/devloop-${issue_num}"
+      rm -rf "$worktree_dir"
+      git -C "$REPO_ROOT" worktree add "$worktree_dir" "$branch" 2>/dev/null || {
+        # 이미 worktree가 있으면 정리 후 재시도
+        git -C "$REPO_ROOT" worktree prune 2>/dev/null
+        git -C "$REPO_ROOT" worktree add "$worktree_dir" "$branch" 2>/dev/null || true
+      }
+
+      # 빈 커밋 (PR 생성 위해 최소 1 커밋 필요)
+      git -C "$worktree_dir" commit --allow-empty -m "chore: init branch for #$issue_num - $issue_title" 2>/dev/null
+
+      # 푸시 (재시도)
+      local pushed=false
+      for retry in 1 2 3 4; do
+        if git -C "$worktree_dir" push -u origin "$branch" 2>/dev/null; then
+          pushed=true
+          break
+        fi
+        sleep $((2 ** retry))
+      done
+
+      if [[ "$pushed" != "true" ]]; then
+        echo "FAIL:push:$issue_num" >> "$LOG_FILE"
+        git -C "$REPO_ROOT" worktree remove "$worktree_dir" 2>/dev/null || true
+        exit 1
+      fi
+
+      # PR 생성
+      gh pr create --repo "$REPO" \
+        --base "$MAIN_BRANCH" \
+        --head "$branch" \
+        --title "$issue_title" \
+        --body "## Summary
+이슈 #$issue_num 자동 구현
+
+## Status
+- [ ] 구현 대기중 (Claude Agent가 구현 예정)
+
+Closes #$issue_num
+
+---
+*Generated by batch-workflow*" 2>/dev/null && {
+        echo "OK:$issue_num:$branch" >> "$LOG_FILE"
+      } || {
+        echo "FAIL:pr:$issue_num" >> "$LOG_FILE"
+      }
+
+      # worktree 정리
+      git -C "$REPO_ROOT" worktree remove "$worktree_dir" 2>/dev/null || true
+    ) &
+
+    pids+=($!)
+    issue_nums+=("$issue_num")
+
+    # 병렬 제한
+    if [[ ${#pids[@]} -ge $MAX_PARALLEL ]]; then
+      wait "${pids[0]}" 2>/dev/null || true
+      pids=("${pids[@]:1}")
+    fi
+  done
+
+  # 남은 프로세스 대기
+  for pid in "${pids[@]}"; do
+    wait "$pid" 2>/dev/null || true
+  done
+
+  ok "브랜치/PR 생성 완료"
+  git -C "$REPO_ROOT" worktree prune 2>/dev/null || true
+}
+
+# =============================================================================
+# Step 3: PR 순차 머지
+# =============================================================================
+merge_prs() {
+  local filter_phase="${1:-}"
+
+  header
+  info "Step 3: PR 순차 머지"
+  header
+
+  local prs
+  prs=$(gh pr list --repo "$REPO" \
+    --state open \
+    --json number,title,headRefName \
+    --limit 100 \
+    -q '[.[] | select(.headRefName | startswith("devloop/"))]' 2>/dev/null)
+
+  local count
+  count=$(echo "$prs" | jq length)
+
+  if [[ "$count" == "0" ]]; then
+    warn "머지할 PR이 없습니다."
+    return 0
+  fi
+
+  info "${count}개 PR 순차 머지 시작..."
+
+  # PR 번호 순 정렬 (이슈 번호 순서 보장)
+  prs=$(echo "$prs" | jq 'sort_by(.number)')
+
+  local merged=0
+  local failed=0
+
+  for i in $(seq 0 $((count - 1))); do
+    local pr_num pr_title branch
+    pr_num=$(echo "$prs" | jq -r ".[$i].number")
+    pr_title=$(echo "$prs" | jq -r ".[$i].title")
+    branch=$(echo "$prs" | jq -r ".[$i].headRefName")
+
+    info "  머지 시도: PR #$pr_num - $pr_title"
+
+    if gh pr merge "$pr_num" --repo "$REPO" --merge --delete-branch 2>/dev/null; then
+      ok "  머지 완료: PR #$pr_num"
+      ((merged++))
+
+      # main 로컬 업데이트
+      git -C "$REPO_ROOT" checkout "$MAIN_BRANCH" 2>/dev/null
+      git -C "$REPO_ROOT" pull origin "$MAIN_BRANCH" 2>/dev/null || true
+    else
+      err "  머지 실패: PR #$pr_num (충돌 또는 체크 실패)"
+      ((failed++))
+    fi
+  done
+
+  echo ""
+  ok "머지 완료: ${merged}개 성공, ${failed}개 실패"
+}
+
+# =============================================================================
+# 상태 확인
+# =============================================================================
+show_status() {
+  header
+  info "현재 상태"
+  header
+
+  echo ""
+  info "Open 이슈 (task 라벨):"
+  gh issue list --repo "$REPO" --state open --label "task" --limit 30 2>/dev/null || true
+
+  echo ""
+  info "Open PR (devloop/ 브랜치):"
+  gh pr list --repo "$REPO" --state open --limit 30 2>/dev/null | grep -E "devloop/|issue-" || echo "  없음"
+
+  echo ""
+  info "최근 머지된 PR:"
+  gh pr list --repo "$REPO" --state merged --limit 10 2>/dev/null | grep -E "devloop/|issue-" || echo "  없음"
+}
+
+# =============================================================================
+# 전체 실행 (create → branches → 구현 대기 → merge)
+# =============================================================================
+run_all() {
+  local filter_phase="${1:-}"
+
+  header
+  echo -e "${CYAN}  DevLoop Batch Workflow${NC}"
+  echo -e "${CYAN}  Phase: ${filter_phase:-전체}${NC}"
+  header
+  echo ""
+
+  create_issues "$filter_phase"
+  echo ""
+  create_branches "$filter_phase"
+  echo ""
+
+  warn "구현 단계: Claude Agent를 사용하여 각 PR 브랜치에서 구현하세요."
+  warn "구현 완료 후 다음 명령으로 머지:"
+  warn "  ./scripts/batch-workflow.sh merge ${filter_phase}"
+  echo ""
+  show_status
+}
+
+# =============================================================================
+# 메인
+# =============================================================================
+main() {
+  local command="${1:-help}"
+  local phase="${2:-}"
+
+  : > "$LOG_FILE"  # 로그 초기화
+
+  check_env
+
+  case "$command" in
+    create-issues)
+      create_issues "$phase"
+      ;;
+    create-branches)
+      create_branches "$phase"
+      ;;
+    merge)
+      merge_prs "$phase"
+      ;;
+    run)
+      run_all "$phase"
+      ;;
+    status)
+      show_status
+      ;;
+    help|*)
+      echo ""
+      echo "Usage: $0 <command> [phase]"
+      echo ""
+      echo "Commands:"
+      echo "  create-issues [phase]    plan_by_claude.md → GitHub 이슈 일괄 생성"
+      echo "  create-branches [phase]  이슈별 브랜치 + PR 병렬 생성"
+      echo "  merge [phase]            PR 순차 머지"
+      echo "  run [phase]              전체 실행 (issues → branches → 머지 대기)"
+      echo "  status                   현재 상태 확인"
+      echo ""
+      echo "Examples:"
+      echo "  $0 run                   # 전체 Phase 실행"
+      echo "  $0 run 1                 # Phase 1만 실행"
+      echo "  $0 create-issues 2       # Phase 2 이슈만 생성"
+      echo "  $0 merge                 # 모든 devloop PR 머지"
+      echo ""
+      ;;
+  esac
+}
+
+main "$@"

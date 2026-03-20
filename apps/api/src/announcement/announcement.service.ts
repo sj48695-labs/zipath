@@ -2,8 +2,10 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Announcement } from "@zipath/db";
+import { Announcement, SubscriptionCriteria } from "@zipath/db";
 import { Cron } from "@nestjs/schedule";
+import { MatchRequestDto } from "./dto/match-request.dto";
+import { MatchResultDto, MatchCriterionResult } from "./dto/match-result.dto";
 
 interface ApiAnnouncement {
   HOUSE_MANAGE_NO: string;
@@ -29,6 +31,8 @@ export class AnnouncementService {
   constructor(
     @InjectRepository(Announcement)
     private readonly announcementRepo: Repository<Announcement>,
+    @InjectRepository(SubscriptionCriteria)
+    private readonly criteriaRepo: Repository<SubscriptionCriteria>,
     private readonly config: ConfigService,
   ) {}
 
@@ -142,6 +146,188 @@ export class AnnouncementService {
         `동기화 실패: ${err instanceof Error ? err.message : String(err)}`,
       );
     }
+  }
+
+  /** 사용자 입력과 공고 요건 자동 매칭 */
+  async matchAnnouncement(
+    announcementId: number,
+    input: MatchRequestDto,
+  ): Promise<MatchResultDto | null> {
+    const announcement = await this.announcementRepo.findOne({
+      where: { id: announcementId },
+    });
+    if (!announcement) return null;
+
+    // 해당 공고의 청약 기준 조회 (DB에 저장된 기준이 있으면 활용)
+    const criteriaQb = this.criteriaRepo.createQueryBuilder("c");
+    if (announcement.region) {
+      criteriaQb.where("c.region = :region OR c.region IS NULL", {
+        region: announcement.region,
+      });
+    }
+    const criteria = await criteriaQb.getMany();
+
+    const results: MatchCriterionResult[] = [];
+
+    if (criteria.length > 0) {
+      // DB에 저장된 기준이 있는 경우 각 기준별로 매칭
+      for (const criterion of criteria) {
+        const reasons: string[] = [];
+        let eligible = true;
+
+        if (criterion.minAge !== null && input.age < criterion.minAge) {
+          eligible = false;
+          reasons.push(`나이 ${criterion.minAge}세 이상 필요 (현재 ${input.age}세)`);
+        }
+
+        if (
+          criterion.maxIncome !== null &&
+          input.income > criterion.maxIncome
+        ) {
+          eligible = false;
+          reasons.push(
+            `소득 ${criterion.maxIncome}만원 이하 필요 (현재 ${input.income}만원)`,
+          );
+        }
+
+        if (
+          criterion.minHomeless !== null &&
+          input.homelessMonths < criterion.minHomeless
+        ) {
+          eligible = false;
+          reasons.push(
+            `무주택 기간 ${criterion.minHomeless}개월 이상 필요 (현재 ${input.homelessMonths}개월)`,
+          );
+        }
+
+        if (
+          criterion.region !== null &&
+          input.region &&
+          criterion.region !== input.region
+        ) {
+          eligible = false;
+          reasons.push(
+            `지역 불일치 (요구: ${criterion.region}, 입력: ${input.region})`,
+          );
+        }
+
+        results.push({
+          criterion: criterion.type,
+          eligible,
+          reason: eligible
+            ? "자격 요건 충족"
+            : reasons.join("; "),
+        });
+      }
+    } else {
+      // DB에 기준이 없으면 기본 로직으로 판별 (subscription 서비스 패턴 참고)
+      results.push(
+        ...this.applyDefaultCriteria(announcement, input),
+      );
+    }
+
+    const overallEligible = results.some((r) => r.eligible);
+
+    return {
+      announcementId: announcement.id,
+      announcementTitle: announcement.title,
+      overallEligible,
+      results,
+      message: overallEligible
+        ? "해당 공고에 지원 가능한 유형이 있습니다!"
+        : "현재 조건으로는 해당 공고 지원이 어렵습니다.",
+    };
+  }
+
+  /** DB에 기준이 없을 때 기본 판별 로직 */
+  private applyDefaultCriteria(
+    announcement: Announcement,
+    input: MatchRequestDto,
+  ): MatchCriterionResult[] {
+    const results: MatchCriterionResult[] = [];
+    const { age, income, homelessMonths, dependents = 0, isMarried = false, isFirstHome = false, region } = input;
+
+    const regionMatch = !region || announcement.region === region;
+
+    // 1순위 일반
+    if (age >= 19 && homelessMonths >= 24 && income <= 6000) {
+      results.push({
+        criterion: "1순위 일반",
+        eligible: regionMatch,
+        reason: regionMatch
+          ? "기본 자격 충족"
+          : `지역 불일치 (공고: ${announcement.region}, 입력: ${region})`,
+      });
+    } else {
+      const reasons: string[] = [];
+      if (age < 19) reasons.push("만 19세 미만");
+      if (homelessMonths < 24) reasons.push("무주택 기간 24개월 미만");
+      if (income > 6000) reasons.push("소득 기준 초과");
+      results.push({
+        criterion: "1순위 일반",
+        eligible: false,
+        reason: reasons.join("; "),
+      });
+    }
+
+    // 2순위
+    if (age >= 19) {
+      results.push({
+        criterion: "2순위",
+        eligible: regionMatch,
+        reason: regionMatch ? "만 19세 이상 신청 가능 (당첨 확률 낮음)" : "지역 불일치",
+      });
+    }
+
+    // 특별공급 - 신혼부부
+    if (isMarried && income <= 7000) {
+      results.push({
+        criterion: "특별공급 (신혼부부)",
+        eligible: regionMatch,
+        reason: regionMatch ? "소득 기준 충족" : "지역 불일치",
+      });
+    } else if (isMarried) {
+      results.push({
+        criterion: "특별공급 (신혼부부)",
+        eligible: false,
+        reason: `소득 기준 초과 (${income}만원 > 7,000만원)`,
+      });
+    }
+
+    // 특별공급 - 생애최초
+    if (isFirstHome && income <= 6000) {
+      results.push({
+        criterion: "특별공급 (생애최초)",
+        eligible: regionMatch,
+        reason: regionMatch ? "무주택 + 소득 기준 충족" : "지역 불일치",
+      });
+    } else if (isFirstHome) {
+      results.push({
+        criterion: "특별공급 (생애최초)",
+        eligible: false,
+        reason: `소득 기준 초과 (${income}만원 > 6,000만원)`,
+      });
+    }
+
+    // 특별공급 - 다자녀
+    if (dependents >= 3) {
+      results.push({
+        criterion: "특별공급 (다자녀)",
+        eligible: regionMatch,
+        reason: regionMatch ? `미성년 자녀 ${dependents}명 (3명 이상)` : "지역 불일치",
+      });
+    }
+
+    // 특별공급 - 노부모부양
+    if (dependents > 0 && age >= 25 && homelessMonths >= 36) {
+      results.push({
+        criterion: "특별공급 (노부모부양)",
+        eligible: regionMatch,
+        reason: regionMatch ? "만 25세 이상, 무주택 3년 이상, 부양가족 있음" : "지역 불일치",
+      });
+    }
+
+    return results;
   }
 
   private parseDate(dateStr: string): Date {

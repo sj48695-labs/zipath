@@ -6,8 +6,13 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
-  test:
+  ci:
+    name: Lint / Build / Test
     runs-on: ubuntu-latest
 
     steps:
@@ -26,5 +31,23 @@ jobs:
       - name: Lint
         run: npx turbo lint
 
-      - name: Test
+      - name: Build apps
+        run: npx turbo build
+
+      - name: Unit tests
         run: npm test -w @zipath/api
+
+      - name: E2E tests
+        run: npm run test:e2e -w @zipath/api
+
+  auto-merge:
+    name: Auto Merge
+    needs: ci
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Merge PR
+        run: gh pr merge "${{ github.event.number }}" --squash --repo "${{ github.repository }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
