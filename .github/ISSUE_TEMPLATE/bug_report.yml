@@ -1,0 +1,86 @@
+name: 버그 리포트
+description: 잘못 동작하는 기능을 신고해주세요
+title: "fix: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        버그를 발견해주셔서 감사합니다. 아래 항목을 최대한 자세히 작성해주세요.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 영역
+      description: 버그가 발생한 영역을 선택해주세요
+      options:
+        - 프론트엔드 (web)
+        - 백엔드 API (api)
+        - 데이터베이스 / ORM (db)
+        - 공공API 연동
+        - 인증 / OAuth
+        - 기타
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: 버그 설명
+      description: 어떤 문제가 발생했나요?
+      placeholder: 예) 청약 시뮬레이션 결과가 항상 "자격 없음"으로 나옵니다
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 재현 방법
+      description: 버그를 재현하는 단계를 순서대로 작성해주세요
+      placeholder: |
+        1. '청약 시뮬레이션' 메뉴 접속
+        2. 나이 30, 무주택 선택
+        3. '조회' 버튼 클릭
+        4. "자격 없음" 결과 출력됨 (예상: "자격 있음")
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 예상 동작
+      description: 어떻게 동작해야 하나요?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 실제 동작
+      description: 실제로 어떻게 동작하나요? 에러 메시지나 스크린샷을 첨부해주세요
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: 추가 컨텍스트 (Claude Code용)
+      description: |
+        관련 파일 경로, API 엔드포인트, 에러 로그 등 Claude Code가 작업할 때 필요한 정보를 적어주세요
+      placeholder: |
+        - 관련 파일: apps/api/src/subscription/subscription.service.ts
+        - API 엔드포인트: GET /subscription/simulate
+        - 에러 로그: TypeError: Cannot read properties of undefined...
+        - 관련 공공API: 청약홈 API /aplyInfo
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: 심각도
+      options:
+        - 낮음 (UI 깨짐, 불편함)
+        - 보통 (기능 일부 동작 안함)
+        - 높음 (핵심 기능 불가)
+        - 긴급 (서비스 전체 장애)
+    validations:
+      required: true

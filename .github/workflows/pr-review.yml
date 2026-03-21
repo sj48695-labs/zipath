@@ -1,0 +1,69 @@
+name: PR Auto Review
+
+on:
+  pull_request:
+    branches: [develop, main]
+    types: [opened]
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  review:
+    name: Post Review Checklist
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: diff
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | head -30 | sed 's/^/- /')
+          COUNT=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | wc -l | tr -d ' ')
+          echo "files<<EOF" >> $GITHUB_OUTPUT
+          echo "$FILES" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+          echo "count=$COUNT" >> $GITHUB_OUTPUT
+
+      - name: Post review checklist comment
+        run: |
+          gh pr comment "${{ github.event.number }}" \
+            --repo "${{ github.repository }}" \
+            --body "## 자동 리뷰 체크리스트
+
+          **변경 파일 (${{ steps.diff.outputs.count }}개)**
+          ${{ steps.diff.outputs.files }}
+
+          ---
+
+          ### 코드 품질
+          - [ ] \`any\` 미사용 → \`unknown\` 또는 명시적 타입 사용
+          - [ ] \`interface\` / \`type\` 컨벤션 준수 (객체는 interface)
+          - [ ] 디버그용 \`console.log\` 제거
+
+          ### 아키텍처
+          - [ ] NestJS: 비즈니스 로직이 서비스 레이어에 위치
+          - [ ] 공통 타입은 \`@zipath/types\` 패키지 사용
+          - [ ] DB 접근은 \`@zipath/db\` 엔티티/레포지터리 경유
+
+          ### 보안
+          - [ ] 환경변수 하드코딩 없음 (\`.env\` 또는 \`ConfigService\` 사용)
+          - [ ] API 입력값 DTO + class-validator 검증
+          - [ ] 공공API 응답 그대로 프론트 노출 금지 (필드 필터링)
+
+          ### 테스트
+          - [ ] 신규 서비스 로직에 유닛 테스트 추가
+          - [ ] 기존 E2E 테스트 영향 범위 확인
+
+          ### 법적 고지
+          - [ ] 공공API 데이터 노출 시 \"참고용이며 법적 효력 없음\" 문구 포함
+
+          ---
+
+          > CI 통과 후 \`auto-merge\` 라벨을 붙이면 자동 squash merge됩니다."
+        env:
+          GH_TOKEN: ${{ github.token }}

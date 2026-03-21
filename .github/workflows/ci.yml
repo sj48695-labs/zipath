@@ -2,9 +2,9 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    branches: [develop, main]
   push:
-    branches: [main]
+    branches: [develop]
 
 permissions:
   contents: write
@@ -15,6 +15,29 @@ jobs:
     name: Lint / Build / Test
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: zipath
+          POSTGRES_PASSWORD: zipath
+          POSTGRES_DB: zipath_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://zipath:zipath@localhost:5432/zipath_test
+      NODE_ENV: test
+      JWT_SECRET: ci-test-secret
+      PORT: 3001
+      DATA_GO_KR_API_KEY: ci-placeholder
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+
     steps:
       - uses: actions/checkout@v4
 
@@ -23,15 +46,20 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm ci
+      - name: Cache Turbo
+        uses: actions/cache@v4
+        with:
+          path: .turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
 
-      - name: Build packages
-        run: npx turbo build --filter='./packages/*'
+      - run: npm ci
 
       - name: Lint
         run: npx turbo lint
 
-      - name: Build apps
+      - name: Build
         run: npx turbo build
 
       - name: Unit tests
@@ -44,7 +72,9 @@ jobs:
     name: Auto Merge
     needs: ci
     runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
+    if: |
+      github.event_name == 'pull_request' &&
+      contains(github.event.pull_request.labels.*.name, 'auto-merge')
 
     steps:
       - name: Merge PR

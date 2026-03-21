@@ -1,0 +1,91 @@
+name: 기능 요청
+description: 새 기능이나 개선 사항을 제안해주세요
+title: "feat: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        기능 제안 감사합니다. Claude Code가 바로 작업에 착수할 수 있도록 최대한 구체적으로 작성해주세요.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 영역
+      options:
+        - 프론트엔드 (web)
+        - 백엔드 API (api)
+        - 데이터베이스 / ORM (db)
+        - 공공API 연동
+        - 인증 / OAuth
+        - 인프라 / CI/CD
+        - 기타
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_category
+    attributes:
+      label: 핵심 기능 카테고리
+      description: Zipath 핵심 기능 중 어디에 해당하나요?
+      options:
+        - 청약 자격 시뮬레이션
+        - 공공분양 공고 분석
+        - 실거래가 조회
+        - 대출 한도 계산기
+        - 계약서 체크리스트
+        - 부동산 용어 설명
+        - 신규 기능 (위 카테고리 외)
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: 해결하려는 문제
+      description: 어떤 불편함이나 필요를 해소하려고 하나요?
+      placeholder: 예) 사용자가 본인의 청약 가점을 직접 계산하기 어렵습니다
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: 제안하는 해결책
+      description: 어떻게 구현하면 좋을지 설명해주세요
+      placeholder: 예) 청약 가점 계산기 화면 추가. 무주택 기간, 부양가족 수, 청약통장 납입 횟수를 입력받아 총 가점을 자동 계산
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance_criteria
+    attributes:
+      label: 완료 기준 (Claude Code용)
+      description: 이 기능이 완료됐다고 볼 수 있는 기준을 명확하게 작성해주세요
+      placeholder: |
+        - [ ] /subscription/score GET API 구현 (무주택기간, 부양가족수, 납입횟수 파라미터)
+        - [ ] 프론트 가점 계산기 UI 구현 (apps/web/src/app/subscription/)
+        - [ ] 가점 범위 유효성 검사 (0~84점)
+        - [ ] 유닛 테스트 추가 (SubscriptionService.calculateScore)
+    validations:
+      required: true
+
+  - type: textarea
+    id: related_files
+    attributes:
+      label: 관련 파일 / API (Claude Code용)
+      description: 작업이 예상되는 파일 경로나 참고할 공공API를 적어주세요
+      placeholder: |
+        - apps/api/src/subscription/subscription.service.ts
+        - apps/web/src/app/subscription/page.tsx
+        - 참고 공공API: 청약홈 API 명세 (https://...)
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 우선순위
+      options:
+        - 낮음 (있으면 좋음)
+        - 보통 (다음 스프린트)
+        - 높음 (이번 스프린트)
+        - 긴급 (MVP 필수)
+    validations:
+      required: true
