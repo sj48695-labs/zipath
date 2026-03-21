@@ -68,6 +68,19 @@ jobs:
       - name: E2E tests
         run: npm run test:e2e -w @zipath/api
 
+  deploy-render:
+    name: Deploy to Render
+    needs: ci
+    runs-on: ubuntu-latest
+    # develop push일 때만 실행 (PR 이벤트 제외)
+    # 사전 조건: Render 서비스의 Auto-Deploy를 Off로 설정해야 함
+    #   Render Dashboard → 서비스 선택 → Settings → Auto-Deploy → Disabled
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Trigger Render deploy hook
+        run: curl -fsSL "${{ secrets.RENDER_DEPLOY_HOOK }}"
+
   auto-merge:
     name: Auto Merge
     needs: ci
