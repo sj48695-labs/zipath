@@ -14,13 +14,13 @@ export class SubscriptionCriteria {
   @Column()
   type!: string; // 1순위, 2순위, 특별공급 등
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   minAge!: number | null;
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   maxIncome!: number | null; // 만원 단위
 
-  @Column({ nullable: true })
+  @Column({ type: 'int', nullable: true })
   minHomeless!: number | null; // 무주택 기간(월)
 
   @Column({ nullable: true })
