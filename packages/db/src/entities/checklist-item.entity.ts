@@ -12,22 +12,22 @@ export class ChecklistItem {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'int' })
   templateId!: number;
 
   @ManyToOne(() => ChecklistTemplate, (template) => template.items)
   @JoinColumn({ name: "templateId" })
   template!: ChecklistTemplate;
 
-  @Column()
+  @Column({ type: 'int' })
   order!: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   content!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: 'varchar', nullable: true })
   category!: string | null; // 서류, 현장확인, 계약조건 등
 
-  @Column({ default: true })
+  @Column({ type: 'boolean', default: true })
   isRequired!: boolean;
 }

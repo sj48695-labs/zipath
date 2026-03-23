@@ -11,16 +11,16 @@ export class Announcement {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   title!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   organization!: string; // LH, SH 등
 
-  @Column()
+  @Column({ type: 'varchar' })
   region!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   supplyType!: string; // 공공분양, 국민임대 등
 
   @Column({ type: "timestamp" })
