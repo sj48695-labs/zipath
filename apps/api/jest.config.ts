@@ -11,6 +11,7 @@ const config: Config = {
   coverageDirectory: "./coverage",
   transformIgnorePatterns: [],
   testEnvironment: "node",
+  maxWorkers: 2,
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
     "^@zipath/types$": "<rootDir>/../../packages/types/src/index.ts",
