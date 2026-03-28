@@ -8,9 +8,9 @@
     "start": "node dist/main",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "jest --config jest.config.ts",
-    "test:cov": "jest --config jest.config.ts --coverage",
-    "test:e2e": "jest --config jest-e2e.config.ts"
+    "test": "jest --config jest.config.js --runInBand",
+    "test:cov": "jest --config jest.config.js --runInBand --coverage",
+    "test:e2e": "jest --config jest-e2e.config.js --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
