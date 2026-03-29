@@ -11,10 +11,10 @@ export class ChecklistTemplate {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   type!: string; // rent, jeonse, buy
 
-  @Column()
+  @Column({ type: 'varchar' })
   title!: string;
 
   @OneToMany(() => ChecklistItem, (item) => item.template)

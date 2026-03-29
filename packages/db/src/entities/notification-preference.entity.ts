@@ -14,7 +14,7 @@ export class NotificationPreference {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'int' })
   userId!: number;
 
   @ManyToOne(() => User)

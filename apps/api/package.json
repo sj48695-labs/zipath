@@ -8,9 +8,9 @@
     "start": "node dist/main",
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,test}/**/*.ts\"",
-    "test": "jest --config jest.config.ts",
-    "test:cov": "jest --config jest.config.ts --coverage",
-    "test:e2e": "jest --config jest-e2e.config.ts"
+    "test": "jest --config jest.config.js --runInBand",
+    "test:cov": "jest --config jest.config.js --runInBand --coverage",
+    "test:e2e": "jest --config jest-e2e.config.js --runInBand"
   },
   "dependencies": {
     "@nestjs/common": "^10.3.0",
@@ -37,6 +37,8 @@
     "rxjs": "^7.8.0",
     "typeorm": "^0.3.20",
     "supertest": "^7.1.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
     "zod": "^3.22.0"
   },
   "devDependencies": {
@@ -45,9 +47,13 @@
     "@types/express": "^4.17.0",
     "@types/jest": "^30.0.0",
     "@types/supertest": "^6.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "@zipath/config": "*",
+    "eslint": "^8.56.0",
     "jest": "^30.3.0",
     "ts-jest": "^29.4.6",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.0"
   }
 }
