@@ -23,3 +23,19 @@
 - 모든 공공API는 `DATA_GO_KR_API_KEY` 환경변수 사용
 - API 응답은 가능하면 캐싱 (DB 또는 인메모리)
 - 에러 시 적절한 HTTP 상태 코드 반환 (502 for upstream errors)
+
+## 서브에이전트 모델 라우팅
+
+| 작업 | 모델 | 에이전트 |
+|------|------|----------|
+| 설계/아키텍처 | Opus | senior-clean-architect |
+| 구현 (TDD) | Sonnet | tdd |
+| 코드 탐색/분석 | Sonnet | Explore |
+| 리뷰/검토 | Sonnet | codex:rescue (선택) |
+| 단순 조회/댓글 | Haiku | — |
+
+## 커밋/푸시 규칙
+
+- **자동 커밋 금지** → `/code` 스킬 내 자동 커밋만 허용
+- 수동 작업 시 반드시 "커밋해도 될까요?" 확인 후 진행
+- 커밋 메시지: `<type>(<scope>): #이슈번호 한글 메시지`

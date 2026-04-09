@@ -54,3 +54,4 @@ scripts/.stop
 
 # claude
 .claude/
+.aider*

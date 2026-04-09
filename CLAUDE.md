@@ -61,6 +61,16 @@ zipath/ (모노레포)
     └── config/           ← 공통 설정
 ```
 
+## 프로젝트 설정 (글로벌 스킬 참조용)
+
+- **메인 브랜치**: `develop`
+- **테스트 명령어**: `npm test -w @zipath/api`
+- **E2E 테스트**: `npm run test:e2e -w @zipath/api`
+- **린트**: `npx turbo lint`
+- **빌드**: `npx turbo build`
+- **VCS**: GitHub (`gh`)
+- **커밋 형식**: `<type>(<scope>): <subject>` (한글)
+
 ## 코딩 규칙
 
 - TypeScript strict mode
@@ -161,12 +171,27 @@ npm run db:up
 - `auto-merge` 라벨이 **없으면**: CI만 실행, 머지는 수동 (리뷰 대기)
 - 라벨을 붙이거나 떼서 자동 머지를 중간에 제어 가능
 
+### AI 워크플로우 (글로벌 스킬)
+
+```
+/prep <이슈> → /plan → /code → /commit-mr → /reply
+```
+
+| 스킬 | 설명 |
+|------|------|
+| `/prep <이슈번호>` | 브랜치 생성 + Draft PR + worktree 전환 |
+| `/plan` | Phase별 구현 계획 작성 → `plans/`에 저장 |
+| `/code` | Phase 순회 구현 (TDD + /simplify + 자동 커밋 분리) |
+| `/commit-mr` | fixup/rebase 정리 + push + PR 마무리 |
+| `/reply` | PR에 플랜 댓글 게시 + 플랜 파일 정리 |
+| `/daily-report` | 일일 업무 리포트 |
+
 ### CI/CD 파이프라인
 
 ```
-이슈 → 브랜치 → 코딩 → PR(→ develop) → CI → [auto-merge 라벨?] → 머지
-                                                        ↓ 없으면
-                                                   리뷰 대기 (수동 머지)
+이슈 → /prep → /plan → /code → /commit-mr → PR(→ develop) → CI → [auto-merge 라벨?] → 머지
+                                                                          ↓ 없으면
+                                                                     리뷰 대기 (수동 머지)
 ```
 
 | 단계 | 트리거 | 내용 |
