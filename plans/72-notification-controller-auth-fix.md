@@ -37,7 +37,7 @@
 
 ### 구현 단계 (Phase)
 
-1. [ ] **Phase 1: 백엔드 NotificationController 인증 가드 적용 + URL 정리**
+1. [x] **Phase 1: 백엔드 NotificationController 인증 가드 적용 + URL 정리**
    - 파일: `apps/api/src/notification/notification.controller.ts`
    - 구현:
      - 클래스 레벨 `@UseGuards(JwtAuthGuard)` 적용
@@ -46,7 +46,7 @@
      - `markAsRead`의 Body `userId` 제거
    - 커밋: `fix(api): NotificationController에 JwtAuthGuard 적용 및 userId 파라미터 제거`
 
-2. [ ] **Phase 2: NotificationService preference 소유권 검증 강화**
+2. [x] **Phase 2: NotificationService preference 소유권 검증 강화**
    - 파일: `apps/api/src/notification/notification.service.ts`
    - 구현:
      - `updatePreference(id, userId, dto)`, `deletePreference(id, userId)` 시그니처 변경 → `findOne({ where: { id, userId } })` 사용해 본인 preference만 수정/삭제
@@ -56,7 +56,7 @@
 
    > 참고: Phase 1 + Phase 2는 빌드 의존성으로 묶이므로 실제 커밋은 1개. 리뷰 단위는 동일 디렉터리 + 동일 보안 fix scope.
 
-3. [ ] **Phase 3: 프론트 notifications 페이지 AuthContext 연동**
+3. [x] **Phase 3: 프론트 notifications 페이지 AuthContext 연동**
    - 파일: `apps/web/src/app/notifications/page.tsx`, `apps/web/src/lib/api.ts`
    - 구현:
      - `apps/web/src/lib/api.ts`의 `fetchApi`에 `auth?: boolean` 옵션 추가, true면 `localStorage.getItem("accessToken")`을 `Authorization: Bearer ...`로 첨부. 토큰 부재 시 throw.
@@ -68,7 +68,7 @@
      - markAsRead body에서 `userId` 필드 제거
    - 커밋: `fix(web): notifications 페이지를 AuthContext와 연동하고 TEMP_USER_ID 제거`
 
-4. [ ] **Phase 4: NotificationController 단위 테스트 추가**
+4. [x] **Phase 4: NotificationController 단위 테스트 추가**
    - 파일: `apps/api/test/notification.controller.spec.ts` (신규)
    - 구현:
      - NotificationService를 모킹한 controller spec
