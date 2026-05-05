@@ -6,7 +6,12 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "typeorm": "node --env-file=../../.env --require ts-node/register ./node_modules/typeorm/cli.js -d ./src/data-source.ts",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:revert": "npm run typeorm -- migration:revert",
+    "migration:show": "npm run typeorm -- migration:show"
   },
   "dependencies": {
     "typeorm": "^0.3.20",
@@ -15,6 +20,8 @@
     "@types/node": "^20.11.0"
   },
   "devDependencies": {
-    "typescript": "^5.3.0"
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.2",
+    "dotenv": "^16.4.5"
   }
 }

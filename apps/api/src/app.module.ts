@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { ScheduleModule } from "@nestjs/schedule";
 import { ThrottlerModule, ThrottlerGuard } from "@nestjs/throttler";
+import { join } from "path";
 import { entities } from "@zipath/db";
 import { SubscriptionModule } from "./subscription/subscription.module";
 import { LoanModule } from "./loan/loan.module";
@@ -25,16 +26,22 @@ import { PaymentModule } from "./payment/payment.module";
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
-        type: "postgres" as const,
-        url: config.get<string>("DATABASE_URL"),
-        ssl:
-          config.get<string>("NODE_ENV") === "production"
-            ? { rejectUnauthorized: false }
-            : false,
-        entities,
-        synchronize: config.get<string>("NODE_ENV") !== "production",
-      }),
+      useFactory: (config: ConfigService) => {
+        const isProd = config.get<string>("NODE_ENV") === "production";
+        // 마이그레이션 파일은 @zipath/db 패키지의 dist/migrations 에 위치.
+        // 빌드 후 monorepo node_modules 에서 패키지를 resolve 해서 경로를 만든다.
+        const dbPkgDir = require.resolve("@zipath/db/package.json").replace(/\/package\.json$/, "");
+        return {
+          type: "postgres" as const,
+          url: config.get<string>("DATABASE_URL"),
+          ssl: isProd ? { rejectUnauthorized: false } : false,
+          entities,
+          synchronize: !isProd,
+          migrationsRun: isProd,
+          migrations: [join(dbPkgDir, "dist/migrations/*.js")],
+          migrationsTableName: "_migrations",
+        };
+      },
     }),
     ThrottlerModule.forRoot([
       { name: "short", ttl: 1000, limit: 10 },   // 10 req/sec

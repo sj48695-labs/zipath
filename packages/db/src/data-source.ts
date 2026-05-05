@@ -1,4 +1,5 @@
 import "reflect-metadata";
+import { join } from "path";
 import { DataSource } from "typeorm";
 import { User } from "./entities/user.entity";
 import { RealPriceCache } from "./entities/real-price-cache.entity";
@@ -22,12 +23,17 @@ export const entities = [
   Payment,
 ];
 
+const isProd = process.env.NODE_ENV === "production";
+
 export const AppDataSource = new DataSource({
   type: "postgres",
   url: process.env.DATABASE_URL,
-  ssl: process.env.NODE_ENV === "production"
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl: isProd ? { rejectUnauthorized: false } : false,
   entities,
-  synchronize: process.env.NODE_ENV !== "production",
+  // production: 마이그레이션으로 스키마 관리. 부팅 시 자동 실행.
+  // dev: synchronize 로 빠른 반복. 마이그레이션은 generate 시점에만 사용.
+  synchronize: !isProd,
+  migrationsRun: isProd,
+  migrations: [join(__dirname, "migrations", "*.{ts,js}")],
+  migrationsTableName: "_migrations",
 });
