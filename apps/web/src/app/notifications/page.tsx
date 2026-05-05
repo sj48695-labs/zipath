@@ -238,7 +238,7 @@ export default function NotificationsPage() {
     });
   };
 
-  if (authLoading || !isAuthenticated) {
+  if (authLoading) {
     return (
       <div className="min-h-screen">
         <header className="border-b">
@@ -249,22 +249,33 @@ export default function NotificationsPage() {
           </div>
         </header>
         <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
-          {authLoading ? (
-            <p className="text-muted-foreground">로딩 중...</p>
-          ) : (
-            <>
-              <h1 className="mb-4 text-2xl font-bold">로그인이 필요합니다</h1>
-              <p className="mb-6 text-sm text-muted-foreground">
-                맞춤 알림 설정을 보려면 먼저 로그인해주세요.
-              </p>
-              <Link
-                href="/login"
-                className="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-              >
-                로그인하기
-              </Link>
-            </>
-          )}
+          <p className="text-muted-foreground">로딩 중...</p>
+        </main>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen">
+        <header className="border-b">
+          <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
+            <Link href="/" className="text-xl font-bold text-primary">
+              Zipath
+            </Link>
+          </div>
+        </header>
+        <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
+          <h1 className="mb-4 text-2xl font-bold">로그인이 필요합니다</h1>
+          <p className="mb-6 text-sm text-muted-foreground">
+            맞춤 알림 설정을 보려면 먼저 로그인해주세요.
+          </p>
+          <Link
+            href="/login"
+            className="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            로그인하기
+          </Link>
         </main>
       </div>
     );
