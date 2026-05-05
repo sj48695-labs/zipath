@@ -20,8 +20,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
     const clientSecret = config.get<string>("GOOGLE_CLIENT_SECRET") || "";
 
     if (!clientID || !clientSecret) {
-      // auth.module.ts에서 env 미설정 시 strategy 등록을 스킵하지만,
-      // 직접 인스턴스화될 경우(예: 테스트, 향후 리팩토링)를 위한 이중 안전장치.
       GoogleStrategy.logger.warn(
         "GOOGLE_CLIENT_ID/SECRET 미설정 — Google OAuth가 실제로 동작하지 않습니다.",
       );

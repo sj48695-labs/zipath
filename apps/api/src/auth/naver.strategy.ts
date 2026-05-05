@@ -1,16 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
+import { OAuthLoginInput } from "@zipath/types";
 import { Strategy, Profile } from "passport-naver-v2";
-
-type VerifyCallback = (error: Error | null, user?: NaverOAuthUser | false) => void;
-
-interface NaverOAuthUser {
-  provider: string;
-  providerId: string;
-  email: string | null;
-  nickname: string | null;
-}
 
 @Injectable()
 export class NaverStrategy extends PassportStrategy(Strategy, "naver") {
@@ -26,9 +18,9 @@ export class NaverStrategy extends PassportStrategy(Strategy, "naver") {
     _accessToken: string,
     _refreshToken: string,
     profile: Profile,
-    done: VerifyCallback,
+    done: (error: Error | null, user?: OAuthLoginInput | false) => void,
   ): void {
-    const user: NaverOAuthUser = {
+    const user: OAuthLoginInput = {
       provider: "naver",
       providerId: profile.id,
       email: profile.email ?? null,

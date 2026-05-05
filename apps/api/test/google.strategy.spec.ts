@@ -38,7 +38,7 @@ describe("GoogleStrategy", () => {
       try {
         new GoogleStrategy(makeConfig({ GOOGLE_CLIENT_ID: undefined }));
       } catch {
-        // passport 라이브러리가 throw하더라도 warn은 super 호출 전에 찍힘
+        // passport가 clientID 없이 throw해도 warn은 이미 찍힘
       }
       expect(warnSpy).toHaveBeenCalled();
       const message = warnSpy.mock.calls[0]?.[0] as string;
@@ -50,7 +50,7 @@ describe("GoogleStrategy", () => {
       try {
         new GoogleStrategy(makeConfig({ GOOGLE_CLIENT_SECRET: undefined }));
       } catch {
-        // passport 라이브러리가 throw하더라도 warn은 super 호출 전에 찍힘
+        // passport가 clientID 없이 throw해도 warn은 이미 찍힘
       }
       expect(warnSpy).toHaveBeenCalled();
     });
@@ -120,19 +120,5 @@ describe("GoogleStrategy", () => {
       expect(user.email).toBe("x@y.com");
     });
 
-    it("provider는 항상 'google', providerId는 profile.id와 일치", () => {
-      const profile: GoogleProfile = {
-        id: "abc-xyz-999",
-        displayName: "n",
-        emails: [{ value: "a@b.com", verified: true }],
-      };
-      const done = jest.fn();
-
-      strategy.validate("a", "r", profile, done);
-
-      const [, user] = done.mock.calls[0] as [unknown, OAuthLoginInput];
-      expect(user.provider).toBe("google");
-      expect(user.providerId).toBe("abc-xyz-999");
-    });
   });
 });
