@@ -12,6 +12,16 @@ import type {
   MatchResult,
 } from "./_components/types";
 
+function formatDate(dateStr: string) {
+  if (!dateStr) return "-";
+  const d = new Date(dateStr);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
+
+function isActive(endDate: string) {
+  return new Date(endDate) >= new Date();
+}
+
 const INITIAL_FORM: MatchFormData = {
   age: "",
   income: "",
@@ -38,11 +48,15 @@ export default function AnnouncementDetailPage() {
   const [matchError, setMatchError] = useState<string | null>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
+
     async function fetchDetail() {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/announcements/${id}`);
+        const res = await fetch(`/api/announcements/${id}`, {
+          signal: controller.signal,
+        });
         if (!res.ok) {
           const data = (await res.json().catch(() => null)) as {
             error?: string;
@@ -52,27 +66,17 @@ export default function AnnouncementDetailPage() {
         }
         const data: AnnouncementDetail = await res.json();
         setAnnouncement(data);
-      } catch {
+      } catch (err) {
+        if (err instanceof DOMException && err.name === "AbortError") return;
         setError("데이터를 불러오는 데 실패했습니다.");
       } finally {
         setLoading(false);
       }
     }
 
-    if (id) {
-      fetchDetail();
-    }
+    fetchDetail();
+    return () => controller.abort();
   }, [id]);
-
-  function formatDate(dateStr: string) {
-    if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-  }
-
-  function isActive(endDate: string) {
-    return new Date(endDate) >= new Date();
-  }
 
   async function handleMatchSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -129,6 +133,8 @@ export default function AnnouncementDetailPage() {
     }
   }
 
+  const active = announcement ? isActive(announcement.endDate) : false;
+
   return (
     <div className="min-h-screen">
       <header className="border-b">
@@ -178,7 +184,7 @@ export default function AnnouncementDetailPage() {
 
         {!loading && !error && announcement && (
           <>
-            {!isActive(announcement.endDate) && (
+            {!active && (
               <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                 <p className="text-sm font-medium text-yellow-800">
                   이 공고는 마감되었습니다. 자격 확인은 참고용으로만 사용하세요.
@@ -186,7 +192,6 @@ export default function AnnouncementDetailPage() {
               </div>
             )}
 
-            {/* 공고 상세 정보 */}
             <div className="mb-8 rounded-lg border bg-card p-6">
               <div className="mb-4 flex flex-wrap items-center gap-2">
                 <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
@@ -195,7 +200,7 @@ export default function AnnouncementDetailPage() {
                 <span className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
                   {announcement.region}
                 </span>
-                {isActive(announcement.endDate) ? (
+                {active ? (
                   <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
                     접수중
                   </span>
@@ -257,7 +262,6 @@ export default function AnnouncementDetailPage() {
               </p>
             </div>
 
-            {/* 원본 데이터 */}
             {announcement.rawData &&
               Object.keys(announcement.rawData).length > 0 && (
                 <details className="mb-8 rounded-lg border bg-card p-6">
@@ -287,7 +291,6 @@ export default function AnnouncementDetailPage() {
                 </details>
               )}
 
-            {/* 자격 확인 섹션 */}
             <div className="rounded-lg border bg-card p-6">
               <h2 className="mb-2 text-lg font-semibold">자격 확인</h2>
               <p className="mb-6 text-sm text-muted-foreground">
@@ -300,7 +303,7 @@ export default function AnnouncementDetailPage() {
                 onSubmit={handleMatchSubmit}
                 loading={matchLoading}
                 submitLabel={
-                  isActive(announcement.endDate)
+                  active
                     ? "자격 확인하기"
                     : "참고용 자격 확인"
                 }

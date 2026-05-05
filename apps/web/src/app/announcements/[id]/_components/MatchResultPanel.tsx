@@ -1,5 +1,3 @@
-"use client";
-
 import type { MatchResult } from "./types";
 
 interface MatchResultPanelProps {
@@ -50,7 +48,7 @@ export default function MatchResultPanel({
           <div className="space-y-2">
             {result.results.map((item, index) => (
               <div
-                key={index}
+                key={item.criterion}
                 className="flex items-start gap-3 rounded-lg border p-4"
               >
                 <span
