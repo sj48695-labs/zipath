@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unwrapBackendData } from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -33,8 +34,7 @@ export async function GET(request: Request) {
       );
     }
 
-    const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
       { error: "Failed to fetch trend data" },

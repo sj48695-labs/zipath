@@ -52,5 +52,27 @@ export async function fetchApi<T>(
     throw new ApiError(String(message), res.status);
   }
 
-  return res.json() as Promise<T>;
+  // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.
+  // 페이지 코드는 unwrapped 형태를 기대하므로 여기서 풀어서 반환.
+  return unwrapBackendData<T>(await res.json());
+}
+
+/**
+ * NestJS TransformInterceptor 의 {success, data} 래핑을 풀어 안쪽 data 를 반환.
+ * 래핑되지 않은 응답은 그대로 통과 (안전 fallback).
+ *
+ * Vercel Next.js API 라우트가 백엔드를 프록시할 때, 응답을 그대로 클라이언트
+ * 페이지에 흘려보내면 페이지 코드가 unwrapped 형태를 기대하므로 깨진다.
+ * 라우트들이 이 헬퍼로 unwrap 후 NextResponse.json 으로 반환해야 함.
+ */
+export function unwrapBackendData<T>(body: unknown): T {
+  if (
+    body !== null &&
+    typeof body === "object" &&
+    "success" in body &&
+    "data" in body
+  ) {
+    return (body as { data: T }).data;
+  }
+  return body as T;
 }
