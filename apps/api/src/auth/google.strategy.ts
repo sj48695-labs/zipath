@@ -1,28 +1,33 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
+import { OAuthLoginInput } from "@zipath/types";
 import { Strategy, VerifyCallback } from "passport-google-oauth20";
 
-interface GoogleProfile {
+export interface GoogleProfile {
   id: string;
   displayName: string;
   emails?: Array<{ value: string; verified: boolean }>;
   photos?: Array<{ value: string }>;
 }
 
-interface GoogleOAuthUser {
-  provider: string;
-  providerId: string;
-  email: string | null;
-  nickname: string | null;
-}
-
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
+  private static readonly logger = new Logger(GoogleStrategy.name);
+
   constructor(config: ConfigService) {
+    const clientID = config.get<string>("GOOGLE_CLIENT_ID") || "";
+    const clientSecret = config.get<string>("GOOGLE_CLIENT_SECRET") || "";
+
+    if (!clientID || !clientSecret) {
+      GoogleStrategy.logger.warn(
+        "GOOGLE_CLIENT_ID/SECRET 미설정 — Google OAuth가 실제로 동작하지 않습니다.",
+      );
+    }
+
     super({
-      clientID: config.get<string>("GOOGLE_CLIENT_ID") || "",
-      clientSecret: config.get<string>("GOOGLE_CLIENT_SECRET") || "",
+      clientID,
+      clientSecret,
       callbackURL: config.get<string>("GOOGLE_CALLBACK_URL") || "http://localhost:4000/auth/google/callback",
       scope: ["email", "profile"],
     });
@@ -34,7 +39,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
     profile: GoogleProfile,
     done: VerifyCallback,
   ): void {
-    const user: GoogleOAuthUser = {
+    const user: OAuthLoginInput = {
       provider: "google",
       providerId: profile.id,
       email: profile.emails?.[0]?.value ?? null,

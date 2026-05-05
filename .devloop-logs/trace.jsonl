@@ -1,0 +1,8 @@
+{"timestamp":"2026-05-01 05:47:49","skill":"plan","issue":"72","model":"sonnet","status":"success","tokens":{"input":4,"output":679,"cache":21683},"duration":146,"logFile":"agents/plan-72.log"}
+{"timestamp":"2026-05-01 05:55:01","skill":"code","issue":"72","model":"sonnet","status":"success","tokens":{"input":4,"output":424,"cache":34099},"duration":187,"logFile":"agents/code-72.log"}
+{"timestamp":"2026-05-01 05:55:13","skill":"code","issue":"72","model":"sonnet","status":"success","tokens":{"input":4,"output":391,"cache":34115},"duration":442,"logFile":"agents/code-72.log"}
+{"timestamp":"2026-05-01 05:56:03","skill":"commit-mr","issue":"72","model":"sonnet","status":"success","tokens":{"input":14,"output":2514,"cache":247895},"duration":48,"logFile":"agents/commit-mr-72.log"}
+{"timestamp":"2026-05-01 05:56:09","skill":"commit-mr","issue":"72","model":"sonnet","status":"success","tokens":{"input":18,"output":2832,"cache":349187},"duration":66,"logFile":"agents/commit-mr-72.log"}
+{"timestamp":"2026-05-01 06:01:05","skill":"review","issue":"72","model":"sonnet","status":"success","tokens":{"input":9,"output":7786,"cache":286671},"duration":200,"logFile":"agents/review-72.log"}
+{"timestamp":"2026-05-01 06:01:50","skill":"review","issue":"72","model":"sonnet","status":"success","tokens":{"input":1800,"output":8443,"cache":431291},"duration":240,"logFile":"agents/review-72.log"}
+{"timestamp":"2026-05-01 06:01:53","skill":"review-fix:commit-mr","issue":"72","model":"sonnet","status":"success","tokens":{"input":11,"output":2232,"cache":245481},"duration":48,"logFile":"agents/review-fix:commit-mr-72.log"}

@@ -1,0 +1,37 @@
+[05:57:50] review #72 시작 (model: sonnet)
+Looking at the git diff to understand what changed before launching the review agents.
+Now launching all three review agents in parallel with the full diff context.
+Three agents done. Let me read the key files before fixing the real issues.
+Two fixes to make: the leaky headers cast in `api.ts` and the redundant DB query in `createPreference`. Skipping `AuthRequest` extraction (the plan explicitly decided against it as over-engineering for a single controller) and the cross-file header markup duplication (pre-existing in `profile/page.tsx`).
+Now verify the TypeScript compiles cleanly:
+Both compile clean. Two fixes applied:
+
+1. **`api.ts`** — `FetchApiOptions` now uses `extends Omit<RequestInit, "headers">` with `headers?: Record<string, string>`, eliminating the unsafe `as Record<string, string>` cast that would silently mishandle `Headers` instances or `string[][]` inputs.
+
+2. **`notification.service.ts`** — `createPreference` upsert path now uses `Object.assign(existing, dto) + save` directly instead of delegating to `updatePreference`, removing the redundant `findOne({ id, userId })` query that `updatePreference` would have run on an entity we already held.
+Looking at the git diff to gather context for the review.
+Now launching three review agents in parallel with the full diff.
+Good findings. Let me read the current files to fix the confirmed issues.
+The route ordering concern is a false positive — `:id/read` (two segments) and `read-all` (one segment) are different path depths so NestJS won't confuse them. The real issues to fix:
+
+1. **Duplicate page shell** — authLoading and !isAuthenticated blocks share identical outer markup
+2. **`totalPages` computed above early returns** — runs even when auth is loading/absent
+3. **JSDoc comment** restates the code instead of explaining the contract
+4. **Unsafe `headers` spread cast** — `HeadersInit` can be `Headers | string[][]`, not just `Record<string,string>`
+
+Let me apply these fixes.
+The linter already applied most of that change. Just need to trim the JSDoc comment.
+Now let me verify the page.tsx changes look correct around the refactored section.
+Good. Now let me run the TypeScript check and tests to make sure nothing broke.
+All 83 tests pass, TypeScript compiles clean. Here's what was fixed:
+
+**Fixed:**
+- `notifications/page.tsx` — Merged the two identical page shells (authLoading / !isAuthenticated) into one block with a conditional inner body. Eliminated ~15 lines of duplicated header/layout markup.
+- `notifications/page.tsx` — Moved `totalPages` computation below the early returns so it only runs when the page actually renders.
+- `api.ts` — Changed `FetchApiOptions extends RequestInit` → `extends Omit<RequestInit, "headers">` with an explicit `headers?: Record<string, string>` override, removing the unsafe cast in the spread. (The linter had already applied this before I could write it, so I only had the JSDoc to clean up.)
+- `api.ts` — Trimmed the JSDoc on `auth` to state only the failure contract rather than restating the implementation.
+
+**Skipped (false positives or out of scope):**
+- Route ordering concern (`read-all` vs `:id/read`) — different path depths, no conflict in NestJS.
+- `AuthRequest` type extraction — file-local usage across 8+ sites in the same controller is fine; sharing it cross-module was explicitly ruled out in the plan as over-engineering.
+- AbortController for fetch cleanup — valid but this is a pre-existing app-wide pattern, not introduced by this PR.
