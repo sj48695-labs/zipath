@@ -7,12 +7,15 @@ import {
   Body,
   Param,
   Query,
+  Request,
+  UseGuards,
   ParseIntPipe,
 } from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { AuthRequest } from "../common/interfaces/auth-request.interface";
 import { NotificationService } from "./notification.service";
 
 interface CreatePreferenceBody {
-  userId: number;
   regions: string[];
   priceThresholdMin: number | null;
   priceThresholdMax: number | null;
@@ -27,45 +30,53 @@ interface UpdatePreferenceBody {
   isActive?: boolean;
 }
 
+@UseGuards(JwtAuthGuard)
 @Controller("notifications")
 export class NotificationController {
   constructor(private readonly notificationService: NotificationService) {}
 
   // --- Preferences ---
 
-  @Get("preferences/:userId")
-  getPreference(@Param("userId", ParseIntPipe) userId: number) {
-    return this.notificationService.getPreference(userId);
+  @Get("preferences")
+  getPreference(@Request() req: AuthRequest) {
+    return this.notificationService.getPreference(req.user.id);
   }
 
   @Post("preferences")
-  createPreference(@Body() body: CreatePreferenceBody) {
-    return this.notificationService.createPreference(body);
+  createPreference(
+    @Request() req: AuthRequest,
+    @Body() body: CreatePreferenceBody,
+  ) {
+    return this.notificationService.createPreference(req.user.id, body);
   }
 
   @Put("preferences/:id")
   updatePreference(
+    @Request() req: AuthRequest,
     @Param("id", ParseIntPipe) id: number,
     @Body() body: UpdatePreferenceBody,
   ) {
-    return this.notificationService.updatePreference(id, body);
+    return this.notificationService.updatePreference(id, req.user.id, body);
   }
 
   @Delete("preferences/:id")
-  deletePreference(@Param("id", ParseIntPipe) id: number) {
-    return this.notificationService.deletePreference(id);
+  deletePreference(
+    @Request() req: AuthRequest,
+    @Param("id", ParseIntPipe) id: number,
+  ) {
+    return this.notificationService.deletePreference(id, req.user.id);
   }
 
   // --- Notifications ---
 
-  @Get(":userId")
+  @Get()
   getNotifications(
-    @Param("userId", ParseIntPipe) userId: number,
+    @Request() req: AuthRequest,
     @Query("page") page?: string,
     @Query("limit") limit?: string,
   ) {
     return this.notificationService.getNotifications(
-      userId,
+      req.user.id,
       page ? parseInt(page, 10) : 1,
       limit ? parseInt(limit, 10) : 20,
     );
@@ -73,19 +84,19 @@ export class NotificationController {
 
   @Put(":id/read")
   markAsRead(
+    @Request() req: AuthRequest,
     @Param("id", ParseIntPipe) id: number,
-    @Body("userId", ParseIntPipe) userId: number,
   ) {
-    return this.notificationService.markAsRead(id, userId);
+    return this.notificationService.markAsRead(id, req.user.id);
   }
 
-  @Put("read-all/:userId")
-  markAllAsRead(@Param("userId", ParseIntPipe) userId: number) {
-    return this.notificationService.markAllAsRead(userId);
+  @Put("read-all")
+  markAllAsRead(@Request() req: AuthRequest) {
+    return this.notificationService.markAllAsRead(req.user.id);
   }
 
-  @Get("unread-count/:userId")
-  getUnreadCount(@Param("userId", ParseIntPipe) userId: number) {
-    return this.notificationService.getUnreadCount(userId);
+  @Get("unread-count")
+  getUnreadCount(@Request() req: AuthRequest) {
+    return this.notificationService.getUnreadCount(req.user.id);
   }
 }

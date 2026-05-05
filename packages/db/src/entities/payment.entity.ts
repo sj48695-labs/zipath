@@ -10,16 +10,16 @@ export class Payment {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'int' })
   userId!: number;
 
-  @Column()
+  @Column({ type: 'int' })
   amount!: number; // 원 단위
 
-  @Column()
+  @Column({ type: 'varchar' })
   productType!: string; // contract-analysis, premium-monthly, real-price-report
 
-  @Column({ default: "pending" })
+  @Column({ type: 'varchar', default: "pending" })
   status!: string; // pending, confirmed, failed, cancelled
 
   @Column({ nullable: true, type: "varchar" })

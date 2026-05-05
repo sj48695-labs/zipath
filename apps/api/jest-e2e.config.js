@@ -1,15 +1,11 @@
-import type { Config } from "jest";
-
-const config: Config = {
+/** @type {import('jest').Config} */
+const config = {
   moduleFileExtensions: ["js", "json", "ts"],
   rootDir: ".",
-  testRegex: ".*\\.spec\\.ts$",
+  testRegex: ".e2e-spec.ts$",
   transform: {
     "^.+\\.(t|j)s$": "ts-jest",
   },
-  collectCoverageFrom: ["src/**/*.service.ts"],
-  coverageDirectory: "./coverage",
-  transformIgnorePatterns: [],
   testEnvironment: "node",
   moduleNameMapper: {
     "^@/(.*)$": "<rootDir>/src/$1",
@@ -18,4 +14,4 @@ const config: Config = {
   },
 };
 
-export default config;
+module.exports = config;

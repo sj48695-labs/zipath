@@ -5,7 +5,7 @@ import { AnnouncementController } from "@/announcement/announcement.controller";
 import { AnnouncementService } from "@/announcement/announcement.service";
 import { ConfigService } from "@nestjs/config";
 import { getRepositoryToken } from "@nestjs/typeorm";
-import { Announcement } from "@zipath/db";
+import { Announcement, SubscriptionCriteria } from "@zipath/db";
 
 const mockAnnouncements = [
   {
@@ -40,6 +40,13 @@ const mockAnnouncementRepo = {
   save: jest.fn(),
 };
 
+const mockCriteriaRepo = {
+  createQueryBuilder: jest.fn().mockReturnValue({
+    where: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue([]),
+  }),
+};
+
 const mockConfigService = {
   get: jest.fn().mockReturnValue("test-api-key"),
 };
@@ -53,6 +60,7 @@ describe("AnnouncementController (e2e)", () => {
       providers: [
         AnnouncementService,
         { provide: getRepositoryToken(Announcement), useValue: mockAnnouncementRepo },
+        { provide: getRepositoryToken(SubscriptionCriteria), useValue: mockCriteriaRepo },
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();

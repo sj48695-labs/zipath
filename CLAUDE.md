@@ -61,6 +61,16 @@ zipath/ (모노레포)
     └── config/           ← 공통 설정
 ```
 
+## 프로젝트 설정 (글로벌 스킬 참조용)
+
+- **메인 브랜치**: `develop`
+- **테스트 명령어**: `npm test -w @zipath/api`
+- **E2E 테스트**: `npm run test:e2e -w @zipath/api`
+- **린트**: `npx turbo lint`
+- **빌드**: `npx turbo build`
+- **VCS**: GitHub (`gh`)
+- **커밋 형식**: `<type>(<scope>): <subject>` (한글)
+
 ## 코딩 규칙
 
 - TypeScript strict mode
@@ -96,3 +106,99 @@ zipath/ (모노레포)
 - 기본 기능 무료
 - 계약서 분석 등 프리미엄 기능 유료 (건당 990원~)
 - 광고 수익
+
+## 개발 워크플로우
+
+### 브랜치 전략
+
+```
+main          ← 프로덕션 (직접 push 금지, develop에서만 PR)
+develop       ← 기본 브랜치 (PR 기본 타겟, 직접 push 금지)
+feat/*        ← 새 기능
+fix/*         ← 버그 수정
+chore/*       ← 빌드/설정/의존성
+docs/*        ← 문서만 변경
+refactor/*    ← 기능 변경 없는 리팩토링
+```
+
+PR 흐름: `feat/*` → **`develop`** → `main` (릴리즈)
+
+> **기본 브랜치는 `develop`입니다.** 모든 피처/픽스 브랜치는 `develop`을 타겟으로 PR을 생성하세요.
+
+### 커밋 컨벤션 (Conventional Commits)
+
+```
+<type>(<scope>): #<N> <subject>
+
+type: feat | fix | chore | docs | refactor | test | style
+scope: web | api | db | ui | types | config (선택)
+#<N>: 작업 이슈 번호 (필수, 단 이슈와 무관한 잡일은 생략 가능)
+subject: 현재형, 소문자, 마침표 없음
+```
+
+예시:
+- `feat(api): #45 청약 자격 시뮬레이션 API 구현`
+- `fix(web): #88 실거래가 조회 오류 수정`
+- `refactor(web): #61 [P1] 공고 상세 페이지 분리` ([P<M>]는 plan phase 표기)
+- `chore: turbo 캐시 설정 추가` (이슈 무관 잡일은 #<N> 생략)
+
+### 로컬 개발 명령어
+
+```bash
+# 전체 개발 서버 시작
+npm run dev
+
+# 린트 (전체)
+npx turbo lint
+
+# 빌드 (전체)
+npx turbo build
+
+# 백엔드 유닛 테스트
+npm test -w @zipath/api
+
+# 백엔드 E2E 테스트 (로컬 DB 필요)
+npm run test:e2e -w @zipath/api
+
+# DB 컨테이너 시작
+npm run db:up
+```
+
+### PR 규칙
+
+- PR 기본 타겟: **`develop`** (feature/fix 브랜치 → develop)
+- 제목: 커밋 컨벤션 형식 사용
+- CI (lint + build + test) 통과 필수
+- `auto-merge` 라벨이 **있으면**: CI 통과 시 자동 squash merge
+- `auto-merge` 라벨이 **없으면**: CI만 실행, 머지는 수동 (리뷰 대기)
+- 라벨을 붙이거나 떼서 자동 머지를 중간에 제어 가능
+
+### AI 워크플로우 (글로벌 스킬)
+
+```
+/prep <이슈> → /plan → /code → /commit-mr → /reply
+```
+
+| 스킬 | 설명 |
+|------|------|
+| `/prep <이슈번호>` | 브랜치 생성 + Draft PR + worktree 전환 |
+| `/plan` | Phase별 구현 계획 작성 → `plans/`에 저장 |
+| `/code` | Phase 순회 구현 (TDD + /simplify + 자동 커밋 분리) |
+| `/commit-mr` | fixup/rebase 정리 + push + PR 마무리 |
+| `/reply` | PR에 플랜 댓글 게시 + 플랜 파일 정리 |
+| `/daily-report` | 일일 업무 리포트 |
+
+### CI/CD 파이프라인
+
+```
+이슈 → /prep → /plan → /code → /commit-mr → PR(→ develop) → CI → [auto-merge 라벨?] → 머지
+                                                                          ↓ 없으면
+                                                                     리뷰 대기 (수동 머지)
+```
+
+| 단계 | 트리거 | 내용 |
+|------|--------|------|
+| CI | PR to develop/main, push to develop | lint → build → unit test → E2E test |
+| Auto Merge | CI 통과 + `auto-merge` 라벨 | squash merge into develop |
+| Deploy Web | push to main (Vercel) | Vercel 자동 배포 |
+| Deploy API | push to main (Render) | Render 자동 배포 |

@@ -1,0 +1,5 @@
+# gitignore 파일 중 worktree에 복사할 대상
+# (wt step copy-ignored가 이 목록을 참조)
+
+# DevLoop 설정
+.devloop

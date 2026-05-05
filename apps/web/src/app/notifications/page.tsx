@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface NotificationPreference {
   id: number;
@@ -73,10 +74,25 @@ const SAMPLE_KEYWORDS = [
   "행복주택",
 ];
 
-// MVP: 임시 userId (추후 인증 시스템 연동)
-const TEMP_USER_ID = 1;
+function PageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b">
+        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
+          <Link href="/" className="text-xl font-bold text-primary">
+            Zipath
+          </Link>
+        </div>
+      </header>
+      <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
+        {children}
+      </main>
+    </div>
+  );
+}
 
 export default function NotificationsPage() {
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [activeTab, setActiveTab] = useState<"preferences" | "history">("preferences");
 
   // Preference state
@@ -102,7 +118,8 @@ export default function NotificationsPage() {
     setPrefError(null);
     try {
       const data = await fetchApi<NotificationPreference | null>(
-        `/notifications/preferences/${TEMP_USER_ID}`,
+        `/notifications/preferences`,
+        { auth: true },
       );
       if (data) {
         setPreference(data);
@@ -123,7 +140,8 @@ export default function NotificationsPage() {
     setNotifError(null);
     try {
       const data = await fetchApi<NotificationListResponse>(
-        `/notifications/${TEMP_USER_ID}?page=${page}&limit=20`,
+        `/notifications?page=${page}&limit=20`,
+        { auth: true },
       );
       setNotifications(data.notifications);
       setNotifTotal(data.total);
@@ -135,14 +153,16 @@ export default function NotificationsPage() {
   }, []);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     fetchPreference();
-  }, [fetchPreference]);
+  }, [isAuthenticated, fetchPreference]);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     if (activeTab === "history") {
       fetchNotifications(notifPage);
     }
-  }, [activeTab, notifPage, fetchNotifications]);
+  }, [isAuthenticated, activeTab, notifPage, fetchNotifications]);
 
   const toggleRegion = (region: string) => {
     setSelectedRegions((prev) =>
@@ -166,7 +186,6 @@ export default function NotificationsPage() {
     setPrefSuccess(null);
     try {
       const body = {
-        userId: TEMP_USER_ID,
         regions: selectedRegions,
         priceThresholdMin: priceMin ? parseInt(priceMin, 10) : null,
         priceThresholdMax: priceMax ? parseInt(priceMax, 10) : null,
@@ -176,13 +195,13 @@ export default function NotificationsPage() {
       if (preference) {
         const updated = await fetchApi<NotificationPreference>(
           `/notifications/preferences/${preference.id}`,
-          { method: "PUT", body: JSON.stringify(body) },
+          { method: "PUT", body: JSON.stringify(body), auth: true },
         );
         setPreference(updated);
       } else {
         const created = await fetchApi<NotificationPreference>(
           `/notifications/preferences`,
-          { method: "POST", body: JSON.stringify(body) },
+          { method: "POST", body: JSON.stringify(body), auth: true },
         );
         setPreference(created);
       }
@@ -199,10 +218,7 @@ export default function NotificationsPage() {
     try {
       await fetchApi<NotificationItem>(
         `/notifications/${notifId}/read`,
-        {
-          method: "PUT",
-          body: JSON.stringify({ userId: TEMP_USER_ID }),
-        },
+        { method: "PUT", auth: true },
       );
       setNotifications((prev) =>
         prev.map((n) =>
@@ -217,8 +233,8 @@ export default function NotificationsPage() {
   const markAllAsRead = async () => {
     try {
       await fetchApi<unknown>(
-        `/notifications/read-all/${TEMP_USER_ID}`,
-        { method: "PUT" },
+        `/notifications/read-all`,
+        { method: "PUT", auth: true },
       );
       setNotifications((prev) =>
         prev.map((n) => ({ ...n, readAt: n.readAt ?? new Date().toISOString() })),
@@ -238,6 +254,31 @@ export default function NotificationsPage() {
       minute: "2-digit",
     });
   };
+
+  if (authLoading) {
+    return (
+      <PageShell>
+        <p className="text-muted-foreground">로딩 중...</p>
+      </PageShell>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return (
+      <PageShell>
+        <h1 className="mb-4 text-2xl font-bold">로그인이 필요합니다</h1>
+        <p className="mb-6 text-sm text-muted-foreground">
+          맞춤 알림 설정을 보려면 먼저 로그인해주세요.
+        </p>
+        <Link
+          href="/login"
+          className="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          로그인하기
+        </Link>
+      </PageShell>
+    );
+  }
 
   const totalPages = Math.ceil(notifTotal / 20);
 

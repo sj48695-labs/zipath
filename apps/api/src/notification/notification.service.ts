@@ -4,7 +4,6 @@ import { IsNull, Repository } from "typeorm";
 import { NotificationPreference, Notification } from "@zipath/db";
 
 interface CreatePreferenceDto {
-  userId: number;
   regions: string[];
   priceThresholdMin: number | null;
   priceThresholdMax: number | null;
@@ -37,17 +36,19 @@ export class NotificationService {
   }
 
   async createPreference(
+    userId: number,
     dto: CreatePreferenceDto,
   ): Promise<NotificationPreference> {
     const existing = await this.preferenceRepo.findOne({
-      where: { userId: dto.userId },
+      where: { userId },
     });
     if (existing) {
-      return this.updatePreference(existing.id, dto);
+      Object.assign(existing, dto);
+      return this.preferenceRepo.save(existing);
     }
 
     const preference = this.preferenceRepo.create({
-      userId: dto.userId,
+      userId,
       regions: dto.regions,
       priceThresholdMin: dto.priceThresholdMin,
       priceThresholdMax: dto.priceThresholdMax,
@@ -58,9 +59,12 @@ export class NotificationService {
 
   async updatePreference(
     id: number,
+    userId: number,
     dto: UpdatePreferenceDto,
   ): Promise<NotificationPreference> {
-    const preference = await this.preferenceRepo.findOne({ where: { id } });
+    const preference = await this.preferenceRepo.findOne({
+      where: { id, userId },
+    });
     if (!preference) {
       throw new NotFoundException(
         `알림 설정을 찾을 수 없습니다. (id: ${id})`,
@@ -79,8 +83,8 @@ export class NotificationService {
     return this.preferenceRepo.save(preference);
   }
 
-  async deletePreference(id: number): Promise<void> {
-    const result = await this.preferenceRepo.delete(id);
+  async deletePreference(id: number, userId: number): Promise<void> {
+    const result = await this.preferenceRepo.delete({ id, userId });
     if (result.affected === 0) {
       throw new NotFoundException(
         `알림 설정을 찾을 수 없습니다. (id: ${id})`,

@@ -11,18 +11,38 @@ export class ApiError extends Error {
   }
 }
 
+interface FetchApiOptions extends Omit<RequestInit, "headers"> {
+  /** 토큰이 없으면 ApiError(401)을 throw한다. */
+  auth?: boolean;
+  headers?: Record<string, string>;
+}
+
 export async function fetchApi<T>(
   path: string,
-  options?: RequestInit,
+  options?: FetchApiOptions,
 ): Promise<T> {
   const url = `${API_BASE}${path}`;
+  const { auth, headers, ...rest } = options ?? {};
+
+  const finalHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...headers,
+  };
+
+  if (auth) {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("accessToken")
+        : null;
+    if (!token) {
+      throw new ApiError("로그인이 필요합니다.", 401);
+    }
+    finalHeaders.Authorization = `Bearer ${token}`;
+  }
 
   const res = await fetch(url, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      ...options?.headers,
-    },
+    ...rest,
+    headers: finalHeaders,
   });
 
   if (!res.ok) {

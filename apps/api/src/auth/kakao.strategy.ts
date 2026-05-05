@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
+import { OAuthLoginInput } from "@zipath/types";
 import { Strategy } from "passport-kakao";
 
 interface KakaoAccount {
@@ -25,15 +26,6 @@ interface KakaoProfile {
   _json: KakaoProfileJson;
 }
 
-interface KakaoOAuthUser {
-  provider: string;
-  providerId: string;
-  email: string | null;
-  nickname: string | null;
-}
-
-type DoneCallback = (error: Error | null, user?: KakaoOAuthUser) => void;
-
 @Injectable()
 export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
   constructor(config: ConfigService) {
@@ -48,9 +40,9 @@ export class KakaoStrategy extends PassportStrategy(Strategy, "kakao") {
     _accessToken: string,
     _refreshToken: string,
     profile: KakaoProfile,
-    done: DoneCallback,
+    done: (error: Error | null, user?: OAuthLoginInput) => void,
   ): void {
-    const user: KakaoOAuthUser = {
+    const user: OAuthLoginInput = {
       provider: "kakao",
       providerId: String(profile.id),
       email: profile._json.kakao_account?.email ?? null,

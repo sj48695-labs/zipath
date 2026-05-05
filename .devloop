@@ -1,0 +1,28 @@
+# zipath — DevLoop 설정
+# Turborepo 모노레포 (GitHub)
+
+# ─── 플랫폼 ──────────────────────────────────────────────────────────────
+PLATFORM=github
+
+# ─── 모델 설정 ──────────────────────────────────────────────────────────
+MODEL_PM=opus
+MODEL_IMPL=sonnet
+
+# ─── 토큰 예산 ──────────────────────────────────────────────────────────
+TOKEN_BUDGET=0
+TOKEN_WINDOW_MINUTES=300
+
+# ─── 커밋 형식 ──────────────────────────────────────────────────────────
+COMMIT_FORMAT=feat: #{iid} {title}
+
+# ─── 프로젝트별 프롬프트 ────────────────────────────────────────────────
+PHASE_PROMPT=Phase 분리 시 각 Task에 테스트 시나리오를 포함하세요. 공공API 연동 Task는 API 키/엔드포인트를 명시하세요.
+IMPL_PROMPT=TDD로 구현하세요. 테스트: npm test -w @zipath/api. 린트: npx turbo lint. 빌드: npx turbo build. "참고용이며 법적 효력 없음" 고지를 UI에 포함하세요.
+
+# ─── 라벨 매핑 ──────────────────────────────────────────────────────────
+LABEL_ERROR=error
+LABEL_URGENT=urgent
+LABEL_BUG=bug
+LABEL_TASK=task
+LABEL_PHASE=phase
+PLAN_HASH=c567436726f2879eb640a77690445f30

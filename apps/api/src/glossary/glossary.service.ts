@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import type { GlossaryTerm, GlossaryCategory } from "@zipath/types";
+import type { GlossaryTerm } from "@zipath/types";
 
 const GLOSSARY_DATA: GlossaryTerm[] = [
   // 등기

@@ -1,0 +1,28 @@
+[05:51:54] code #72 시작 (model: sonnet)
+Issue #72 구현이 완료되었습니다.
+
+**변경 내용 요약:**
+
+| 커밋 | 내용 |
+|------|------|
+| `62d67c0` | `notification.controller.ts` — 클래스 레벨 `@UseGuards(JwtAuthGuard)`, `:userId` 경로 제거 → `req.user.id` 사용 |
+| `26b3501` | `notifications/page.tsx` — `TEMP_USER_ID` 제거, `useAuth()` 훅 연동, 비로그인 안내 화면 추가 |
+| `595f500` | `notification.controller.spec.ts` — `req.user.id` 전달 검증 테스트 9개 신규 작성 |
+
+**검증 결과:**
+- `npm test -w @zipath/api`: 92 tests 통과
+- `turbo lint` / `turbo build`: 통과
+
+다음 단계로 `/commit-mr`를 실행하면 push 및 PR 마무리가 진행됩니다.
+구현이 완료되었습니다.
+
+**변경 요약:**
+- `notification.controller.ts`: 클래스 레벨 `@UseGuards(JwtAuthGuard)` 적용, `:userId` 경로 파라미터 제거 → `req.user.id`로 추출
+- `notification.service.ts`: `updatePreference`/`deletePreference` 등 `where: { id, userId }` 소유권 검증 강화
+- `apps/web/src/app/notifications/page.tsx`: `TEMP_USER_ID` 제거, `useAuth()` 훅 연동, 비로그인 안내 화면 추가
+- `apps/web/src/lib/api.ts`: `auth?: boolean` 옵션 추가 — Bearer 토큰 자동 첨부
+- `test/notification.controller.spec.ts` 신규: 9개 케이스 모두 통과
+
+**검증 결과:** 92 tests passed / lint 5/5 / build 3/3
+
+다음은 `/commit-mr`로 push + PR 마무리하면 됩니다.

@@ -1,0 +1,2 @@
+#74: notification-scheduler.service.ts 신규 생성. @Cron EVERY_5_MINUTES으로 실거래가·공고 변동 감지. ScheduleModule은 app.module.ts에 등록됨. 중복 알림은 (userId, type, referenceId) 조합 체크. 첫 실행은 기준값 저장만, 알림 미생성. referenceId 컬럼 추가(#75)가 선행 필요.
+#75: 잔여 2건만 — (1) notification.entity.ts에 referenceId varchar nullable 컬럼 추가, (2) Header.tsx에 /notifications/unread-count 30초 폴링 + 뱃지 렌더링(99+ 처리, 0이면 숨김). Controller/Service는 이미 구현 완료.

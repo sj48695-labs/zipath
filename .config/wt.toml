@@ -1,0 +1,16 @@
+# Worktrunk 프로젝트 설정
+
+[post-create]
+# .worktreeinclude에 명시된 gitignore 파일 복사 (.devloop 등)
+copy-ignored = "wt step copy-ignored"
+# 의존성 설치
+deps = "npm ci"
+
+[post-switch]
+# IDE 새 창으로 열기
+ide = "agy {{ worktree_path }}"
+
+[pre-merge]
+lint = "npx turbo lint"
+test = "npm test -w @zipath/api"
+build = "npx turbo build"

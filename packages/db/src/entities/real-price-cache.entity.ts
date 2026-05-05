@@ -12,13 +12,13 @@ export class RealPriceCache {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column()
+  @Column({ type: 'varchar' })
   regionCode!: string;
 
-  @Column()
+  @Column({ type: 'varchar' })
   dealType!: string; // 매매, 전세, 월세
 
-  @Column()
+  @Column({ type: 'varchar' })
   yearMonth!: string;
 
   @Column({ type: "jsonb" })
