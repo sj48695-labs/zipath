@@ -128,17 +128,19 @@ PR 흐름: `feat/*` → **`develop`** → `main` (릴리즈)
 ### 커밋 컨벤션 (Conventional Commits)
 
 ```
-<type>(<scope>): <subject>
+<type>(<scope>): #<N> <subject>
 
 type: feat | fix | chore | docs | refactor | test | style
 scope: web | api | db | ui | types | config (선택)
+#<N>: 작업 이슈 번호 (필수, 단 이슈와 무관한 잡일은 생략 가능)
 subject: 현재형, 소문자, 마침표 없음
 ```
 
 예시:
-- `feat(api): 청약 자격 시뮬레이션 API 구현`
-- `fix(web): 실거래가 조회 오류 수정`
-- `chore: turbo 캐시 설정 추가`
+- `feat(api): #45 청약 자격 시뮬레이션 API 구현`
+- `fix(web): #88 실거래가 조회 오류 수정`
+- `refactor(web): #61 [P1] 공고 상세 페이지 분리` ([P<M>]는 plan phase 표기)
+- `chore: turbo 캐시 설정 추가` (이슈 무관 잡일은 #<N> 생략)
 
 ### 로컬 개발 명령어
 
