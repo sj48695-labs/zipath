@@ -12,6 +12,7 @@ import {
   ParseIntPipe,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { AuthRequest } from "../common/interfaces/auth-request.interface";
 import { NotificationService } from "./notification.service";
 
 interface CreatePreferenceBody {
@@ -28,8 +29,6 @@ interface UpdatePreferenceBody {
   announcementKeywords?: string[];
   isActive?: boolean;
 }
-
-type AuthRequest = { user: { id: number } };
 
 @UseGuards(JwtAuthGuard)
 @Controller("notifications")
