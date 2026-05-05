@@ -20,8 +20,8 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  const port = process.env.PORT || 4000;
-  await app.listen(port);
-  Logger.log(`Server running on port ${port}`, "Bootstrap");
+  const port = Number(process.env.PORT) || 4000;
+  await app.listen(port, "0.0.0.0");
+  Logger.log(`Server running on 0.0.0.0:${port}`, "Bootstrap");
 }
 bootstrap();
