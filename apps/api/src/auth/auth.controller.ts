@@ -17,6 +17,7 @@ import { KakaoAuthGuard } from "./kakao-auth.guard";
 import { NaverAuthGuard } from "./naver-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
 import { Public } from "./public.decorator";
+import { AuthRequest } from "../common/interfaces/auth-request.interface";
 
 interface OAuthUser {
   provider: string;
@@ -153,7 +154,7 @@ export class AuthController {
   /** 내 프로필 */
   @UseGuards(JwtAuthGuard)
   @Get("profile")
-  async getProfile(@Request() req: { user: { id: number } }) {
+  async getProfile(@Request() req: AuthRequest) {
     return this.authService.getProfile(req.user.id);
   }
 }
