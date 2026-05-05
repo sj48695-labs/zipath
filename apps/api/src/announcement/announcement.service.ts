@@ -105,15 +105,30 @@ export class AnnouncementService {
       });
 
       const res = await fetch(`${this.apiBase}?${params.toString()}`);
+      const text = await res.text();
+
       if (!res.ok) {
-        const body = await res.text().catch(() => "");
         this.logger.error(
-          `API 응답 오류: ${res.status} | url=${this.apiBase} | body=${body.slice(0, 300)}`,
+          `API 응답 오류: ${res.status} | url=${this.apiBase} | body=${text.slice(0, 300)}`,
         );
         return;
       }
 
-      const data = await res.json();
+      // data.go.kr 는 에러 시 XML 반환 가능 — `<returnAuthMsg>` 등 추출 로깅
+      if (text.trimStart().startsWith("<")) {
+        const reason =
+          /<returnReasonCode>([^<]+)<\/returnReasonCode>/.exec(text)?.[1] ??
+          "";
+        const authMsg =
+          /<returnAuthMsg>([^<]+)<\/returnAuthMsg>/.exec(text)?.[1] ?? "";
+        const errMsg = /<errMsg>([^<]+)<\/errMsg>/.exec(text)?.[1] ?? "";
+        this.logger.error(
+          `data.go.kr XML error | code=${reason} | auth=${authMsg} | err=${errMsg} | url=${this.apiBase}`,
+        );
+        return;
+      }
+
+      const data = JSON.parse(text);
       const items: ApiAnnouncement[] =
         data?.response?.body?.items?.item ?? [];
 

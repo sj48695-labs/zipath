@@ -176,15 +176,31 @@ export class RealPriceService {
     try {
       const res = await fetch(`${this.apiBase}?${params.toString()}`);
 
+      const text = await res.text();
+
       if (!res.ok) {
-        const body = await res.text().catch(() => "");
         this.logger.error(
-          `API responded with status ${res.status} | url=${this.apiBase} | body=${body.slice(0, 300)}`,
+          `API responded with status ${res.status} | url=${this.apiBase} | body=${text.slice(0, 300)}`,
         );
         return [];
       }
 
-      const data = await res.json();
+      // data.go.kr 는 정상 응답엔 JSON, 에러엔 XML 을 반환할 수 있음.
+      // XML 이면 `<returnAuthMsg>` / `<returnReasonCode>` 추출해 로깅.
+      if (text.trimStart().startsWith("<")) {
+        const reason =
+          /<returnReasonCode>([^<]+)<\/returnReasonCode>/.exec(text)?.[1] ??
+          "";
+        const authMsg =
+          /<returnAuthMsg>([^<]+)<\/returnAuthMsg>/.exec(text)?.[1] ?? "";
+        const errMsg = /<errMsg>([^<]+)<\/errMsg>/.exec(text)?.[1] ?? "";
+        this.logger.error(
+          `data.go.kr XML error | code=${reason} | auth=${authMsg} | err=${errMsg} | url=${this.apiBase}`,
+        );
+        return [];
+      }
+
+      const data = JSON.parse(text);
       const items =
         data?.response?.body?.items?.item ??
         data?.body?.items?.item ??
