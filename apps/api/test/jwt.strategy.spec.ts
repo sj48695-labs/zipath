@@ -4,13 +4,6 @@ import { JwtStrategy } from "../src/auth/jwt.strategy";
 import { AuthService } from "../src/auth/auth.service";
 import { User } from "@zipath/db";
 
-/**
- * #62 / #72 — JwtStrategy ↔ AuthRequest 타입 호환 테스트
- *
- * NotificationController 등에서 사용하는 AuthRequest = { user: { id: number } }와
- * JwtStrategy.validate()가 반환하는 객체가 호환되는지 검증한다.
- */
-
 function makeUser(overrides: Partial<User> = {}): User {
   return {
     id: 1,
@@ -64,7 +57,6 @@ describe("JwtStrategy", () => {
 
       const result = await strategy.validate({ sub: 42, email: "u@z.com" });
 
-      // AuthRequest = { user: { id: number } } 호환성 — id가 number 타입으로 존재
       expect(result).toBeDefined();
       expect(typeof result.id).toBe("number");
       expect(result.id).toBe(42);

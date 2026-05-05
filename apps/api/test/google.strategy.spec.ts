@@ -1,27 +1,8 @@
 import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { GoogleStrategy } from "../src/auth/google.strategy";
+import { OAuthLoginInput } from "@zipath/types";
+import { GoogleProfile, GoogleStrategy } from "../src/auth/google.strategy";
 
-interface GoogleProfile {
-  id: string;
-  displayName: string;
-  emails?: Array<{ value: string; verified: boolean }>;
-  photos?: Array<{ value: string }>;
-}
-
-interface GoogleOAuthUser {
-  provider: string;
-  providerId: string;
-  email: string | null;
-  nickname: string | null;
-}
-
-/**
- * Helper: ConfigService 모킹
- *
- * GoogleStrategy 생성자는 ConfigService에서 OAuth 환경변수를 읽는다.
- * 정상 케이스용 기본값을 채우고, 누락 시나리오는 overrides로 undefined 지정.
- */
 function makeConfig(overrides: Record<string, string | undefined> = {}): ConfigService {
   const values: Record<string, string | undefined> = {
     GOOGLE_CLIENT_ID: "test-client-id",
@@ -49,13 +30,11 @@ describe("GoogleStrategy", () => {
 
   describe("constructor", () => {
     it("env 모두 설정 시 경고 로그 미출력", () => {
-      // beforeEach에서 정상 env로 생성됨 → warn 호출 없어야 함
       expect(warnSpy).not.toHaveBeenCalled();
     });
 
     it("GOOGLE_CLIENT_ID 누락 시 경고 로그 출력", () => {
       warnSpy.mockClear();
-      // env 미설정 시 super는 빈 문자열을 받지만 throw하지 않음 (실제 OAuth 호출 시점에만 실패)
       try {
         new GoogleStrategy(makeConfig({ GOOGLE_CLIENT_ID: undefined }));
       } catch {
@@ -71,7 +50,7 @@ describe("GoogleStrategy", () => {
       try {
         new GoogleStrategy(makeConfig({ GOOGLE_CLIENT_SECRET: undefined }));
       } catch {
-        // 동일
+        // passport 라이브러리가 throw하더라도 warn은 super 호출 전에 찍힘
       }
       expect(warnSpy).toHaveBeenCalled();
     });
@@ -89,7 +68,7 @@ describe("GoogleStrategy", () => {
       strategy.validate("access", "refresh", profile, done);
 
       expect(done).toHaveBeenCalledTimes(1);
-      const [err, user] = done.mock.calls[0] as [unknown, GoogleOAuthUser];
+      const [err, user] = done.mock.calls[0] as [unknown, OAuthLoginInput];
       expect(err).toBeNull();
       expect(user).toEqual({
         provider: "google",
@@ -108,7 +87,7 @@ describe("GoogleStrategy", () => {
 
       strategy.validate("a", "r", profile, done);
 
-      const [, user] = done.mock.calls[0] as [unknown, GoogleOAuthUser];
+      const [, user] = done.mock.calls[0] as [unknown, OAuthLoginInput];
       expect(user.email).toBeNull();
       expect(user.nickname).toBe("닉네임");
     });
@@ -123,7 +102,7 @@ describe("GoogleStrategy", () => {
 
       strategy.validate("a", "r", profile, done);
 
-      const [, user] = done.mock.calls[0] as [unknown, GoogleOAuthUser];
+      const [, user] = done.mock.calls[0] as [unknown, OAuthLoginInput];
       expect(user.email).toBeNull();
     });
 
@@ -136,7 +115,7 @@ describe("GoogleStrategy", () => {
 
       strategy.validate("a", "r", profile, done);
 
-      const [, user] = done.mock.calls[0] as [unknown, GoogleOAuthUser];
+      const [, user] = done.mock.calls[0] as [unknown, OAuthLoginInput];
       expect(user.nickname).toBeNull();
       expect(user.email).toBe("x@y.com");
     });
@@ -151,7 +130,7 @@ describe("GoogleStrategy", () => {
 
       strategy.validate("a", "r", profile, done);
 
-      const [, user] = done.mock.calls[0] as [unknown, GoogleOAuthUser];
+      const [, user] = done.mock.calls[0] as [unknown, OAuthLoginInput];
       expect(user.provider).toBe("google");
       expect(user.providerId).toBe("abc-xyz-999");
     });
