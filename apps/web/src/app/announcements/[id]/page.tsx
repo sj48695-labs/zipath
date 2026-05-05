@@ -172,6 +172,14 @@ export default function AnnouncementDetailPage() {
 
         {!loading && !error && announcement && (
           <>
+            {!isActive(announcement.endDate) && (
+              <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
+                <p className="text-sm font-medium text-yellow-800">
+                  이 공고는 마감되었습니다. 자격 확인은 참고용으로만 사용하세요.
+                </p>
+              </div>
+            )}
+
             {/* 공고 상세 정보 */}
             <div className="mb-8 rounded-lg border bg-card p-6">
               <div className="mb-4 flex flex-wrap items-center gap-2">
@@ -236,6 +244,11 @@ export default function AnnouncementDetailPage() {
                   </div>
                 )}
               </div>
+
+              <p className="mt-4 text-xs text-muted-foreground">
+                * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 내용은
+                청약홈 원문을 확인해주세요.
+              </p>
             </div>
 
             {/* 원본 데이터 */}
@@ -278,6 +291,11 @@ export default function AnnouncementDetailPage() {
                 onChange={setFormData}
                 onSubmit={handleMatchSubmit}
                 loading={matchLoading}
+                submitLabel={
+                  isActive(announcement.endDate)
+                    ? "자격 확인하기"
+                    : "참고용 자격 확인"
+                }
               />
 
               <MatchResultPanel result={matchResult} error={matchError} />

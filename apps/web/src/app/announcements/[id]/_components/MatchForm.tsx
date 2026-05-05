@@ -46,7 +46,7 @@ export default function MatchForm({
         </div>
         <div>
           <label htmlFor="income" className="mb-1 block text-sm font-medium">
-            월 소득 (만원)
+            연 소득 (만원)
           </label>
           <input
             id="income"
@@ -54,11 +54,14 @@ export default function MatchForm({
             type="number"
             min="0"
             required
-            placeholder="예: 3500"
+            placeholder="예: 5000"
             value={value.income}
             onChange={handleInputChange}
             className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
+          <p className="mt-1 text-xs text-muted-foreground">
+            세전 가구 합산 연소득
+          </p>
         </div>
         <div>
           <label
@@ -78,6 +81,9 @@ export default function MatchForm({
             onChange={handleInputChange}
             className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
+          <p className="mt-1 text-xs text-muted-foreground">
+            세대 구성원 전원 기준
+          </p>
         </div>
         <div>
           <label
@@ -97,6 +103,9 @@ export default function MatchForm({
             onChange={handleInputChange}
             className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           />
+          <p className="mt-1 text-xs text-muted-foreground">
+            본인/배우자 제외, 미성년 자녀 등
+          </p>
         </div>
         <div>
           <label htmlFor="region" className="mb-1 block text-sm font-medium">
