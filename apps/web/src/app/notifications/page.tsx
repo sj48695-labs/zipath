@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -73,6 +73,23 @@ const SAMPLE_KEYWORDS = [
   "국민임대",
   "행복주택",
 ];
+
+function PageShell({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen">
+      <header className="border-b">
+        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
+          <Link href="/" className="text-xl font-bold text-primary">
+            Zipath
+          </Link>
+        </div>
+      </header>
+      <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
+        {children}
+      </main>
+    </div>
+  );
+}
 
 export default function NotificationsPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth();
@@ -240,44 +257,26 @@ export default function NotificationsPage() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen">
-        <header className="border-b">
-          <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
-            <Link href="/" className="text-xl font-bold text-primary">
-              Zipath
-            </Link>
-          </div>
-        </header>
-        <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
-          <p className="text-muted-foreground">로딩 중...</p>
-        </main>
-      </div>
+      <PageShell>
+        <p className="text-muted-foreground">로딩 중...</p>
+      </PageShell>
     );
   }
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen">
-        <header className="border-b">
-          <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
-            <Link href="/" className="text-xl font-bold text-primary">
-              Zipath
-            </Link>
-          </div>
-        </header>
-        <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
-          <h1 className="mb-4 text-2xl font-bold">로그인이 필요합니다</h1>
-          <p className="mb-6 text-sm text-muted-foreground">
-            맞춤 알림 설정을 보려면 먼저 로그인해주세요.
-          </p>
-          <Link
-            href="/login"
-            className="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
-          >
-            로그인하기
-          </Link>
-        </main>
-      </div>
+      <PageShell>
+        <h1 className="mb-4 text-2xl font-bold">로그인이 필요합니다</h1>
+        <p className="mb-6 text-sm text-muted-foreground">
+          맞춤 알림 설정을 보려면 먼저 로그인해주세요.
+        </p>
+        <Link
+          href="/login"
+          className="rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          로그인하기
+        </Link>
+      </PageShell>
     );
   }
 
