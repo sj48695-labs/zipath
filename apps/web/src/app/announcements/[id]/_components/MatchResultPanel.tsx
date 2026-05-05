@@ -18,7 +18,11 @@ export default function MatchResultPanel({
   return (
     <>
       {error && (
-        <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
+        <div
+          role="alert"
+          aria-live="polite"
+          className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4"
+        >
           <p className="text-sm font-medium text-red-800">{error}</p>
         </div>
       )}
@@ -50,6 +54,7 @@ export default function MatchResultPanel({
                 className="flex items-start gap-3 rounded-lg border p-4"
               >
                 <span
+                  aria-label={item.eligible ? "자격 충족" : "자격 미충족"}
                   className={`mt-0.5 shrink-0 text-lg ${
                     item.eligible ? "text-green-600" : "text-red-500"
                   }`}

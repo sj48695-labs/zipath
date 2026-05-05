@@ -153,19 +153,25 @@ export default function AnnouncementDetailPage() {
       <main className="mx-auto max-w-5xl px-4 py-8">
         <Link
           href="/announcements"
+          aria-label="공고 목록 페이지로 돌아가기"
           className="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
         >
           &larr; 공고 목록으로
         </Link>
 
         {loading && (
-          <div className="flex justify-center py-20">
+          <div role="status" className="flex justify-center py-20">
             <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+            <span className="sr-only">로딩 중</span>
           </div>
         )}
 
         {error && (
-          <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="rounded-lg border border-red-200 bg-red-50 p-6 text-center"
+          >
             <p className="font-medium text-red-800">{error}</p>
           </div>
         )}
@@ -254,9 +260,11 @@ export default function AnnouncementDetailPage() {
             {/* 원본 데이터 */}
             {announcement.rawData &&
               Object.keys(announcement.rawData).length > 0 && (
-                <div className="mb-8 rounded-lg border bg-card p-6">
-                  <h2 className="mb-4 text-lg font-semibold">원본 데이터</h2>
-                  <div className="overflow-x-auto">
+                <details className="mb-8 rounded-lg border bg-card p-6">
+                  <summary className="cursor-pointer text-lg font-semibold">
+                    원문 데이터 보기
+                  </summary>
+                  <div className="mt-4 overflow-x-auto">
                     <table className="w-full text-sm">
                       <tbody>
                         {Object.entries(announcement.rawData).map(
@@ -276,7 +284,7 @@ export default function AnnouncementDetailPage() {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </details>
               )}
 
             {/* 자격 확인 섹션 */}
