@@ -4,41 +4,23 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 
-interface AnnouncementDetail {
-  id: number;
-  title: string;
-  region: string;
-  supplyType: string;
-  startDate: string;
-  endDate: string;
-  detailUrl: string | null;
-  summary: string | null;
-  rawData: Record<string, unknown> | null;
-}
+import MatchForm from "./_components/MatchForm";
+import MatchResultPanel from "./_components/MatchResultPanel";
+import type {
+  AnnouncementDetail,
+  MatchFormData,
+  MatchResult,
+} from "./_components/types";
 
-interface MatchCriterionResult {
-  criterion: string;
-  eligible: boolean;
-  reason: string;
-}
-
-interface MatchResult {
-  announcementId: number;
-  announcementTitle: string;
-  overallEligible: boolean;
-  results: MatchCriterionResult[];
-  message: string;
-}
-
-interface MatchFormData {
-  age: string;
-  income: string;
-  homelessMonths: string;
-  dependents: string;
-  region: string;
-  isMarried: boolean;
-  isFirstHome: boolean;
-}
+const INITIAL_FORM: MatchFormData = {
+  age: "",
+  income: "",
+  homelessMonths: "",
+  dependents: "",
+  region: "",
+  isMarried: false,
+  isFirstHome: false,
+};
 
 export default function AnnouncementDetailPage() {
   const params = useParams();
@@ -50,15 +32,7 @@ export default function AnnouncementDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [formData, setFormData] = useState<MatchFormData>({
-    age: "",
-    income: "",
-    homelessMonths: "",
-    dependents: "",
-    region: "",
-    isMarried: false,
-    isFirstHome: false,
-  });
+  const [formData, setFormData] = useState<MatchFormData>(INITIAL_FORM);
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
   const [matchLoading, setMatchLoading] = useState(false);
   const [matchError, setMatchError] = useState<string | null>(null);
@@ -98,11 +72,6 @@ export default function AnnouncementDetailPage() {
 
   function isActive(endDate: string) {
     return new Date(endDate) >= new Date();
-  }
-
-  function handleInputChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
   }
 
   async function handleMatchSubmit(e: React.FormEvent) {
@@ -304,204 +273,14 @@ export default function AnnouncementDetailPage() {
                 나의 정보를 입력하면 이 공고에 지원 가능한지 확인할 수 있습니다.
               </p>
 
-              <form onSubmit={handleMatchSubmit} className="mb-6 space-y-4">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div>
-                    <label
-                      htmlFor="age"
-                      className="mb-1 block text-sm font-medium"
-                    >
-                      나이 (만)
-                    </label>
-                    <input
-                      id="age"
-                      name="age"
-                      type="number"
-                      min="0"
-                      max="150"
-                      required
-                      placeholder="예: 30"
-                      value={formData.age}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="income"
-                      className="mb-1 block text-sm font-medium"
-                    >
-                      월 소득 (만원)
-                    </label>
-                    <input
-                      id="income"
-                      name="income"
-                      type="number"
-                      min="0"
-                      required
-                      placeholder="예: 3500"
-                      value={formData.income}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="homelessMonths"
-                      className="mb-1 block text-sm font-medium"
-                    >
-                      무주택 기간 (개월)
-                    </label>
-                    <input
-                      id="homelessMonths"
-                      name="homelessMonths"
-                      type="number"
-                      min="0"
-                      required
-                      placeholder="예: 36"
-                      value={formData.homelessMonths}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="dependents"
-                      className="mb-1 block text-sm font-medium"
-                    >
-                      부양가족 수{" "}
-                      <span className="text-muted-foreground">(선택)</span>
-                    </label>
-                    <input
-                      id="dependents"
-                      name="dependents"
-                      type="number"
-                      min="0"
-                      placeholder="본인 제외"
-                      value={formData.dependents}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                  <div>
-                    <label
-                      htmlFor="region"
-                      className="mb-1 block text-sm font-medium"
-                    >
-                      거주 지역{" "}
-                      <span className="text-muted-foreground">(선택)</span>
-                    </label>
-                    <input
-                      id="region"
-                      name="region"
-                      type="text"
-                      placeholder="예: 서울"
-                      value={formData.region}
-                      onChange={handleInputChange}
-                      className="w-full rounded-lg border px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-                    />
-                  </div>
-                </div>
+              <MatchForm
+                value={formData}
+                onChange={setFormData}
+                onSubmit={handleMatchSubmit}
+                loading={matchLoading}
+              />
 
-                <div className="flex flex-wrap gap-6">
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={formData.isMarried}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          isMarried: e.target.checked,
-                        }))
-                      }
-                      className="h-4 w-4 rounded border-gray-300"
-                    />
-                    혼인 상태
-                  </label>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={formData.isFirstHome}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          isFirstHome: e.target.checked,
-                        }))
-                      }
-                      className="h-4 w-4 rounded border-gray-300"
-                    />
-                    생애최초 주택 구입
-                  </label>
-                </div>
-
-                <button
-                  type="submit"
-                  disabled={matchLoading}
-                  className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-                >
-                  {matchLoading ? "확인 중..." : "자격 확인하기"}
-                </button>
-              </form>
-
-              {matchError && (
-                <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-4">
-                  <p className="text-sm font-medium text-red-800">
-                    {matchError}
-                  </p>
-                </div>
-              )}
-
-              {matchResult && (
-                <div className="space-y-4">
-                  <div
-                    className={`rounded-lg border p-4 ${
-                      matchResult.overallEligible
-                        ? "border-green-200 bg-green-50"
-                        : "border-yellow-200 bg-yellow-50"
-                    }`}
-                  >
-                    <p
-                      className={`font-semibold ${
-                        matchResult.overallEligible
-                          ? "text-green-800"
-                          : "text-yellow-800"
-                      }`}
-                    >
-                      {matchResult.message}
-                    </p>
-                  </div>
-
-                  <div className="space-y-2">
-                    {matchResult.results.map((result, index) => (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 rounded-lg border p-4"
-                      >
-                        <span
-                          className={`mt-0.5 shrink-0 text-lg ${
-                            result.eligible
-                              ? "text-green-600"
-                              : "text-red-500"
-                          }`}
-                        >
-                          {result.eligible ? "O" : "X"}
-                        </span>
-                        <div>
-                          <p className="font-medium">{result.criterion}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {result.reason}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <p className="text-xs text-muted-foreground">
-                    * 본 결과는 참고용이며 법적 효력이 없습니다. 정확한 자격
-                    여부는 청약홈에서 확인해주세요.
-                  </p>
-                </div>
-              )}
+              <MatchResultPanel result={matchResult} error={matchError} />
             </div>
           </>
         )}
