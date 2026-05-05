@@ -46,7 +46,7 @@ A. **보강 후 close**. 코드는 있지만 (1) `.env.example` 누락, (2) `goo
 
 ### 구현 단계 (Phase)
 
-1. [ ] **Phase 1: GoogleStrategy 단위 테스트 추가**
+1. [x] **Phase 1: GoogleStrategy 단위 테스트 추가**
    - 파일: `apps/api/test/google.strategy.spec.ts` (신규)
    - 구현:
      - `validate()` 호출 시 `done(null, user)` 형태로 OAuth 프로필을 변환하는지 검증
@@ -54,7 +54,7 @@ A. **보강 후 close**. 코드는 있지만 (1) `.env.example` 누락, (2) `goo
      - `provider: "google"`, `providerId: profile.id` 매핑 검증
    - 커밋: `test(api): #62 GoogleStrategy validate 단위 테스트 추가`
 
-2. [ ] **Phase 2: 환경변수 문서화 (.env.example 보강)**
+2. [x] **Phase 2: 환경변수 문서화 (.env.example 보강)**
    - 파일: `.env.example`
    - 구현:
      - `GOOGLE_CALLBACK_URL=http://localhost:4000/auth/google/callback` 주석 라인 추가
@@ -62,7 +62,7 @@ A. **보강 후 close**. 코드는 있지만 (1) `.env.example` 누락, (2) `goo
      - 동일 위치에 `KAKAO_CALLBACK_URL`, `NAVER_CALLBACK_URL`도 함께 명시 (일관성)
    - 커밋: `chore(api): #62 OAuth 콜백/프론트엔드 URL 환경변수 문서화`
 
-3. [ ] **Phase 3: JwtStrategy ↔ AuthRequest 타입 호환 검증 테스트**
+3. [x] **Phase 3: JwtStrategy ↔ AuthRequest 타입 호환 검증 테스트**
    - 파일: `apps/api/test/jwt.strategy.spec.ts` (신규)
    - 구현:
      - `JwtStrategy.validate({ sub: 1, email: "x" })` → `AuthService.validateJwtPayload` 호출 검증
@@ -70,7 +70,7 @@ A. **보강 후 close**. 코드는 있지만 (1) `.env.example` 누락, (2) `goo
      - 유저 미발견 시 `UnauthorizedException` 검증
    - 커밋: `test(api): #62 JwtStrategy AuthRequest 타입 호환 테스트 추가`
 
-4. [ ] **Phase 4: GoogleStrategy 환경변수 검증 강화 (선택)**
+4. [x] **Phase 4: GoogleStrategy 환경변수 검증 강화 (선택)**
    - 파일: `apps/api/src/auth/google.strategy.ts`
    - 구현:
      - `clientID`/`clientSecret` 빈 문자열일 때 명시적 에러 로그(`Logger.warn`) 추가
