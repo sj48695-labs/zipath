@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, VerifyCallback } from "passport-google-oauth20";
@@ -19,10 +19,23 @@ interface GoogleOAuthUser {
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, "google") {
+  private static readonly logger = new Logger(GoogleStrategy.name);
+
   constructor(config: ConfigService) {
+    const clientID = config.get<string>("GOOGLE_CLIENT_ID") || "";
+    const clientSecret = config.get<string>("GOOGLE_CLIENT_SECRET") || "";
+
+    if (!clientID || !clientSecret) {
+      // auth.module.ts에서 env 미설정 시 strategy 등록을 스킵하지만,
+      // 직접 인스턴스화될 경우(예: 테스트, 향후 리팩토링)를 위한 이중 안전장치.
+      GoogleStrategy.logger.warn(
+        "GOOGLE_CLIENT_ID/SECRET 미설정 — Google OAuth가 실제로 동작하지 않습니다.",
+      );
+    }
+
     super({
-      clientID: config.get<string>("GOOGLE_CLIENT_ID") || "",
-      clientSecret: config.get<string>("GOOGLE_CLIENT_SECRET") || "",
+      clientID,
+      clientSecret,
       callbackURL: config.get<string>("GOOGLE_CALLBACK_URL") || "http://localhost:4000/auth/google/callback",
       scope: ["email", "profile"],
     });

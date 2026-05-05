@@ -1,3 +1,4 @@
+import { Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GoogleStrategy } from "../src/auth/google.strategy";
 
@@ -19,8 +20,7 @@ interface GoogleOAuthUser {
  * Helper: ConfigService 모킹
  *
  * GoogleStrategy 생성자는 ConfigService에서 OAuth 환경변수를 읽는다.
- * passport-google-oauth20의 super(...)는 clientID/clientSecret이 없으면
- * 즉시 throw 하므로 더미 값을 채워준다.
+ * 정상 케이스용 기본값을 채우고, 누락 시나리오는 overrides로 undefined 지정.
  */
 function makeConfig(overrides: Record<string, string | undefined> = {}): ConfigService {
   const values: Record<string, string | undefined> = {
@@ -36,9 +36,45 @@ function makeConfig(overrides: Record<string, string | undefined> = {}): ConfigS
 
 describe("GoogleStrategy", () => {
   let strategy: GoogleStrategy;
+  let warnSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    warnSpy = jest.spyOn(Logger.prototype, "warn").mockImplementation(() => {});
     strategy = new GoogleStrategy(makeConfig());
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
+  describe("constructor", () => {
+    it("env 모두 설정 시 경고 로그 미출력", () => {
+      // beforeEach에서 정상 env로 생성됨 → warn 호출 없어야 함
+      expect(warnSpy).not.toHaveBeenCalled();
+    });
+
+    it("GOOGLE_CLIENT_ID 누락 시 경고 로그 출력", () => {
+      warnSpy.mockClear();
+      // env 미설정 시 super는 빈 문자열을 받지만 throw하지 않음 (실제 OAuth 호출 시점에만 실패)
+      try {
+        new GoogleStrategy(makeConfig({ GOOGLE_CLIENT_ID: undefined }));
+      } catch {
+        // passport 라이브러리가 throw하더라도 warn은 super 호출 전에 찍힘
+      }
+      expect(warnSpy).toHaveBeenCalled();
+      const message = warnSpy.mock.calls[0]?.[0] as string;
+      expect(message).toContain("GOOGLE_CLIENT_ID");
+    });
+
+    it("GOOGLE_CLIENT_SECRET 누락 시 경고 로그 출력", () => {
+      warnSpy.mockClear();
+      try {
+        new GoogleStrategy(makeConfig({ GOOGLE_CLIENT_SECRET: undefined }));
+      } catch {
+        // 동일
+      }
+      expect(warnSpy).toHaveBeenCalled();
+    });
   });
 
   describe("validate", () => {
