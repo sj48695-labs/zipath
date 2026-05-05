@@ -158,8 +158,14 @@ export class RealPriceService {
       return [];
     }
 
+    // data.go.kr 키는 Encoding/Decoding 두 형식이 있음. URLSearchParams 가
+    // 재인코딩 하므로 디코딩된 형태를 넘겨야 한 번만 인코딩 됨.
+    // (decode 가 이미 디코딩된 키에는 무영향이라 양쪽 형식 모두 안전)
+    let key = serviceKey;
+    try { key = decodeURIComponent(serviceKey); } catch { /* keep raw */ }
+
     const params = new URLSearchParams({
-      serviceKey,
+      serviceKey: key,
       LAWD_CD: regionCode,
       DEAL_YMD: yearMonth,
       pageNo: "1",
@@ -171,7 +177,10 @@ export class RealPriceService {
       const res = await fetch(`${this.apiBase}?${params.toString()}`);
 
       if (!res.ok) {
-        this.logger.error(`API responded with status ${res.status}`);
+        const body = await res.text().catch(() => "");
+        this.logger.error(
+          `API responded with status ${res.status} | url=${this.apiBase} | body=${body.slice(0, 300)}`,
+        );
         return [];
       }
 
