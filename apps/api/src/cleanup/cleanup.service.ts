@@ -20,31 +20,27 @@ export class CleanupService {
   @Cron("0 3 * * 0") // 매주 일요일 새벽 3시
   async handleCleanup(): Promise<void> {
     this.logger.log("데이터 정리 시작");
-    await this.cleanExpiredCache();
-    await this.cleanOldAnnouncements();
-    await this.cleanStaleAnnouncements();
-    await this.cleanInactiveUsers();
+    await Promise.all([
+      this.cleanExpiredCache(),
+      this.cleanOldAnnouncements(),
+      this.cleanStaleAnnouncements(),
+      this.cleanInactiveUsers(),
+    ]);
     this.logger.log("데이터 정리 완료");
   }
 
   /** 3개월 이상 된 실거래가 캐시 삭제 */
   async cleanExpiredCache(): Promise<void> {
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
     const result = await this.cacheRepo.delete({
-      fetchedAt: LessThan(threeMonthsAgo),
+      fetchedAt: LessThan(this.monthsAgo(3)),
     });
     this.logger.log(`캐시 삭제: ${result.affected ?? 0}건`);
   }
 
   /** 마감 후 6개월 지난 공고 삭제 */
   async cleanOldAnnouncements(): Promise<void> {
-    const sixMonthsAgo = new Date();
-    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-
     const result = await this.announcementRepo.delete({
-      endDate: LessThan(sixMonthsAgo),
+      endDate: LessThan(this.monthsAgo(6)),
     });
     this.logger.log(`공고 삭제(마감 6개월): ${result.affected ?? 0}건`);
   }
@@ -54,11 +50,8 @@ export class CleanupService {
    * cleanOldAnnouncements 의 endDate 6개월 정책과 OR 효과로 동작.
    */
   async cleanStaleAnnouncements(): Promise<void> {
-    const threeMonthsAgo = new Date();
-    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
-
     const result = await this.announcementRepo.delete({
-      fetchedAt: LessThan(threeMonthsAgo),
+      fetchedAt: LessThan(this.monthsAgo(3)),
     });
     this.logger.log(`공고 삭제(stale 3개월): ${result.affected ?? 0}건`);
   }
@@ -72,5 +65,11 @@ export class CleanupService {
       lastActiveAt: LessThan(oneYearAgo),
     });
     this.logger.log(`미접속 유저 삭제: ${result.affected ?? 0}건`);
+  }
+
+  private monthsAgo(n: number): Date {
+    const d = new Date();
+    d.setMonth(d.getMonth() - n);
+    return d;
   }
 }

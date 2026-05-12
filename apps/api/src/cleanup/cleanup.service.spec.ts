@@ -134,7 +134,6 @@ describe("CleanupService", () => {
       await service.handleCleanup();
 
       expect(cacheRepo.delete).toHaveBeenCalledTimes(1);
-      // announcementRepo.delete 는 cleanOldAnnouncements + cleanStaleAnnouncements 두 번
       expect(announcementRepo.delete).toHaveBeenCalledTimes(2);
       expect(userRepo.delete).toHaveBeenCalledTimes(1);
     });
