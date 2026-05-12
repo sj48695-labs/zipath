@@ -22,6 +22,7 @@ export class CleanupService {
     this.logger.log("데이터 정리 시작");
     await this.cleanExpiredCache();
     await this.cleanOldAnnouncements();
+    await this.cleanStaleAnnouncements();
     await this.cleanInactiveUsers();
     this.logger.log("데이터 정리 완료");
   }
@@ -45,7 +46,21 @@ export class CleanupService {
     const result = await this.announcementRepo.delete({
       endDate: LessThan(sixMonthsAgo),
     });
-    this.logger.log(`공고 삭제: ${result.affected ?? 0}건`);
+    this.logger.log(`공고 삭제(마감 6개월): ${result.affected ?? 0}건`);
+  }
+
+  /**
+   * 3개월간 API 응답에 잡히지 않아 fetchedAt 갱신이 끊긴 stale 공고 삭제.
+   * cleanOldAnnouncements 의 endDate 6개월 정책과 OR 효과로 동작.
+   */
+  async cleanStaleAnnouncements(): Promise<void> {
+    const threeMonthsAgo = new Date();
+    threeMonthsAgo.setMonth(threeMonthsAgo.getMonth() - 3);
+
+    const result = await this.announcementRepo.delete({
+      fetchedAt: LessThan(threeMonthsAgo),
+    });
+    this.logger.log(`공고 삭제(stale 3개월): ${result.affected ?? 0}건`);
   }
 
   /** 1년 이상 미접속 유저 삭제 */

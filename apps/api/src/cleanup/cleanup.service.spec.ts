@@ -87,6 +87,29 @@ describe("CleanupService", () => {
     });
   });
 
+  describe("cleanStaleAnnouncements", () => {
+    it("should delete announcements with fetchedAt older than 3 months", async () => {
+      announcementRepo.delete!.mockResolvedValue({ affected: 4 });
+
+      await service.cleanStaleAnnouncements();
+
+      expect(announcementRepo.delete).toHaveBeenCalledTimes(1);
+      const callArg = announcementRepo.delete!.mock.calls[0][0] as Record<
+        string,
+        unknown
+      >;
+      expect(callArg).toHaveProperty("fetchedAt");
+    });
+
+    it("should handle zero affected rows", async () => {
+      announcementRepo.delete!.mockResolvedValue({ affected: 0 });
+
+      await service.cleanStaleAnnouncements();
+
+      expect(announcementRepo.delete).toHaveBeenCalledTimes(1);
+    });
+  });
+
   describe("cleanInactiveUsers", () => {
     it("should delete users inactive for over 1 year", async () => {
       userRepo.delete!.mockResolvedValue({ affected: 2 });
@@ -103,7 +126,7 @@ describe("CleanupService", () => {
   });
 
   describe("handleCleanup", () => {
-    it("should run all three cleanup methods", async () => {
+    it("should run all four cleanup methods", async () => {
       cacheRepo.delete!.mockResolvedValue({ affected: 5 });
       announcementRepo.delete!.mockResolvedValue({ affected: 3 });
       userRepo.delete!.mockResolvedValue({ affected: 2 });
@@ -111,7 +134,8 @@ describe("CleanupService", () => {
       await service.handleCleanup();
 
       expect(cacheRepo.delete).toHaveBeenCalledTimes(1);
-      expect(announcementRepo.delete).toHaveBeenCalledTimes(1);
+      // announcementRepo.delete 는 cleanOldAnnouncements + cleanStaleAnnouncements 두 번
+      expect(announcementRepo.delete).toHaveBeenCalledTimes(2);
       expect(userRepo.delete).toHaveBeenCalledTimes(1);
     });
 
