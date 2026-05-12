@@ -60,6 +60,7 @@ interface MockRepository {
   findOne: jest.Mock;
   create: jest.Mock;
   save: jest.Mock;
+  upsert: jest.Mock;
 }
 
 interface MockConfigService {
@@ -102,6 +103,7 @@ describe("AnnouncementService", () => {
       findOne: jest.fn(),
       create: jest.fn(),
       save: jest.fn(),
+      upsert: jest.fn().mockResolvedValue({ identifiers: [], generatedMaps: [], raw: {} }),
     };
 
     criteriaRepo = {
@@ -109,6 +111,7 @@ describe("AnnouncementService", () => {
       findOne: jest.fn(),
       create: jest.fn(),
       save: jest.fn(),
+      upsert: jest.fn(),
     };
 
     configService = {
@@ -120,6 +123,101 @@ describe("AnnouncementService", () => {
       criteriaRepo as never,
       configService as never,
     );
+  });
+
+  // ----- syncFromApi -----
+  describe("syncFromApi", () => {
+    /** 정상 JSON 응답을 흉내내는 fetch mock */
+    function mockJsonFetch(items: unknown[]) {
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: jest.fn().mockResolvedValue(
+          JSON.stringify({
+            response: { body: { items: { item: items } } },
+          }),
+        ),
+      });
+    }
+
+    it("should skip when DATA_GO_KR_API_KEY is missing", async () => {
+      configService.get.mockReturnValue(undefined);
+
+      await service.syncFromApi();
+
+      expect(announcementRepo.upsert).not.toHaveBeenCalled();
+    });
+
+    it("should call upsert with externalId and fetchedAt when API returns items", async () => {
+      configService.get.mockReturnValue("test-key");
+      mockJsonFetch([
+        {
+          HOUSE_MANAGE_NO: "H1",
+          PBLANC_NO: "P1",
+          HOUSE_NM: "테스트단지",
+          HOUSE_SECD_NM: "아파트",
+          HSSPLY_ADRES: "서울",
+          TOT_SUPLY_HSHLDCO: 100,
+          RCEPT_BGNDE: "20260301",
+          RCEPT_ENDDE: "20260331",
+          PRZWNER_PRESNATN_DE: "20260415",
+          SUBSCRPT_AREA_CODE_NM: "서울",
+          HOUSE_DTL_SECD_NM: "공공분양",
+          PBLANC_URL: "https://example.com/p1",
+          BSNS_MBY_NM: "LH",
+        },
+      ]);
+
+      await service.syncFromApi();
+
+      expect(announcementRepo.upsert).toHaveBeenCalledTimes(1);
+      const [rows, opts] = announcementRepo.upsert.mock.calls[0] as [
+        Array<Record<string, unknown>>,
+        { conflictPaths: string[] },
+      ];
+      expect(rows).toHaveLength(1);
+      expect(rows[0].externalId).toBe("H1-P1");
+      expect(rows[0].fetchedAt).toBeInstanceOf(Date);
+      expect(rows[0].organization).toBe("LH");
+      expect(opts.conflictPaths).toEqual(["externalId"]);
+    });
+
+    it("should NOT call upsert when API returns XML error", async () => {
+      configService.get.mockReturnValue("test-key");
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        text: jest.fn().mockResolvedValue(
+          "<OpenAPI_ServiceResponse><returnReasonCode>30</returnReasonCode><returnAuthMsg>SERVICE_KEY_IS_NOT_REGISTERED_ERROR</returnAuthMsg></OpenAPI_ServiceResponse>",
+        ),
+      });
+
+      await service.syncFromApi();
+
+      expect(announcementRepo.upsert).not.toHaveBeenCalled();
+    });
+
+    it("should NOT call upsert when items array is empty", async () => {
+      configService.get.mockReturnValue("test-key");
+      mockJsonFetch([]);
+
+      await service.syncFromApi();
+
+      expect(announcementRepo.upsert).not.toHaveBeenCalled();
+    });
+
+    it("should NOT call upsert when API responds with HTTP error", async () => {
+      configService.get.mockReturnValue("test-key");
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        text: jest.fn().mockResolvedValue("internal error"),
+      });
+
+      await service.syncFromApi();
+
+      expect(announcementRepo.upsert).not.toHaveBeenCalled();
+    });
   });
 
   // ----- findAll -----
