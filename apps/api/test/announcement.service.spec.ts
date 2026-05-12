@@ -7,6 +7,7 @@ import type { MatchRequestDto } from "../src/announcement/dto/match-request.dto"
 function makeAnnouncement(overrides: Partial<Announcement> = {}): Announcement {
   return {
     id: 1,
+    externalId: "TEST-EXT-1",
     title: "테스트 공고",
     organization: "LH",
     region: "서울",
@@ -16,6 +17,7 @@ function makeAnnouncement(overrides: Partial<Announcement> = {}): Announcement {
     detailUrl: null,
     summary: null,
     rawData: null,
+    fetchedAt: new Date(),
     createdAt: new Date(),
     updatedAt: new Date(),
     ...overrides,
