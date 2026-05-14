@@ -8,10 +8,20 @@ type MockRepository<T extends ObjectLiteral = ObjectLiteral> = Partial<
   Record<keyof Repository<T>, jest.Mock>
 >;
 
+const makeQb = (affected = 0) => {
+  const qb = {
+    delete: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    execute: jest.fn().mockResolvedValue({ affected }),
+  };
+  return qb;
+};
+
 const createMockRepository = <
   T extends ObjectLiteral = ObjectLiteral,
 >(): MockRepository<T> => ({
   delete: jest.fn(),
+  createQueryBuilder: jest.fn().mockReturnValue(makeQb()),
 });
 
 describe("CleanupService", () => {
@@ -72,41 +82,29 @@ describe("CleanupService", () => {
     });
   });
 
-  describe("cleanOldAnnouncements", () => {
-    it("should delete announcements older than 6 months", async () => {
-      announcementRepo.delete!.mockResolvedValue({ affected: 3 });
+  describe("cleanAnnouncements", () => {
+    it("should issue a single OR delete covering endDate and fetchedAt", async () => {
+      const qb = makeQb(7);
+      announcementRepo.createQueryBuilder!.mockReturnValue(qb);
 
-      await service.cleanOldAnnouncements();
+      await service.cleanAnnouncements();
 
-      expect(announcementRepo.delete).toHaveBeenCalledTimes(1);
-      const callArg = announcementRepo.delete!.mock.calls[0][0] as Record<
-        string,
-        unknown
-      >;
-      expect(callArg).toHaveProperty("endDate");
-    });
-  });
-
-  describe("cleanStaleAnnouncements", () => {
-    it("should delete announcements with fetchedAt older than 3 months", async () => {
-      announcementRepo.delete!.mockResolvedValue({ affected: 4 });
-
-      await service.cleanStaleAnnouncements();
-
-      expect(announcementRepo.delete).toHaveBeenCalledTimes(1);
-      const callArg = announcementRepo.delete!.mock.calls[0][0] as Record<
-        string,
-        unknown
-      >;
-      expect(callArg).toHaveProperty("fetchedAt");
+      expect(announcementRepo.createQueryBuilder).toHaveBeenCalledTimes(1);
+      expect(qb.delete).toHaveBeenCalledTimes(1);
+      expect(qb.where).toHaveBeenCalledTimes(1);
+      const [whereClause] = qb.where.mock.calls[0] as [string];
+      expect(whereClause).toMatch(/endDate/);
+      expect(whereClause).toMatch(/fetchedAt/);
+      expect(qb.execute).toHaveBeenCalledTimes(1);
     });
 
     it("should handle zero affected rows", async () => {
-      announcementRepo.delete!.mockResolvedValue({ affected: 0 });
+      const qb = makeQb(0);
+      announcementRepo.createQueryBuilder!.mockReturnValue(qb);
 
-      await service.cleanStaleAnnouncements();
+      await service.cleanAnnouncements();
 
-      expect(announcementRepo.delete).toHaveBeenCalledTimes(1);
+      expect(qb.execute).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -126,15 +124,16 @@ describe("CleanupService", () => {
   });
 
   describe("handleCleanup", () => {
-    it("should run all four cleanup methods", async () => {
+    it("should run all cleanup methods", async () => {
+      const qb = makeQb(3);
       cacheRepo.delete!.mockResolvedValue({ affected: 5 });
-      announcementRepo.delete!.mockResolvedValue({ affected: 3 });
+      announcementRepo.createQueryBuilder!.mockReturnValue(qb);
       userRepo.delete!.mockResolvedValue({ affected: 2 });
 
       await service.handleCleanup();
 
       expect(cacheRepo.delete).toHaveBeenCalledTimes(1);
-      expect(announcementRepo.delete).toHaveBeenCalledTimes(2);
+      expect(announcementRepo.createQueryBuilder).toHaveBeenCalledTimes(1);
       expect(userRepo.delete).toHaveBeenCalledTimes(1);
     });
 
