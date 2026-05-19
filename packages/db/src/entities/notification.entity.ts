@@ -29,6 +29,9 @@ export class Notification {
   @Column({ type: "text" })
   message!: string;
 
+  @Column({ type: "varchar", nullable: true })
+  referenceId!: string | null;
+
   @Column({ type: "timestamp", nullable: true })
   readAt!: Date | null;
 
