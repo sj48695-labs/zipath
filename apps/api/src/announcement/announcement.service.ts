@@ -28,7 +28,6 @@ interface ApiAnnouncement {
   SUBSCRPT_AREA_CODE_NM: string;
   HOUSE_DTL_SECD_NM: string;
   PBLANC_URL: string;
-  /** 사업주체명 (LH/SH/iH 등) — 응답에 따라 없을 수도 있음 */
   BSNS_MBY_NM?: string;
 }
 
@@ -217,12 +216,11 @@ export class AnnouncementService {
           summary: this.buildSummary(item),
           rawData: item as unknown as Record<string, unknown>,
           fetchedAt: now,
-        }) as QueryDeepPartialEntity<Announcement>,
+        }),
       );
 
       await this.announcementRepo.upsert(rows, {
         conflictPaths: ["externalId"],
-        skipUpdateIfNoValuesChanged: true,
       });
 
       this.logger.log(`공고 동기화 완료: ${rows.length}건 (신규+갱신)`);
