@@ -101,9 +101,11 @@ describe("RealPriceService", () => {
       const apiTrades = [makeTrade()];
       global.fetch = jest.fn().mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({
-          response: { body: { items: { item: apiTrades } } },
-        }),
+        text: jest.fn().mockResolvedValue(
+          JSON.stringify({
+            response: { body: { items: { item: apiTrades } } },
+          }),
+        ),
       });
 
       cacheRepo.create.mockReturnValue(makeCacheEntity(apiTrades));
@@ -158,9 +160,11 @@ describe("RealPriceService", () => {
       const singleTrade = makeTrade();
       global.fetch = jest.fn().mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({
-          response: { body: { items: { item: singleTrade } } },
-        }),
+        text: jest.fn().mockResolvedValue(
+          JSON.stringify({
+            response: { body: { items: { item: singleTrade } } },
+          }),
+        ),
       });
 
       cacheRepo.create.mockReturnValue(makeCacheEntity([singleTrade]));
@@ -181,9 +185,11 @@ describe("RealPriceService", () => {
       const trades = [makeTrade()];
       global.fetch = jest.fn().mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({
-          response: { body: { items: { item: trades } } },
-        }),
+        text: jest.fn().mockResolvedValue(
+          JSON.stringify({
+            response: { body: { items: { item: trades } } },
+          }),
+        ),
       });
 
       const entity = makeCacheEntity(trades);
@@ -202,9 +208,11 @@ describe("RealPriceService", () => {
 
       global.fetch = jest.fn().mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({
-          response: { body: { items: { item: [] } } },
-        }),
+        text: jest.fn().mockResolvedValue(
+          JSON.stringify({
+            response: { body: { items: { item: [] } } },
+          }),
+        ),
       });
 
       await service.search("11680", "202603");
