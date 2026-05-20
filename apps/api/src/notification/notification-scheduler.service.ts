@@ -1,7 +1,7 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { Cron, CronExpression } from "@nestjs/schedule";
 import { InjectRepository } from "@nestjs/typeorm";
-import { MoreThan, Repository } from "typeorm";
+import { In, MoreThan, Repository } from "typeorm";
 import {
   Announcement,
   Notification,
@@ -12,6 +12,7 @@ import type { RealPriceTrade } from "@zipath/types";
 import { RealPriceService } from "../real-price/real-price.service";
 
 const PRICE_CHANGE_THRESHOLD_PCT = 3; // ±3% 이상 변동 시 알림
+const DEAL_TYPE_SALE = "매매";
 const NOTIFICATION_TYPE_PRICE_CHANGE = "PRICE_CHANGE";
 const NOTIFICATION_TYPE_NEW_ANNOUNCEMENT = "NEW_ANNOUNCEMENT";
 const LAWD_CD_PATTERN = /^\d{5}$/;
@@ -66,10 +67,9 @@ export class NotificationSchedulerService {
     }
 
     const yearMonth = this.currentYearMonth();
-    const dealType = "매매";
+    const dealType = DEAL_TYPE_SALE;
     let createdCount = 0;
 
-    // 동일 지역코드는 한 번만 외부 호출 → 평균가 계산 후 사용자별로 알림 생성.
     const regionCodes = this.collectLawdRegions(preferences);
 
     for (const regionCode of regionCodes) {
@@ -110,30 +110,31 @@ export class NotificationSchedulerService {
       const usersForRegion = preferences.filter((p) =>
         p.regions.includes(regionCode),
       );
-      for (const pref of usersForRegion) {
-        const duplicate = await this.notificationRepo.findOne({
-          where: {
-            userId: pref.userId,
-            type: NOTIFICATION_TYPE_PRICE_CHANGE,
-            referenceId,
-          },
+      if (usersForRegion.length > 0) {
+        const existingNotifs = await this.notificationRepo.findBy({
+          userId: In(usersForRegion.map((p) => p.userId)),
+          type: NOTIFICATION_TYPE_PRICE_CHANGE,
+          referenceId,
         });
-        if (duplicate) continue;
+        const notifiedUserIds = new Set(existingNotifs.map((n) => n.userId));
 
-        await this.notificationRepo.save(
-          this.notificationRepo.create({
-            userId: pref.userId,
-            type: NOTIFICATION_TYPE_PRICE_CHANGE,
-            title: `실거래가 변동 알림 (${regionCode})`,
-            message:
-              `${yearMonth} ${regionCode} 평균가가 ${prevAvg.toLocaleString()}만원 → ` +
-              `${summary.avgPrice.toLocaleString()}만원 (${changePct.toFixed(2)}%) 변동했어요. ` +
-              `본 정보는 참고용이며 법적 효력이 없습니다.`,
-            referenceId,
-            readAt: null,
-          }),
-        );
-        createdCount++;
+        for (const pref of usersForRegion) {
+          if (notifiedUserIds.has(pref.userId)) continue;
+          await this.notificationRepo.save(
+            this.notificationRepo.create({
+              userId: pref.userId,
+              type: NOTIFICATION_TYPE_PRICE_CHANGE,
+              title: `실거래가 변동 알림 (${regionCode})`,
+              message:
+                `${yearMonth} ${regionCode} 평균가가 ${prevAvg.toLocaleString()}만원 → ` +
+                `${summary.avgPrice.toLocaleString()}만원 (${changePct.toFixed(2)}%) 변동했어요. ` +
+                `본 정보는 참고용이며 법적 효력이 없습니다.`,
+              referenceId,
+              readAt: null,
+            }),
+          );
+          createdCount++;
+        }
       }
 
       // baseline 갱신은 알림 생성 여부와 무관하게 수행 (다음 사이클 기준 갱신)
@@ -153,7 +154,6 @@ export class NotificationSchedulerService {
   async detectNewAnnouncements(): Promise<void> {
     if (this.lastAnnouncementCheckAt === null) {
       this.lastAnnouncementCheckAt = new Date();
-      this.logger.log("신규 공고 감지 첫 실행 — 기준 시각만 기록");
       return;
     }
 
@@ -171,46 +171,47 @@ export class NotificationSchedulerService {
     const preferences = await this.preferenceRepo.findBy({ isActive: true });
     let createdCount = 0;
 
-    for (const announcement of newAnnouncements) {
-      const referenceId = `announcement:${announcement.id}`;
-      const matchedUsers = this.matchAnnouncementUsers(
-        announcement,
-        preferences,
-      );
+    const announcementMatches = newAnnouncements.map((announcement) => ({
+      announcement,
+      referenceId: `announcement:${announcement.id}`,
+      matchedUsers: this.matchAnnouncementUsers(announcement, preferences),
+    }));
 
-      for (const pref of matchedUsers) {
-        const duplicate = await this.notificationRepo.findOne({
-          where: {
-            userId: pref.userId,
-            type: NOTIFICATION_TYPE_NEW_ANNOUNCEMENT,
-            referenceId,
-          },
-        });
-        if (duplicate) continue;
+    const allUserIds = [
+      ...new Set(announcementMatches.flatMap((m) => m.matchedUsers.map((p) => p.userId))),
+    ];
+    const allReferenceIds = announcementMatches.map((m) => m.referenceId);
 
-        await this.notificationRepo.save(
-          this.notificationRepo.create({
-            userId: pref.userId,
-            type: NOTIFICATION_TYPE_NEW_ANNOUNCEMENT,
-            title: `신규 공고: ${announcement.title}`,
-            message:
-              `관심 지역(${announcement.region})에 신규 공고가 등록됐어요. ` +
-              `본 정보는 참고용이며 법적 효력이 없습니다.`,
-            referenceId,
-            readAt: null,
-          }),
-        );
-        createdCount++;
+    if (allUserIds.length > 0) {
+      const existingNotifs = await this.notificationRepo.findBy({
+        userId: In(allUserIds),
+        type: NOTIFICATION_TYPE_NEW_ANNOUNCEMENT,
+        referenceId: In(allReferenceIds),
+      });
+      const notifiedSet = new Set(existingNotifs.map((n) => `${n.userId}:${n.referenceId}`));
+
+      for (const { announcement, referenceId, matchedUsers } of announcementMatches) {
+        for (const pref of matchedUsers) {
+          if (notifiedSet.has(`${pref.userId}:${referenceId}`)) continue;
+          await this.notificationRepo.save(
+            this.notificationRepo.create({
+              userId: pref.userId,
+              type: NOTIFICATION_TYPE_NEW_ANNOUNCEMENT,
+              title: `신규 공고: ${announcement.title}`,
+              message:
+                `관심 지역(${announcement.region})에 신규 공고가 등록됐어요. ` +
+                `본 정보는 참고용이며 법적 효력이 없습니다.`,
+              referenceId,
+              readAt: null,
+            }),
+          );
+          createdCount++;
+        }
       }
     }
 
     this.lastAnnouncementCheckAt = now;
     this.logger.log(`신규 공고 알림 생성: ${createdCount}건`);
-  }
-
-  /** 테스트/운영 점검용. 외부에서 첫 실행 상태로 초기화. */
-  resetAnnouncementCheckpoint(): void {
-    this.lastAnnouncementCheckAt = null;
   }
 
   private collectLawdRegions(preferences: NotificationPreference[]): string[] {
@@ -259,8 +260,7 @@ export class NotificationSchedulerService {
    *   ("서울 강남구" → ["서울","강남구"] 가 "서울특별시 강남구" 에 모두 포함 → match).
    */
   private isRegionMatch(announcementRegion: string, prefRegion: string): boolean {
-    if (!prefRegion || !announcementRegion) return false;
-    if (LAWD_CD_PATTERN.test(prefRegion)) return false;
+    if (!prefRegion || !announcementRegion || LAWD_CD_PATTERN.test(prefRegion)) return false;
     if (
       announcementRegion.includes(prefRegion) ||
       prefRegion.includes(announcementRegion)
