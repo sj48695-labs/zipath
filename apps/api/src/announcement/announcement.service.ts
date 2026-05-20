@@ -122,8 +122,14 @@ export class AnnouncementService {
         const authMsg =
           /<returnAuthMsg>([^<]+)<\/returnAuthMsg>/.exec(text)?.[1] ?? "";
         const errMsg = /<errMsg>([^<]+)<\/errMsg>/.exec(text)?.[1] ?? "";
+        // 표준 cmmMsgHeader 가 아닌 XML/HTML 응답일 경우 원본도 같이 남겨야
+        // 디버깅 가능 (예: WAF/HTML 에러 페이지)
+        const rawHint =
+          !reason && !authMsg && !errMsg
+            ? ` | raw=${text.replace(/\s+/g, " ").slice(0, 300)}`
+            : "";
         this.logger.error(
-          `data.go.kr XML error | code=${reason} | auth=${authMsg} | err=${errMsg} | url=${this.apiBase}`,
+          `data.go.kr XML error | code=${reason} | auth=${authMsg} | err=${errMsg} | url=${this.apiBase}${rawHint}`,
         );
         return;
       }
