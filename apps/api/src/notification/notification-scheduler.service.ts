@@ -245,15 +245,31 @@ export class NotificationSchedulerService {
   ): PreferenceUserRegion[] {
     const region = announcement.region ?? "";
     return preferences.filter((pref) =>
-      (pref.regions ?? []).some((prefRegion) => {
-        if (!prefRegion) return false;
-        // LAWD_CD 형식은 공고 region 텍스트와 매칭 불가 → 스킵.
-        if (LAWD_CD_PATTERN.test(prefRegion)) return false;
-        return (
-          region.includes(prefRegion) || prefRegion.includes(region)
-        );
-      }),
+      (pref.regions ?? []).some((prefRegion) =>
+        this.isRegionMatch(region, prefRegion),
+      ),
     );
+  }
+
+  /**
+   * 관심 지역(prefRegion)이 공고 region 과 매칭되는지 판정.
+   * - LAWD_CD 형식은 공고 region 텍스트와 매칭 불가 → false.
+   * - 양방향 부분 문자열 매칭 우선 ("서울 강남구" ↔ "서울 강남구").
+   * - 둘 다 실패하면 공백 토큰으로 분해해 각 토큰이 공고에 포함되는지 검사
+   *   ("서울 강남구" → ["서울","강남구"] 가 "서울특별시 강남구" 에 모두 포함 → match).
+   */
+  private isRegionMatch(announcementRegion: string, prefRegion: string): boolean {
+    if (!prefRegion || !announcementRegion) return false;
+    if (LAWD_CD_PATTERN.test(prefRegion)) return false;
+    if (
+      announcementRegion.includes(prefRegion) ||
+      prefRegion.includes(announcementRegion)
+    ) {
+      return true;
+    }
+    const tokens = prefRegion.split(/\s+/).filter((t) => t.length > 0);
+    if (tokens.length === 0) return false;
+    return tokens.every((token) => announcementRegion.includes(token));
   }
 
   private currentYearMonth(): string {
