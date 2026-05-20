@@ -4,6 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import NotificationBell from "../_components/NotificationBell";
 
 interface NotificationPreference {
   id: number;
@@ -23,6 +24,7 @@ interface NotificationItem {
   type: string;
   title: string;
   message: string;
+  referenceId: string | null;
   readAt: string | null;
   createdAt: string;
 }
@@ -63,6 +65,20 @@ const SAMPLE_REGIONS = [
   "인천 부평구",
 ];
 
+/** 알림 타입/referenceId 기반으로 이동 경로를 결정한다. */
+function getNotificationHref(item: NotificationItem): string | null {
+  if (item.type === "announcement") {
+    // referenceId 형식: "announcement:<id>" — 상세 페이지로 이동.
+    if (item.referenceId?.startsWith("announcement:")) {
+      const id = item.referenceId.slice("announcement:".length);
+      if (id) return `/announcements/${id}`;
+    }
+    return "/announcements";
+  }
+  if (item.type === "price_change") return "/real-price";
+  return null;
+}
+
 const SAMPLE_KEYWORDS = [
   "신혼",
   "생애최초",
@@ -82,6 +98,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
           <Link href="/" className="text-xl font-bold text-primary">
             Zipath
           </Link>
+          <NotificationBell />
         </div>
       </header>
       <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
@@ -289,7 +306,7 @@ export default function NotificationsPage() {
           <Link href="/" className="text-xl font-bold text-primary">
             Zipath
           </Link>
-          <nav className="flex gap-6 text-sm text-muted-foreground">
+          <nav className="flex items-center gap-6 text-sm text-muted-foreground">
             <Link href="/subscription" className="hover:text-foreground">
               청약
             </Link>
@@ -299,6 +316,7 @@ export default function NotificationsPage() {
             <Link href="/notifications" className="font-medium text-foreground">
               알림
             </Link>
+            <NotificationBell />
           </nav>
         </div>
       </header>
@@ -556,16 +574,14 @@ export default function NotificationsPage() {
                 <div className="space-y-3">
                   {notifications.map((notif) => {
                     const notifType = notif.type as NotificationType;
-                    return (
-                      <div
-                        key={notif.id}
-                        onClick={() => !notif.readAt && markAsRead(notif.id)}
-                        className={`cursor-pointer rounded-lg border p-4 transition-colors ${
-                          notif.readAt
-                            ? "bg-card"
-                            : "border-primary/20 bg-primary/5"
-                        }`}
-                      >
+                    const href = getNotificationHref(notif);
+                    const baseClassName = `block cursor-pointer rounded-lg border p-4 transition-colors ${
+                      notif.readAt
+                        ? "bg-card"
+                        : "border-primary/20 bg-primary/5"
+                    }`;
+                    const content = (
+                      <>
                         <div className="mb-2 flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {!notif.readAt && (
@@ -588,6 +604,33 @@ export default function NotificationsPage() {
                         <p className="text-sm text-muted-foreground">
                           {notif.message}
                         </p>
+                      </>
+                    );
+
+                    const handleClick = () => {
+                      if (!notif.readAt) void markAsRead(notif.id);
+                    };
+
+                    if (href) {
+                      return (
+                        <Link
+                          key={notif.id}
+                          href={href}
+                          onClick={handleClick}
+                          className={baseClassName}
+                        >
+                          {content}
+                        </Link>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={notif.id}
+                        onClick={handleClick}
+                        className={baseClassName}
+                      >
+                        {content}
                       </div>
                     );
                   })}
