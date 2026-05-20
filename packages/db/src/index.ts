@@ -7,4 +7,5 @@ export { ChecklistTemplate } from "./entities/checklist-template.entity";
 export { ChecklistItem } from "./entities/checklist-item.entity";
 export { NotificationPreference } from "./entities/notification-preference.entity";
 export { Notification } from "./entities/notification.entity";
+export { PriceBaseline } from "./entities/price-baseline.entity";
 export { Payment } from "./entities/payment.entity";

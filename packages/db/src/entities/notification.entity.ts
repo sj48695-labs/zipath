@@ -21,13 +21,17 @@ export class Notification {
   user!: User;
 
   @Column({ type: "varchar" })
-  type!: string; // 'announcement' | 'price_change' | 'subscription' | 'system'
+  type!: string; // 'PRICE_CHANGE' | 'NEW_ANNOUNCEMENT' | 'SUBSCRIPTION' | 'SYSTEM'
 
   @Column({ type: "varchar" })
   title!: string;
 
   @Column({ type: "text" })
   message!: string;
+
+  // 중복 알림 방지용 외부 식별자. 예) "11680:202505" (가격 변동), "announcement:42" (공고)
+  @Column({ type: "varchar", nullable: true })
+  referenceId!: string | null;
 
   @Column({ type: "timestamp", nullable: true })
   readAt!: Date | null;
