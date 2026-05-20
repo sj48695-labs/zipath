@@ -27,6 +27,9 @@
     "@types/passport-jwt": "^4.0.1",
     "@zipath/db": "*",
     "@zipath/types": "*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "fast-xml-parser": "^5.8.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
@@ -35,10 +38,8 @@
     "pg": "^8.13.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.0",
-    "typeorm": "^0.3.20",
     "supertest": "^7.1.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.14.1",
+    "typeorm": "^0.3.20",
     "zod": "^3.22.0"
   },
   "devDependencies": {

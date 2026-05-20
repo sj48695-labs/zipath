@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { XMLParser } from "fast-xml-parser";
 import { RealPriceCache } from "@zipath/db";
 import type { RealPriceTrade, MonthlyPriceSummary } from "@zipath/types";
 
@@ -10,6 +11,12 @@ export class RealPriceService {
   private readonly logger = new Logger(RealPriceService.name);
   private readonly apiBase =
     "https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev";
+  // 숫자/실수형 텍스트는 string 으로 유지 (regionCode, 거래금액 등 포맷 보존)
+  private readonly xmlParser = new XMLParser({
+    ignoreAttributes: true,
+    parseTagValue: false,
+    trimValues: true,
+  });
 
   constructor(
     @InjectRepository(RealPriceCache)
@@ -185,28 +192,31 @@ export class RealPriceService {
         return [];
       }
 
-      // data.go.kr 는 정상 응답엔 JSON, 에러엔 XML 을 반환할 수 있음.
-      // XML 이면 `<returnAuthMsg>` / `<returnReasonCode>` 추출해 로깅.
-      if (text.trimStart().startsWith("<")) {
-        const reason =
-          /<returnReasonCode>([^<]+)<\/returnReasonCode>/.exec(text)?.[1] ??
-          "";
-        const authMsg =
-          /<returnAuthMsg>([^<]+)<\/returnAuthMsg>/.exec(text)?.[1] ?? "";
-        const errMsg = /<errMsg>([^<]+)<\/errMsg>/.exec(text)?.[1] ?? "";
-        // 표준 cmmMsgHeader 가 아닌 XML/HTML 응답일 경우 원본도 같이 남겨야
-        // 디버깅 가능 (예: WAF/HTML 에러 페이지)
-        const rawHint =
-          !reason && !authMsg && !errMsg
-            ? ` | raw=${text.replace(/\s+/g, " ").slice(0, 300)}`
-            : "";
+      // data.go.kr 의 RTMS 엔드포인트는 `type=json` 을 무시하고 XML 만 반환함.
+      // 정상 응답도 XML (`<response><header><resultCode>000`), 에러도 XML
+      // (`<OpenAPI_ServiceResponse><cmmMsgHeader>`) 이라 시작 글자만으로
+      // 에러로 단정할 수 없음 — 파싱 후 resultCode 로 분기해야 함.
+      const data = text.trimStart().startsWith("<")
+        ? this.xmlParser.parse(text)
+        : JSON.parse(text);
+
+      const errHeader = data?.OpenAPI_ServiceResponse?.cmmMsgHeader;
+      if (errHeader) {
         this.logger.error(
-          `data.go.kr XML error | code=${reason} | auth=${authMsg} | err=${errMsg} | url=${this.apiBase}${rawHint}`,
+          `data.go.kr API error | code=${errHeader.returnReasonCode ?? ""} | auth=${errHeader.returnAuthMsg ?? ""} | err=${errHeader.errMsg ?? ""} | url=${this.apiBase}`,
         );
         return [];
       }
 
-      const data = JSON.parse(text);
+      const resultCode = data?.response?.header?.resultCode;
+      if (resultCode && resultCode !== "000") {
+        const resultMsg = data?.response?.header?.resultMsg ?? "";
+        this.logger.error(
+          `data.go.kr result error | code=${resultCode} | msg=${resultMsg} | url=${this.apiBase}`,
+        );
+        return [];
+      }
+
       const items =
         data?.response?.body?.items?.item ??
         data?.body?.items?.item ??

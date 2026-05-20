@@ -2,6 +2,7 @@ import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
+import { XMLParser } from "fast-xml-parser";
 import { Announcement, SubscriptionCriteria } from "@zipath/db";
 import { Cron } from "@nestjs/schedule";
 import { MatchRequestDto } from "./dto/match-request.dto";
@@ -27,6 +28,12 @@ export class AnnouncementService {
   private readonly logger = new Logger(AnnouncementService.name);
   private readonly apiBase =
     "https://apis.data.go.kr/B552555/lttotPblancList/getAPTLttotPblancList";
+  // 숫자형 텍스트도 string 으로 유지 (관리번호/공고번호 포맷 보존)
+  private readonly xmlParser = new XMLParser({
+    ignoreAttributes: true,
+    parseTagValue: false,
+    trimValues: true,
+  });
 
   constructor(
     @InjectRepository(Announcement)
@@ -114,31 +121,38 @@ export class AnnouncementService {
         return;
       }
 
-      // data.go.kr 는 에러 시 XML 반환 가능 — `<returnAuthMsg>` 등 추출 로깅
-      if (text.trimStart().startsWith("<")) {
-        const reason =
-          /<returnReasonCode>([^<]+)<\/returnReasonCode>/.exec(text)?.[1] ??
-          "";
-        const authMsg =
-          /<returnAuthMsg>([^<]+)<\/returnAuthMsg>/.exec(text)?.[1] ?? "";
-        const errMsg = /<errMsg>([^<]+)<\/errMsg>/.exec(text)?.[1] ?? "";
-        // 표준 cmmMsgHeader 가 아닌 XML/HTML 응답일 경우 원본도 같이 남겨야
-        // 디버깅 가능 (예: WAF/HTML 에러 페이지)
-        const rawHint =
-          !reason && !authMsg && !errMsg
-            ? ` | raw=${text.replace(/\s+/g, " ").slice(0, 300)}`
-            : "";
+      // data.go.kr 는 `type=json` 을 무시하고 XML 만 반환할 수 있음.
+      // 정상 응답도 XML (`<response><header><resultCode>000`), 에러도 XML
+      // (`<OpenAPI_ServiceResponse><cmmMsgHeader>`) — 파싱 후 resultCode 로 분기.
+      const data = text.trimStart().startsWith("<")
+        ? this.xmlParser.parse(text)
+        : JSON.parse(text);
+
+      const errHeader = data?.OpenAPI_ServiceResponse?.cmmMsgHeader;
+      if (errHeader) {
         this.logger.error(
-          `data.go.kr XML error | code=${reason} | auth=${authMsg} | err=${errMsg} | url=${this.apiBase}${rawHint}`,
+          `data.go.kr API error | code=${errHeader.returnReasonCode ?? ""} | auth=${errHeader.returnAuthMsg ?? ""} | err=${errHeader.errMsg ?? ""} | url=${this.apiBase}`,
         );
         return;
       }
 
-      const data = JSON.parse(text);
-      const items: ApiAnnouncement[] =
-        data?.response?.body?.items?.item ?? [];
+      const resultCode = data?.response?.header?.resultCode;
+      if (resultCode && resultCode !== "000") {
+        const resultMsg = data?.response?.header?.resultMsg ?? "";
+        this.logger.error(
+          `data.go.kr result error | code=${resultCode} | msg=${resultMsg} | url=${this.apiBase}`,
+        );
+        return;
+      }
 
-      if (!Array.isArray(items) || items.length === 0) {
+      const rawItems = data?.response?.body?.items?.item;
+      const items: ApiAnnouncement[] = Array.isArray(rawItems)
+        ? (rawItems as ApiAnnouncement[])
+        : rawItems
+          ? [rawItems as ApiAnnouncement]
+          : [];
+
+      if (items.length === 0) {
         this.logger.warn("동기화할 공고 데이터 없음");
         return;
       }
