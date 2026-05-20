@@ -9,5 +9,6 @@ import { RealPriceService } from "./real-price.service";
   imports: [ConfigModule, TypeOrmModule.forFeature([RealPriceCache])],
   controllers: [RealPriceController],
   providers: [RealPriceService],
+  exports: [RealPriceService],
 })
 export class RealPriceModule {}
