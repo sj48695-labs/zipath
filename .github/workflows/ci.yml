@@ -70,6 +70,8 @@ jobs:
         run: npm run test:e2e -w @zipath/api
 
   # template: playwright-e2e v0.1
+  # PR: Vercel preview URL (현재 PR 의 코드) 가 deploy 되길 기다린 뒤 그곳에 e2e.
+  # workflow_dispatch: 명시한 base URL 또는 default 운영 dev URL.
   e2e-web:
     name: E2E (web)
     needs: ci
@@ -79,11 +81,30 @@ jobs:
       (github.event_name == 'pull_request' && contains(github.event.pull_request.labels.*.name, 'run-e2e-web'))
     continue-on-error: true
 
-    env:
-      ZIPATH_BASE_URL: https://zipath-web.vercel.app
-
     steps:
       - uses: actions/checkout@v4
+
+      # PR 이면 Vercel preview URL 을 기다린다. develop/main 의 마지막 배포본 대신 PR 코드 자체를 검증.
+      - name: Wait for Vercel preview
+        if: github.event_name == 'pull_request'
+        id: vercel-preview
+        uses: patrickedqvist/wait-for-vercel-preview@v1.3.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          max_timeout: 600
+          check_interval: 10
+
+      # workflow_dispatch 또는 preview URL 없을 때는 develop 의 deployed dev URL fallback.
+      - name: Resolve base URL
+        id: base-url
+        run: |
+          if [ -n "${{ steps.vercel-preview.outputs.url }}" ]; then
+            echo "url=${{ steps.vercel-preview.outputs.url }}" >> "$GITHUB_OUTPUT"
+            echo "Using Vercel preview URL: ${{ steps.vercel-preview.outputs.url }}"
+          else
+            echo "url=https://zipath-web.vercel.app" >> "$GITHUB_OUTPUT"
+            echo "Using fallback dev URL: https://zipath-web.vercel.app"
+          fi
 
       - uses: actions/setup-node@v4
         with:
@@ -112,6 +133,8 @@ jobs:
         working-directory: apps/web-e2e
 
       - name: Run Playwright
+        env:
+          ZIPATH_BASE_URL: ${{ steps.base-url.outputs.url }}
         run: npx playwright test
         working-directory: apps/web-e2e
 
