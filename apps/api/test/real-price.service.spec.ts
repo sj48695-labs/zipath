@@ -253,13 +253,14 @@ describe("RealPriceService", () => {
       expect(result.cached).toBe(true);
     });
 
+    const tradesSmallMediumLarge = [
+      makeTrade({ aptNm: "소형", excluUseAr: "40" }),
+      makeTrade({ aptNm: "중형", excluUseAr: "85" }),
+      makeTrade({ aptNm: "대형", excluUseAr: "120" }),
+    ];
+
     it("should filter trades by minArea only", async () => {
-      const trades = [
-        makeTrade({ aptNm: "소형", excluUseAr: "40" }),
-        makeTrade({ aptNm: "중형", excluUseAr: "85" }),
-        makeTrade({ aptNm: "대형", excluUseAr: "120" }),
-      ];
-      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(trades));
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(tradesSmallMediumLarge));
 
       const result = await service.search("11680", "202603", 60);
 
@@ -268,12 +269,7 @@ describe("RealPriceService", () => {
     });
 
     it("should filter trades by maxArea only", async () => {
-      const trades = [
-        makeTrade({ aptNm: "소형", excluUseAr: "40" }),
-        makeTrade({ aptNm: "중형", excluUseAr: "85" }),
-        makeTrade({ aptNm: "대형", excluUseAr: "120" }),
-      ];
-      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(trades));
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(tradesSmallMediumLarge));
 
       const result = await service.search("11680", "202603", undefined, 85);
 
