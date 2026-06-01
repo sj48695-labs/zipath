@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { fetchApi } from "@/lib/api";
+import { fetchApi, fetchApiForm, ApiError } from "@/lib/api";
 import SiteHeader from "@/components/layout/SiteHeader";
 
 interface ChecklistItem {
@@ -22,6 +22,28 @@ interface ContractChecklist {
 }
 
 type ContractType = "월세" | "전세" | "매매";
+
+interface ClauseDetection {
+  id: string;
+  label: string;
+  detected: boolean;
+  severity: "required" | "recommended";
+  matchedKeywords: string[];
+  advice: string;
+}
+
+interface ContractAnalysisResult {
+  contractType: string;
+  clauses: ClauseDetection[];
+  detectedCount: number;
+  totalCount: number;
+  missingRequired: string[];
+  missingRecommended: string[];
+  riskLevel: "safe" | "caution" | "danger";
+  riskSummary: string;
+  disclaimer: string;
+  premiumNotice?: string;
+}
 
 const CONTRACT_TYPES: { type: ContractType; label: string; description: string; color: string }[] = [
   {
@@ -51,6 +73,42 @@ export default function ContractAnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+
+  // 계약서 이미지 분석(OCR) 상태
+  const [analysisType, setAnalysisType] = useState<ContractType>("월세");
+  const [analysisFile, setAnalysisFile] = useState<File | null>(null);
+  const [analysisResult, setAnalysisResult] =
+    useState<ContractAnalysisResult | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
+
+  const handleAnalyzeImage = useCallback(async () => {
+    if (!analysisFile) {
+      setAnalysisError("분석할 계약서 이미지를 선택해주세요.");
+      return;
+    }
+    setAnalyzing(true);
+    setAnalysisError(null);
+    setAnalysisResult(null);
+    try {
+      const formData = new FormData();
+      formData.append("type", analysisType);
+      formData.append("image", analysisFile);
+      const result = await fetchApiForm<ContractAnalysisResult>(
+        "/contract-analysis/analyze",
+        formData,
+      );
+      setAnalysisResult(result);
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "계약서 분석에 실패했습니다. 다시 시도해주세요.";
+      setAnalysisError(message);
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [analysisFile, analysisType]);
 
   const fetchChecklist = useCallback(async (type: ContractType) => {
     setLoading(true);
@@ -112,6 +170,130 @@ export default function ContractAnalysisPage() {
           이 체크리스트는 참고용이며 법적 효력이 없습니다. 실제 계약 시에는
           반드시 전문가(공인중개사, 변호사)의 조언을 받으세요.
         </div>
+
+        {/* 계약서 이미지 분석 (OCR) */}
+        <section className="mb-10 rounded-lg border-2 border-primary/20 bg-primary/5 p-5">
+          <div className="mb-1 flex items-center gap-2">
+            <h2 className="text-lg font-bold">계약서 이미지 분석</h2>
+            <span className="rounded bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+              프리미엄 체험
+            </span>
+          </div>
+          <p className="mb-4 text-sm text-muted-foreground">
+            계약서 사진을 업로드하면 주요 조항이 빠짐없이 들어있는지 자동으로
+            점검해 드립니다.
+          </p>
+
+          <div className="grid gap-4 sm:grid-cols-[auto_1fr_auto] sm:items-end">
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                계약 유형
+              </label>
+              <select
+                value={analysisType}
+                onChange={(e) =>
+                  setAnalysisType(e.target.value as ContractType)
+                }
+                className="rounded-md border bg-card px-3 py-2 text-sm"
+              >
+                {CONTRACT_TYPES.map((ct) => (
+                  <option key={ct.type} value={ct.type}>
+                    {ct.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                계약서 이미지 (PNG, JPEG)
+              </label>
+              <input
+                type="file"
+                accept="image/png,image/jpeg"
+                onChange={(e) =>
+                  setAnalysisFile(e.target.files?.[0] ?? null)
+                }
+                className="block w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-primary file:px-3 file:py-2 file:text-sm file:font-medium file:text-primary-foreground hover:file:bg-primary/90"
+              />
+            </div>
+            <button
+              onClick={handleAnalyzeImage}
+              disabled={analyzing || !analysisFile}
+              className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              {analyzing ? "분석 중..." : "분석하기"}
+            </button>
+          </div>
+
+          {analysisError && (
+            <p className="mt-3 text-sm font-medium text-red-700">
+              {analysisError}
+            </p>
+          )}
+
+          {analysisResult && (
+            <div className="mt-5 space-y-3">
+              <div
+                className={`rounded-md px-4 py-3 text-sm ${
+                  analysisResult.riskLevel === "danger"
+                    ? "bg-red-50 text-red-800"
+                    : analysisResult.riskLevel === "caution"
+                      ? "bg-yellow-50 text-yellow-800"
+                      : "bg-green-50 text-green-800"
+                }`}
+              >
+                <span className="font-semibold">
+                  주요 조항 {analysisResult.detectedCount}/
+                  {analysisResult.totalCount} 검출
+                </span>{" "}
+                — {analysisResult.riskSummary}
+              </div>
+
+              <ul className="space-y-2">
+                {analysisResult.clauses.map((clause) => (
+                  <li
+                    key={clause.id}
+                    className={`rounded-md border px-4 py-3 ${
+                      clause.detected
+                        ? "border-green-200 bg-green-50"
+                        : clause.severity === "required"
+                          ? "border-red-200 bg-red-50"
+                          : "border-yellow-200 bg-yellow-50"
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={`text-sm font-medium ${
+                          clause.detected
+                            ? "text-green-800"
+                            : clause.severity === "required"
+                              ? "text-red-800"
+                              : "text-yellow-800"
+                        }`}
+                      >
+                        {clause.detected ? "검출됨" : "누락"} · {clause.label}
+                      </span>
+                      {clause.severity === "required" && (
+                        <span className="rounded bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700">
+                          필수
+                        </span>
+                      )}
+                    </div>
+                    {!clause.detected && (
+                      <p className="mt-1 text-xs text-muted-foreground">
+                        {clause.advice}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+
+              <p className="rounded-md bg-amber-50 px-4 py-3 text-xs text-amber-800">
+                {analysisResult.disclaimer}
+              </p>
+            </div>
+          )}
+        </section>
 
         {/* 계약 유형 선택 */}
         <div className="mb-8">
