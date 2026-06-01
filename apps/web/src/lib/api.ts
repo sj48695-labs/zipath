@@ -210,6 +210,55 @@ export async function fetchApi<T>(
   return unwrapBackendData<T>(await res.json());
 }
 
+interface FetchFormOptions {
+  /** 토큰이 없으면 ApiError(401)을 throw한다. */
+  auth?: boolean;
+  method?: string;
+}
+
+/**
+ * multipart/form-data(파일 업로드) 전용 fetch 헬퍼.
+ *
+ * fetchApi 는 Content-Type: application/json 을 고정하므로 파일 업로드에 부적합하다.
+ * 이 헬퍼는 Content-Type 을 설정하지 않아 브라우저가 multipart boundary 를 자동 지정한다.
+ */
+export async function fetchApiForm<T>(
+  path: string,
+  formData: FormData,
+  options?: FetchFormOptions,
+): Promise<T> {
+  const url = `${API_BASE}${path}`;
+  const { auth, method = "POST" } = options ?? {};
+
+  const headers: Record<string, string> = {};
+
+  if (auth) {
+    const token =
+      typeof window !== "undefined"
+        ? localStorage.getItem("accessToken")
+        : null;
+    if (!token) {
+      throw new ApiError("로그인이 필요합니다.", 401);
+    }
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetch(url, {
+    method,
+    body: formData,
+    headers,
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => null);
+    const message =
+      (body as Record<string, unknown>)?.message ?? `API 오류 (${res.status})`;
+    throw new ApiError(String(message), res.status);
+  }
+
+  return unwrapBackendData<T>(await res.json());
+}
+
 /**
  * NestJS TransformInterceptor 의 {success, data} 래핑을 풀어 안쪽 data 를 반환.
  * 래핑되지 않은 응답은 그대로 통과 (안전 fallback).
