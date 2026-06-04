@@ -500,8 +500,50 @@ export default function RegionComparePage() {
               </ResponsiveContainer>
             </div>
 
-            {/* Data table */}
-            <div className="overflow-x-auto rounded-lg border">
+            {/* Mobile: card grid (no horizontal scroll) */}
+            <div className="grid grid-cols-2 gap-3 sm:hidden">
+              {regionStats.map((s, idx) => (
+                <div
+                  key={s.regionCode}
+                  className="rounded-lg border bg-card p-3"
+                >
+                  <div className="mb-2 flex items-center gap-2 font-medium">
+                    <span
+                      className="inline-block h-3 w-3 shrink-0 rounded-full"
+                      style={{ backgroundColor: REGION_COLORS[idx] }}
+                    />
+                    <span className="truncate text-sm">{s.regionName}</span>
+                  </div>
+                  <dl className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">평균가</dt>
+                      <dd className="font-medium text-primary">
+                        {s.avgPrice > 0 ? formatPrice(s.avgPrice) : "-"}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">최저가</dt>
+                      <dd className="text-green-600">
+                        {s.minPrice > 0 ? formatPrice(s.minPrice) : "-"}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">최고가</dt>
+                      <dd className="text-red-600">
+                        {s.maxPrice > 0 ? formatPrice(s.maxPrice) : "-"}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">거래</dt>
+                      <dd>{s.tradeCount}건</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: data table */}
+            <div className="hidden overflow-x-auto rounded-lg border sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-secondary/30 text-left">
