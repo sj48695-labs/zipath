@@ -11,6 +11,7 @@ function makeUser(overrides: Partial<User> = {}): User {
     nickname: "테스터",
     provider: "google",
     providerId: "google-123",
+    interestRegions: [],
     createdAt: new Date("2026-01-01"),
     updatedAt: new Date("2026-01-01"),
     lastActiveAt: new Date("2026-01-01"),

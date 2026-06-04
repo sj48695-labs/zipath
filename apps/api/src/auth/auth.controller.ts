@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Patch,
   Get,
   Body,
   BadRequestException,
@@ -35,6 +36,10 @@ const oauthLoginSchema = z.object({
 
 const refreshSchema = z.object({
   refreshToken: z.string().min(1),
+});
+
+const interestRegionsSchema = z.object({
+  interestRegions: z.array(z.string()).max(20),
 });
 
 @Controller("auth")
@@ -156,5 +161,24 @@ export class AuthController {
   @Get("profile")
   async getProfile(@Request() req: AuthRequest) {
     return this.authService.getProfile(req.user.id);
+  }
+
+  /** 관심 지역 설정 */
+  @UseGuards(JwtAuthGuard)
+  @Patch("profile/interest-regions")
+  async updateInterestRegions(
+    @Request() req: AuthRequest,
+    @Body() body: unknown,
+  ) {
+    const parsed = interestRegionsSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(
+        "interestRegions는 문자열 배열이어야 합니다. (최대 20개)",
+      );
+    }
+    return this.authService.updateInterestRegions(
+      req.user.id,
+      parsed.data.interestRegions,
+    );
   }
 }
