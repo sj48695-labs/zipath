@@ -34,9 +34,10 @@ interface Trade {
 
 interface MonthlyPriceSummaryItem {
   yearMonth: string;
-  avgPrice: number;
-  minPrice: number;
-  maxPrice: number;
+  // 거래가 0건인 월은 null (차트 gap 표시)
+  avgPrice: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
   tradeCount: number;
 }
 
@@ -336,7 +337,13 @@ export default function RealPricePage() {
               </div>
             )}
             {(trendSearched || trendLoading) && (
-              <MonthlyPriceTrendChart data={trendData} loading={trendLoading} />
+              <>
+                <MonthlyPriceTrendChart data={trendData} loading={trendLoading} />
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  거래가 없는 월은 차트에서 빈 구간(gap)으로 표시됩니다. 본 정보는
+                  참고용이며 법적 효력이 없습니다.
+                </p>
+              </>
             )}
           </>
         )}
