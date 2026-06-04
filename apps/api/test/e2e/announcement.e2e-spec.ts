@@ -25,9 +25,11 @@ const mockAnnouncements = [
 const createQueryBuilder = {
   orderBy: jest.fn().mockReturnThis(),
   andWhere: jest.fn().mockReturnThis(),
+  where: jest.fn().mockReturnThis(),
   skip: jest.fn().mockReturnThis(),
   take: jest.fn().mockReturnThis(),
   getManyAndCount: jest.fn().mockResolvedValue([mockAnnouncements, 1]),
+  getMany: jest.fn().mockResolvedValue(mockAnnouncements),
 };
 
 const mockAnnouncementRepo = {
@@ -127,6 +129,27 @@ describe("AnnouncementController (e2e)", () => {
     it("ID가 숫자가 아니면 400을 반환한다", async () => {
       await request(app.getHttpServer())
         .get("/api/announcements/abc")
+        .expect(400);
+    });
+  });
+
+  describe("POST /api/announcements/match", () => {
+    it("사용자 조건으로 전체 공고를 자동 매칭한다", async () => {
+      const res = await request(app.getHttpServer())
+        .post("/api/announcements/match")
+        .send({ age: 30, income: 5000, homelessMonths: 36, region: "서울" })
+        .expect(201);
+
+      expect(res.body.matchedCount).toBe(res.body.matches.length);
+      expect(Array.isArray(res.body.matches)).toBe(true);
+      expect(res.body.matches[0].overallEligible).toBe(true);
+      expect(res.body.disclaimer).toContain("법적 효력");
+    });
+
+    it("필수 입력(age)이 없으면 400을 반환한다", async () => {
+      await request(app.getHttpServer())
+        .post("/api/announcements/match")
+        .send({ income: 5000, homelessMonths: 36 })
         .expect(400);
     });
   });
