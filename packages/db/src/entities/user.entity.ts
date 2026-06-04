@@ -23,6 +23,9 @@ export class User {
   @Column({ type: "varchar", nullable: true, unique: true })
   providerId!: string | null; // SSO provider의 유저 ID
 
+  @Column({ type: "simple-array", default: "" })
+  interestRegions!: string[]; // 관심 지역 목록 (예: "서울 강남구")
+
   @CreateDateColumn()
   createdAt!: Date;
 
