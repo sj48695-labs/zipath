@@ -15,9 +15,10 @@ import {
 
 interface MonthlyPriceSummary {
   yearMonth: string;
-  avgPrice: number;
-  minPrice: number;
-  maxPrice: number;
+  // 거래가 0건인 월은 null → 차트에서 gap 으로 표시
+  avgPrice: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
   tradeCount: number;
 }
 
@@ -34,7 +35,8 @@ function formatYearMonth(ym: string): string {
   return `${year}.${month}`;
 }
 
-function formatPrice(value: number): string {
+function formatPrice(value: number | null | undefined): string {
+  if (value === null || value === undefined) return "거래 없음";
   if (value >= 10000) {
     const eok = Math.floor(value / 10000);
     const remainder = value % 10000;
@@ -121,10 +123,10 @@ export default function MonthlyPriceTrendChart({
               />
               <Tooltip
                 formatter={(value: unknown, name: unknown) => {
-                  const v = Number(value);
+                  const v = value === null || value === undefined ? null : Number(value);
                   const n = String(name);
                   if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                  if (n === "tradeCount") return [`${v}건`, "거래 건수"];
+                  if (n === "tradeCount") return [`${v ?? 0}건`, "거래 건수"];
                   return [formatPrice(v), n];
                 }}
                 labelFormatter={(label: unknown) => String(label)}
@@ -144,6 +146,7 @@ export default function MonthlyPriceTrendChart({
                 strokeWidth={2}
                 dot={{ r: 4 }}
                 activeDot={{ r: 6 }}
+                connectNulls={false}
               />
             </LineChart>
           ) : (
@@ -164,7 +167,7 @@ export default function MonthlyPriceTrendChart({
               />
               <Tooltip
                 formatter={(value: unknown, name: unknown) => {
-                  const v = Number(value);
+                  const v = value === null || value === undefined ? null : Number(value);
                   const n = String(name);
                   if (n === "maxPrice") return [formatPrice(v), "최고가"];
                   if (n === "avgPrice") return [formatPrice(v), "평균가"];
@@ -189,6 +192,7 @@ export default function MonthlyPriceTrendChart({
                 fill="hsl(0, 72%, 51%)"
                 fillOpacity={0.1}
                 strokeWidth={1}
+                connectNulls={false}
               />
               <Area
                 type="monotone"
@@ -197,6 +201,7 @@ export default function MonthlyPriceTrendChart({
                 fill="hsl(221, 83%, 53%)"
                 fillOpacity={0.2}
                 strokeWidth={2}
+                connectNulls={false}
               />
               <Area
                 type="monotone"
@@ -205,6 +210,7 @@ export default function MonthlyPriceTrendChart({
                 fill="hsl(142, 71%, 45%)"
                 fillOpacity={0.1}
                 strokeWidth={1}
+                connectNulls={false}
               />
             </AreaChart>
           )}
@@ -224,21 +230,35 @@ export default function MonthlyPriceTrendChart({
             </tr>
           </thead>
           <tbody>
-            {data.map((d) => (
-              <tr key={d.yearMonth} className="border-b hover:bg-secondary/10">
-                <td className="px-3 py-2">{formatYearMonth(d.yearMonth)}</td>
-                <td className="px-3 py-2 text-right font-medium text-primary">
-                  {formatPrice(d.avgPrice)}
-                </td>
-                <td className="px-3 py-2 text-right text-green-600">
-                  {formatPrice(d.minPrice)}
-                </td>
-                <td className="px-3 py-2 text-right text-red-600">
-                  {formatPrice(d.maxPrice)}
-                </td>
-                <td className="px-3 py-2 text-right">{d.tradeCount}건</td>
-              </tr>
-            ))}
+            {data.map((d) => {
+              const noData = d.tradeCount === 0 || d.avgPrice === null;
+              return (
+                <tr key={d.yearMonth} className="border-b hover:bg-secondary/10">
+                  <td className="px-3 py-2">{formatYearMonth(d.yearMonth)}</td>
+                  {noData ? (
+                    <td
+                      colSpan={3}
+                      className="px-3 py-2 text-center text-muted-foreground"
+                    >
+                      거래 없음
+                    </td>
+                  ) : (
+                    <>
+                      <td className="px-3 py-2 text-right font-medium text-primary">
+                        {formatPrice(d.avgPrice)}
+                      </td>
+                      <td className="px-3 py-2 text-right text-green-600">
+                        {formatPrice(d.minPrice)}
+                      </td>
+                      <td className="px-3 py-2 text-right text-red-600">
+                        {formatPrice(d.maxPrice)}
+                      </td>
+                    </>
+                  )}
+                  <td className="px-3 py-2 text-right">{d.tradeCount}건</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
