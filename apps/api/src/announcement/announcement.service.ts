@@ -7,6 +7,7 @@ import { Announcement, SubscriptionCriteria } from "@zipath/db";
 import { Cron } from "@nestjs/schedule";
 import { MatchRequestDto } from "./dto/match-request.dto";
 import { MatchResultDto, MatchCriterionResult } from "./dto/match-result.dto";
+import { MatchAllResultDto, MATCH_DISCLAIMER } from "./dto/match-all-result.dto";
 
 interface ApiAnnouncement {
   HOUSE_MANAGE_NO: string;
@@ -280,6 +281,36 @@ export class AnnouncementService {
       message: overallEligible
         ? "해당 공고에 지원 가능한 유형이 있습니다!"
         : "현재 조건으로는 해당 공고 지원이 어렵습니다.",
+    };
+  }
+
+  /**
+   * 사용자 조건으로 신청 가능한 전체 공고를 자동 매칭한다.
+   * 마감 전(`endDate >= now`) 공고만 대상으로 하며,
+   * 지원 가능(`overallEligible === true`)한 공고만 반환한다.
+   */
+  async matchAllAnnouncements(
+    input: MatchRequestDto,
+  ): Promise<MatchAllResultDto> {
+    const activeAnnouncements = await this.announcementRepo
+      .createQueryBuilder("a")
+      .where("a.endDate >= :now", { now: new Date() })
+      .orderBy("a.endDate", "ASC")
+      .getMany();
+
+    const matches: MatchResultDto[] = [];
+    for (const announcement of activeAnnouncements) {
+      // 단일 공고 매칭 로직 재사용 (중복 구현 금지)
+      const result = await this.matchAnnouncement(announcement.id, input);
+      if (result && result.overallEligible) {
+        matches.push(result);
+      }
+    }
+
+    return {
+      matchedCount: matches.length,
+      matches,
+      disclaimer: MATCH_DISCLAIMER,
     };
   }
 
