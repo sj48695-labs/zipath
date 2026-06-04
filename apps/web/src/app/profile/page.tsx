@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -35,6 +36,129 @@ function formatDateTime(dateString: string): string {
 function getProviderLabel(provider: string | null): string {
   if (!provider) return "알 수 없음";
   return PROVIDER_LABELS[provider as ProviderLabel] ?? provider;
+}
+
+const MAX_REGIONS = 20;
+
+function InterestRegionsSection({ regions }: { regions: string[] }) {
+  const { updateInterestRegions } = useAuth();
+  const [draft, setDraft] = useState<string[]>(regions);
+  const [input, setInput] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [justSaved, setJustSaved] = useState(false);
+
+  const isDirty =
+    draft.length !== regions.length ||
+    draft.some((r, i) => r !== regions[i]);
+
+  function addRegion() {
+    const value = input.trim();
+    setError(null);
+    setJustSaved(false);
+    if (!value) return;
+    if (draft.includes(value)) {
+      setError("이미 추가된 지역입니다.");
+      return;
+    }
+    if (draft.length >= MAX_REGIONS) {
+      setError(`관심 지역은 최대 ${MAX_REGIONS}개까지 등록할 수 있습니다.`);
+      return;
+    }
+    setDraft([...draft, value]);
+    setInput("");
+  }
+
+  function removeRegion(region: string) {
+    setError(null);
+    setJustSaved(false);
+    setDraft(draft.filter((r) => r !== region));
+  }
+
+  async function save() {
+    setIsSaving(true);
+    setError(null);
+    try {
+      await updateInterestRegions(draft);
+      setJustSaved(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "저장에 실패했습니다.");
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  return (
+    <div className="mt-6 rounded-lg border bg-card p-6">
+      <h2 className="mb-1 text-lg font-semibold">관심 지역</h2>
+      <p className="mb-4 text-sm text-muted-foreground">
+        관심 지역을 등록하면 실거래가, 청약 공고 알림에 활용됩니다.
+      </p>
+
+      <div className="mb-4 flex gap-2">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              addRegion();
+            }
+          }}
+          placeholder="예: 서울 강남구"
+          className="flex-1 rounded-lg border px-3 py-2 text-sm"
+          aria-label="관심 지역 입력"
+        />
+        <button
+          type="button"
+          onClick={addRegion}
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          추가
+        </button>
+      </div>
+
+      {draft.length === 0 ? (
+        <p className="mb-4 text-sm text-muted-foreground">
+          등록된 관심 지역이 없습니다.
+        </p>
+      ) : (
+        <ul className="mb-4 flex flex-wrap gap-2">
+          {draft.map((region) => (
+            <li
+              key={region}
+              className="flex items-center gap-1 rounded-full bg-accent px-3 py-1 text-sm"
+            >
+              <span>{region}</span>
+              <button
+                type="button"
+                onClick={() => removeRegion(region)}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label={`${region} 삭제`}
+              >
+                &times;
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {error && <p className="mb-3 text-sm text-red-600">{error}</p>}
+      {justSaved && !isDirty && (
+        <p className="mb-3 text-sm text-green-600">저장되었습니다.</p>
+      )}
+
+      <button
+        type="button"
+        onClick={save}
+        disabled={isSaving || !isDirty}
+        className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+      >
+        {isSaving ? "저장 중..." : "저장"}
+      </button>
+    </div>
+  );
 }
 
 export default function ProfilePage() {
@@ -168,6 +292,9 @@ export default function ProfilePage() {
             </div>
           </dl>
         </div>
+
+        {/* Interest regions */}
+        <InterestRegionsSection regions={user.interestRegions ?? []} />
 
         {/* Actions */}
         <div className="mt-6 flex flex-col gap-3">

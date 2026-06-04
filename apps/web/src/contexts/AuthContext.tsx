@@ -14,6 +14,7 @@ interface UserProfile {
   email: string | null;
   nickname: string | null;
   provider: string | null;
+  interestRegions: string[];
   createdAt: string;
   lastActiveAt: string;
 }
@@ -25,6 +26,7 @@ interface AuthContextValue {
   login: (accessToken: string, refreshToken: string) => void;
   logout: () => void;
   fetchProfile: () => Promise<void>;
+  updateInterestRegions: (regions: string[]) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -93,6 +95,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const updateInterestRegions = useCallback(async (regions: string[]) => {
+    const accessToken = getStoredToken("accessToken");
+    if (!accessToken) {
+      throw new Error("로그인이 필요합니다.");
+    }
+
+    const res = await fetch("/api/auth/profile/interest-regions", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: JSON.stringify({ interestRegions: regions }),
+    });
+
+    if (!res.ok) {
+      const body: unknown = await res.json().catch(() => null);
+      const message =
+        (body as Record<string, string>)?.error ?? "관심 지역 저장에 실패했습니다.";
+      throw new Error(message);
+    }
+
+    const data: unknown = await res.json();
+    setUser(data as UserProfile);
+  }, []);
+
   useEffect(() => {
     void fetchProfile();
   }, [fetchProfile]);
@@ -106,6 +134,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         login,
         logout,
         fetchProfile,
+        updateInterestRegions,
       }}
     >
       {children}
