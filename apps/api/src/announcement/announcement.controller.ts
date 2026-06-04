@@ -33,6 +33,18 @@ export class AnnouncementController {
     return { message: "동기화 완료" };
   }
 
+  @Post("match")
+  async matchAll(@Body() body: unknown) {
+    const parsed = matchRequestSchema.safeParse(body);
+    if (!parsed.success) {
+      throw new BadRequestException(
+        parsed.error.issues.map((i) => i.message).join(", "),
+      );
+    }
+
+    return this.announcementService.matchAllAnnouncements(parsed.data);
+  }
+
   @Get(":id")
   async findOne(@Param("id", ParseIntPipe) id: number) {
     const result = await this.announcementService.findOne(id);
