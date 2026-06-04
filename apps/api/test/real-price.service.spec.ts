@@ -135,6 +135,7 @@ describe("RealPriceService", () => {
       global.fetch = jest.fn().mockResolvedValue({
         ok: false,
         status: 500,
+        text: jest.fn().mockResolvedValue("Internal Server Error"),
       });
 
       const result = await service.search("11680", "202603");

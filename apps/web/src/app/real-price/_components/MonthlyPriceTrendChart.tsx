@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   LineChart,
   Line,
@@ -45,8 +46,6 @@ function formatPrice(value: number | null | undefined): string {
   }
   return `${value.toLocaleString()}만원`;
 }
-
-import { useState } from "react";
 
 export default function MonthlyPriceTrendChart({
   data,
