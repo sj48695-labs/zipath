@@ -3,10 +3,6 @@ export interface Region {
   name: string;
 }
 
-/**
- * 실거래가 조회가 지원하는 시군구 목록.
- * 메인 조회 화면과 지역 비교 화면이 공유한다 (중복 정의 제거).
- */
 export const REGIONS: Region[] = [
   { code: "11110", name: "서울 종로구" },
   { code: "11140", name: "서울 중구" },
@@ -75,18 +71,11 @@ export const REGIONS: Region[] = [
   { code: "26710", name: "부산 기장군" },
 ];
 
-/** 현재 실거래가 조회가 지원하는 시도. */
 export const SUPPORTED_SIDO = ["서울", "경기", "인천", "부산"] as const;
 
-/** 지원 지역 안내 문구에 쓰는 짧은 라벨. */
 export const SUPPORTED_REGION_LABEL = "수도권·부산";
 
-/**
- * 검색 입력값이 미지원 지역에 해당하는지 판정한다.
- * 검색어가 비어있지 않은데도 매칭되는 지역이 0건이면 미지원으로 본다.
- * (지원 시도 오타로 0건인 경우도 동일하게 안내하는 편이 합리적이므로
- *  시도명 화이트리스트 정밀 매칭은 의도적으로 생략한다.)
- */
+// 오타로 0건이 나오는 경우도 동일 안내가 합리적이므로 시도명 정밀 매칭은 생략한다.
 export function isUnsupportedRegionQuery(
   query: string,
   filteredCount: number,

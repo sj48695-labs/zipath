@@ -120,14 +120,15 @@ export default function RegionComparePage() {
 
   const monthOptions = getMonthOptions();
 
-  const filteredRegions = searchQuery
+  const trimmedQuery = searchQuery.trim();
+  const filteredRegions = trimmedQuery
     ? REGIONS.filter((r) =>
-        r.name.toLowerCase().includes(searchQuery.toLowerCase()),
+        r.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
       )
     : REGIONS;
 
   const showUnsupportedNotice = isUnsupportedRegionQuery(
-    searchQuery,
+    trimmedQuery,
     filteredRegions.length,
   );
 
@@ -313,12 +314,10 @@ export default function RegionComparePage() {
             className="mb-3 w-full rounded-lg border bg-background px-3 py-2 text-sm"
           />
 
-          {/* Unsupported region warning (amber) — 미지원 지역 검색 시 */}
           {showUnsupportedNotice && (
             <SupportedRegionNotice variant="inline" className="mb-3" />
           )}
 
-          {/* Region checkboxes */}
           <div className="grid max-h-48 grid-cols-2 gap-1 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
             {filteredRegions.map((r) => {
               const isSelected = selectedRegions.includes(r.code);

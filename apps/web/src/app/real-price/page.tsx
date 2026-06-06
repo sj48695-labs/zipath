@@ -228,7 +228,6 @@ export default function RealPricePage() {
           })}
         </div>
 
-        {/* Supported region notice */}
         <SupportedRegionNotice className="mb-4" />
 
         {/* Search controls - single month for table/chart, date range for trend */}

@@ -1,18 +1,10 @@
 import { SUPPORTED_REGION_LABEL } from "../_lib/regions";
 
 interface SupportedRegionNoticeProps {
-  /**
-   * banner: 패널 상단 상시 안내 (지원 범위 명시)
-   * inline: 미지원 지역 검색 시 노출되는 인라인 경고
-   */
   variant?: "banner" | "inline";
   className?: string;
 }
 
-/**
- * 실거래가 조회 지원 지역(수도권·부산) 안내.
- * 검색 결과 없음(회색 톤)과 구분되도록 amber 계열 스타일을 사용한다.
- */
 export default function SupportedRegionNotice({
   variant = "banner",
   className = "",
