@@ -1,12 +1,5 @@
 import * as Joi from "joi";
 
-/**
- * 앱 부팅 시 환경변수를 검증하는 Joi 스키마.
- *
- * - 필수 env 누락/형식 오류 시 ConfigModule 이 즉시 예외를 던져 부팅을 중단한다.
- * - production 에서만 필요한 OAuth/결제 키는 NODE_ENV 에 따라 조건부로 요구한다.
- * - 정의되지 않은 env 는 그대로 통과시킨다 (allowUnknown).
- */
 export const envValidationSchema = Joi.object({
   // 실행 환경
   NODE_ENV: Joi.string()
