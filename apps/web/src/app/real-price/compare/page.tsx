@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
+import { useIsClient } from "@/lib/useIsClient";
 import {
   BarChart,
   Bar,
@@ -110,15 +111,27 @@ function computeStats(trades: Trade[], region: Region): RegionStats {
 }
 
 export default function RegionComparePage() {
+  const isClient = useIsClient();
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [dealYmd, setDealYmd] = useState(() => getMonthOptions()[0].value);
+  const [dealYmd, setDealYmd] = useState("");
   const [regionStats, setRegionStats] = useState<RegionStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const monthOptions = getMonthOptions();
+  // 월 목록은 `new Date()`에 의존하므로 SSR/CSR 결과가 달라질 수 있다.
+  // 하이드레이션 불일치를 피하기 위해 클라이언트 마운트 이후에만 계산한다.
+  const monthOptions = isClient ? getMonthOptions() : [];
+
+  useEffect(() => {
+    if (!dealYmd) {
+      const options = getMonthOptions();
+      if (options.length > 0) {
+        setDealYmd(options[0].value);
+      }
+    }
+  }, [dealYmd]);
 
   const trimmedQuery = searchQuery.trim();
   const filteredRegions = trimmedQuery
@@ -355,13 +368,18 @@ export default function RegionComparePage() {
             <select
               value={dealYmd}
               onChange={(e) => setDealYmd(e.target.value)}
+              disabled={!isClient}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
-              {monthOptions.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
+              {isClient ? (
+                monthOptions.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.label}
+                  </option>
+                ))
+              ) : (
+                <option value="">불러오는 중...</option>
+              )}
             </select>
           </div>
           <button
