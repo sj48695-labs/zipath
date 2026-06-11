@@ -66,27 +66,17 @@ describe("envValidationSchema", () => {
     const prodBase = { ...baseEnv, NODE_ENV: "production" };
 
     it("production 에서 JWT_SECRET 누락 시 에러", () => {
-      const { error } = validate({
-        ...prodBase,
-        GOOGLE_CLIENT_ID: "g",
-        GOOGLE_CLIENT_SECRET: "g",
-        KAKAO_CLIENT_ID: "k",
-        KAKAO_CLIENT_SECRET: "k",
-        NAVER_CLIENT_ID: "n",
-        NAVER_CLIENT_SECRET: "n",
-        TOSS_CLIENT_KEY: "t",
-        TOSS_SECRET_KEY: "t",
-      });
+      const { error } = validate(prodBase);
       expect(error).toBeDefined();
       expect(error?.message).toContain("JWT_SECRET");
     });
 
-    it("production 에서 OAuth/Toss 키 누락 시 에러", () => {
+    it("production 에서 선택 기능 키가 없어도 JWT_SECRET 이 있으면 통과", () => {
       const { error } = validate({ ...prodBase, JWT_SECRET: "secret" });
-      expect(error).toBeDefined();
+      expect(error).toBeUndefined();
     });
 
-    it("production 에서 모든 키가 있으면 통과", () => {
+    it("production 에서 모든 선택 기능 키가 있으면 통과", () => {
       const { error } = validate({
         ...prodBase,
         JWT_SECRET: "prod-secret",
@@ -100,6 +90,31 @@ describe("envValidationSchema", () => {
         TOSS_SECRET_KEY: "t",
       });
       expect(error).toBeUndefined();
+    });
+  });
+
+  describe("선택 기능 키 쌍 검증", () => {
+    it("OAuth client id 만 있으면 에러", () => {
+      const { error } = validate({ ...baseEnv, GOOGLE_CLIENT_ID: "g" });
+      expect(error).toBeDefined();
+      expect(error?.message).toContain("GOOGLE_CLIENT_SECRET");
+    });
+
+    it("빈 문자열 선택 키는 미설정으로 처리한다", () => {
+      const { error, value } = validate({
+        ...baseEnv,
+        GOOGLE_CLIENT_ID: "",
+        GOOGLE_CLIENT_SECRET: "",
+      });
+      expect(error).toBeUndefined();
+      expect(value.GOOGLE_CLIENT_ID).toBeUndefined();
+      expect(value.GOOGLE_CLIENT_SECRET).toBeUndefined();
+    });
+
+    it("Toss 키도 한쪽만 있으면 에러", () => {
+      const { error } = validate({ ...baseEnv, TOSS_SECRET_KEY: "secret" });
+      expect(error).toBeDefined();
+      expect(error?.message).toContain("TOSS_CLIENT_KEY");
     });
   });
 
