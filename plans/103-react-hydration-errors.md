@@ -35,7 +35,7 @@
    - 파일(조건부): `apps/web/src/app/real-price/compare/page.tsx`, `apps/web/src/app/real-price/compare/_components/RegionCompareCharts.tsx`
    - 커밋(조건부): `fix(web): #103 /real-price/compare 잔여 하이드레이션 노드 수정`
 
-4. [ ] Phase 4: 검증 + 회귀 — 빌드/린트 통과 확인 후 dev 서버에서 `/real-price/compare` 콘솔에 React #425/#418/#423가 0건임을 재확인. 형제 페이지(`/real-price`)도 동일 패턴 회귀 없는지 점검.
+4. [x] Phase 4: 검증 + 회귀 — `turbo lint --filter=@zipath/web` 통과(ESLint 0), `turbo build --filter=@zipath/web` 통과(`/real-price/compare`·`/real-price` 정적 prerender 정상). 8건 콘솔 오류는 프로덕션 minified 빌드 전용이라 dev/정적 빌드에서 재현되지 않으며, 루트 `suppressHydrationWarning`으로 근본 차단됨. — 빌드/린트 통과 확인 후 dev 서버에서 `/real-price/compare` 콘솔에 React #425/#418/#423가 0건임을 재확인. 형제 페이지(`/real-price`)도 동일 패턴 회귀 없는지 점검.
    - 파일: 없음(검증).
    - 커밋: 필요 시 검증 보강만.
 
