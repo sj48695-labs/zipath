@@ -447,8 +447,16 @@ export default function RealPricePage() {
             )}
 
             {!loading && !error && searched && trades.length === 0 && (
-              <div className="rounded-lg border p-6 text-center text-muted-foreground">
-                해당 조건의 거래 데이터가 없습니다.
+              <div className="rounded-lg border p-10 text-center">
+                <p className="text-lg font-medium">검색 결과가 없습니다</p>
+                <p className="mt-2 text-sm text-muted-foreground">
+                  선택한 지역과 계약월에 등록된 거래 내역이 없습니다.
+                </p>
+                <ul className="mx-auto mt-4 max-w-md list-disc space-y-1 text-left text-sm text-muted-foreground">
+                  <li>다른 계약월을 선택해보세요.</li>
+                  <li>면적 필터를 적용 중이라면 범위를 넓혀보세요.</li>
+                  <li>다른 지역을 선택해 다시 조회해보세요.</li>
+                </ul>
               </div>
             )}
 
