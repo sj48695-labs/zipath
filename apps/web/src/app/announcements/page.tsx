@@ -4,9 +4,12 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   formatDotDate,
+  formatKoreanDateTime,
   getTodayKey,
   isDateOnOrAfterToday,
 } from "@/lib/dateFormat";
+
+const CHEONGYAKHOME_URL = "https://www.applyhome.co.kr/";
 
 interface AnnouncementItem {
   id: number;
@@ -25,12 +28,14 @@ interface ApiResponse {
   totalCount: number;
   page: number;
   limit: number;
+  lastSyncedAt?: string | null;
   error?: string;
 }
 
 export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
@@ -51,13 +56,20 @@ export default function AnnouncementsPage() {
 
         if (data.error) {
           setError(data.error);
+          setAnnouncements([]);
+          setTotalCount(0);
+          setLastSyncedAt(null);
           return;
         }
 
         setAnnouncements(data.items ?? []);
         setTotalCount(data.totalCount ?? 0);
+        setLastSyncedAt(data.lastSyncedAt ?? null);
       } catch {
         setError("데이터를 불러오는 데 실패했습니다.");
+        setAnnouncements([]);
+        setTotalCount(0);
+        setLastSyncedAt(null);
       } finally {
         setLoading(false);
       }
@@ -96,8 +108,26 @@ export default function AnnouncementsPage() {
         </p>
 
         {loading && (
-          <div className="flex justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <div role="status" aria-live="polite" className="grid gap-4">
+            <span className="sr-only">공고를 불러오는 중</span>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                aria-hidden="true"
+                className="animate-pulse rounded-lg border bg-card p-6"
+              >
+                <div className="mb-3 flex gap-2">
+                  <div className="h-5 w-16 rounded bg-muted" />
+                  <div className="h-5 w-12 rounded bg-muted" />
+                </div>
+                <div className="mb-2 h-6 w-2/3 rounded bg-muted" />
+                <div className="h-4 w-1/2 rounded bg-muted" />
+                <div className="mt-4 flex gap-6">
+                  <div className="h-3 w-24 rounded bg-muted" />
+                  <div className="h-3 w-24 rounded bg-muted" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -108,8 +138,24 @@ export default function AnnouncementsPage() {
         )}
 
         {!loading && !error && announcements.length === 0 && (
-          <div className="rounded-lg border p-6 text-center text-muted-foreground">
-            등록된 공고가 없습니다.
+          <div className="rounded-lg border p-6 text-center">
+            <p className="text-muted-foreground">등록된 공고가 없습니다.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {lastSyncedAt
+                ? `마지막 동기화: ${formatKoreanDateTime(lastSyncedAt)}`
+                : "아직 동기화된 공고 정보가 없습니다."}
+            </p>
+            <a
+              href={CHEONGYAKHOME_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-sm text-primary hover:underline"
+            >
+              청약홈에서 직접 확인하기 →
+            </a>
+            <p className="mt-4 text-xs text-muted-foreground">
+              본 정보는 참고용이며 법적 효력이 없습니다.
+            </p>
           </div>
         )}
 
