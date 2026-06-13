@@ -60,7 +60,7 @@ const REGION_COLORS = [
   "hsl(45, 93%, 47%)",
 ];
 
-function getMonthOptions() {
+function buildMonthOptions() {
   const options: { value: string; label: string }[] = [];
   const now = new Date();
   for (let i = 0; i < 12; i++) {
@@ -72,6 +72,8 @@ function getMonthOptions() {
   return options;
 }
 
+const MONTH_OPTIONS = buildMonthOptions();
+
 function formatPrice(value: number): string {
   if (value >= 10000) {
     const eok = Math.floor(value / 10000);
@@ -80,6 +82,10 @@ function formatPrice(value: number): string {
     return `${eok}억 ${remainder.toLocaleString()}`;
   }
   return `${value.toLocaleString()}만원`;
+}
+
+function fmtPrice(value: number): string {
+  return value > 0 ? formatPrice(value) : "-";
 }
 
 function computeStats(trades: Trade[], region: Region): RegionStats {
@@ -111,14 +117,14 @@ function computeStats(trades: Trade[], region: Region): RegionStats {
 
 export default function RegionComparePage() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [dealYmd, setDealYmd] = useState(() => getMonthOptions()[0].value);
+  const [dealYmd, setDealYmd] = useState(() => MONTH_OPTIONS[0].value);
   const [regionStats, setRegionStats] = useState<RegionStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const monthOptions = getMonthOptions();
+  const monthOptions = MONTH_OPTIONS;
 
   const trimmedQuery = searchQuery.trim();
   const filteredRegions = trimmedQuery
@@ -500,8 +506,53 @@ export default function RegionComparePage() {
               </ResponsiveContainer>
             </div>
 
-            {/* Data table */}
-            <div className="overflow-x-auto rounded-lg border">
+            {/* Mobile: card grid (no horizontal scroll) */}
+            <div className="grid grid-cols-2 gap-3 sm:hidden">
+              {regionStats.map((s) => (
+                <div
+                  key={s.regionCode}
+                  className="rounded-lg border bg-card p-3"
+                >
+                  <div className="mb-2 flex items-center gap-2 font-medium">
+                    <span
+                      className="inline-block h-3 w-3 shrink-0 rounded-full"
+                      style={{
+                        backgroundColor:
+                          REGION_COLORS[selectedRegions.indexOf(s.regionCode)],
+                      }}
+                    />
+                    <span className="truncate text-sm">{s.regionName}</span>
+                  </div>
+                  <dl className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">평균가</dt>
+                      <dd className="font-medium text-primary">
+                        {fmtPrice(s.avgPrice)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">최저가</dt>
+                      <dd className="text-green-600">
+                        {fmtPrice(s.minPrice)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">최고가</dt>
+                      <dd className="text-red-600">
+                        {fmtPrice(s.maxPrice)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">거래</dt>
+                      <dd>{s.tradeCount}건</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop: data table */}
+            <div className="hidden overflow-x-auto rounded-lg border sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-secondary/30 text-left">
@@ -521,7 +572,7 @@ export default function RegionComparePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {regionStats.map((s, idx) => (
+                  {regionStats.map((s) => (
                     <tr
                       key={s.regionCode}
                       className="border-b hover:bg-secondary/10"
@@ -530,19 +581,22 @@ export default function RegionComparePage() {
                         <span
                           className="mr-2 inline-block h-3 w-3 rounded-full"
                           style={{
-                            backgroundColor: REGION_COLORS[idx],
+                            backgroundColor:
+                              REGION_COLORS[
+                                selectedRegions.indexOf(s.regionCode)
+                              ],
                           }}
                         />
                         {s.regionName}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-primary">
-                        {s.avgPrice > 0 ? formatPrice(s.avgPrice) : "-"}
+                        {fmtPrice(s.avgPrice)}
                       </td>
                       <td className="px-4 py-3 text-right text-green-600">
-                        {s.minPrice > 0 ? formatPrice(s.minPrice) : "-"}
+                        {fmtPrice(s.minPrice)}
                       </td>
                       <td className="px-4 py-3 text-right text-red-600">
-                        {s.maxPrice > 0 ? formatPrice(s.maxPrice) : "-"}
+                        {fmtPrice(s.maxPrice)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {s.tradeCount}건

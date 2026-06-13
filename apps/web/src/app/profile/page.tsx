@@ -210,7 +210,7 @@ export default function ProfilePage() {
 
         <UserInfo user={user} />
 
-        <InterestRegionsSection regions={user.interestRegions ?? []} />
+        <InterestRegionsSection regions={user.interestRegions} />
 
         <div className="mt-6 flex flex-col gap-3">
           <Link
