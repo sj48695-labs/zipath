@@ -13,17 +13,25 @@ import { JwtStrategy } from "./jwt.strategy";
 
 const logger = new Logger("AuthModule");
 
-const oauthProviders = [
-  { strategy: GoogleStrategy, envKey: "GOOGLE_CLIENT_ID", name: "Google" },
-  { strategy: KakaoStrategy, envKey: "KAKAO_CLIENT_ID", name: "Kakao" },
-  { strategy: NaverStrategy, envKey: "NAVER_CLIENT_ID", name: "Naver" },
-].flatMap(({ strategy, envKey, name }) => {
-  if (!process.env[envKey]) {
-    logger.warn(`${envKey} not set — ${name} OAuth disabled`);
-    return [];
-  }
-  return [strategy];
-});
+type OAuthStrategyClass = new (config: ConfigService) => unknown;
+
+function conditionalOAuthProvider(
+  Strategy: OAuthStrategyClass,
+  envKey: string,
+  name: string,
+) {
+  return {
+    provide: Strategy,
+    useFactory: (config: ConfigService) => {
+      if (!config.get(envKey)) {
+        logger.warn(`${envKey} not set — ${name} OAuth disabled`);
+        return null;
+      }
+      return new Strategy(config);
+    },
+    inject: [ConfigService],
+  };
+}
 
 @Module({
   imports: [
@@ -34,13 +42,19 @@ const oauthProviders = [
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>("JWT_SECRET") || "zipath-dev-secret",
+        secret: config.get<string>("JWT_SECRET"),
         signOptions: { expiresIn: "1h" },
       }),
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, JwtStrategy, ...oauthProviders],
+  providers: [
+    AuthService,
+    JwtStrategy,
+    conditionalOAuthProvider(GoogleStrategy, "GOOGLE_CLIENT_ID", "Google"),
+    conditionalOAuthProvider(KakaoStrategy, "KAKAO_CLIENT_ID", "Kakao"),
+    conditionalOAuthProvider(NaverStrategy, "NAVER_CLIENT_ID", "Naver"),
+  ],
   exports: [AuthService, JwtModule],
 })
 export class AuthModule {}
