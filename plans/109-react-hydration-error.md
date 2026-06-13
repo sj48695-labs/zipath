@@ -32,18 +32,18 @@
    - 파일: `plans/109-react-hydration-error.md`
    - 커밋: `docs: #109 하이드레이션 오류 dev 재현/진단 결과 기록`
 
-2. [ ] Phase 2: 루트 레이아웃 하이드레이션 방어 재확인 + (조건부) 보강
+2. [x] Phase 2: 루트 레이아웃 하이드레이션 방어 재확인 + (조건부) 보강 — **이미 적용됨, 코드 변경 없음**. `apps/web/src/app/layout.tsx`에 `<html lang="ko" suppressHydrationWarning>` / `<body className="min-h-screen antialiased" suppressHydrationWarning>` 존재 확인.
    - `apps/web/src/app/layout.tsx`에 `<html>`/`<body>` `suppressHydrationWarning`이 이미 있는지 확인(현재 워크트리 기준 적용됨). 누락 시 추가.
    - Phase 1에서 dev 재현이 0건이고 외부 주입 가설이면, 본 Phase는 "이미 적용됨 — 변경 없음"으로 기록하고 코드 변경 없이 통과. (실질 수정이 없으면 빈 커밋 대신 Phase 3/4로 진행)
    - 파일: `apps/web/src/app/layout.tsx`
    - 커밋(조건부): `fix(web): #109 루트 레이아웃 suppressHydrationWarning 보강`
 
-3. [ ] Phase 3: (조건부) Phase 1에서 실제 자식 노드 mismatch가 잡힌 경우만 좁게 수정
+3. [x] Phase 3: (조건부) Phase 1에서 실제 자식 노드 mismatch가 잡힌 경우만 좁게 수정 — **스킵**. Phase 1 dev 재현 0건이므로 자식 노드 mismatch 없음. 코드 변경 없음.
    - 후보: `/real-price`·`/real-price/compare`의 `<select value=...>`/`<option>`, 텍스트 노드, `AuthContext` 소비 노드. 정확히 재현된 element에만 `suppressHydrationWarning` 부여 또는 SSR/CSR 첫 렌더 동일화. dev 재현 0건이면 "원인 없음 — 스킵"으로 기록.
    - 파일(조건부): `apps/web/src/app/real-price/page.tsx`, `apps/web/src/app/real-price/compare/page.tsx`, 관련 `_components/*`
    - 커밋(조건부): `fix(web): #109 잔여 하이드레이션 노드 수정`
 
-4. [ ] Phase 4: 검증 + 회귀 + 릴리즈 경로 명시
+4. [x] Phase 4: 검증 + 회귀 + 릴리즈 경로 명시 — lint 0(`✔ No ESLint warnings or errors`), build 성공(`/real-price`·`/real-price/compare` 모두 ○ Static prerender), dev 콘솔 React #418/#423/#425 0건(Phase 1). **프로덕션 반영은 `develop` → `main` 릴리즈 필요**(아래 절 참조).
    - `npx turbo lint --filter=@zipath/web`(ESLint 0), `npx turbo build --filter=@zipath/web`(`/real-price`·`/real-price/compare` prerender 정상) 통과.
    - dev 서버에서 양 페이지 콘솔 React #418/#423/#425 0건 재확인.
    - **핵심: 이 수정의 프로덕션 반영은 `develop` → `main` 릴리즈 필요**임을 PR 본문/이슈에 명시(Vercel은 `main`에서만 배포, `main`에는 #103 fix가 아직 없음). 본 PR이 develop에 머지된 뒤에도 `main` 릴리즈 전까지 프로덕션 콘솔 오류는 지속됨을 고지.
@@ -82,3 +82,10 @@
 - `develop`의 `apps/web/src/app/layout.tsx`는 `suppressHydrationWarning` 적용됨. `main`(프로덕션 배포 소스)에는 **미적용** → 프로덕션이 미수정 빌드를 서빙해 오류 재현.
 - `/real-price`, `/real-price/compare` 페이지 트리에 SSR/CSR 첫 렌더가 갈리는 잔여 mismatch 노드 없음(초기 state 결정적, 날짜 계산은 useEffect, Recharts ssr:false, AuthContext 결정적 초기값).
 - 8건은 프로덕션 minified 빌드 전용 외부 주입(브라우저 확장) 패턴으로 분류. 근본 차단책 = 루트 `suppressHydrationWarning`(이미 develop에 존재) + `main` 릴리즈.
+
+### 릴리즈 경로 (PR/이슈 고지 필수)
+
+> **이 PR이 `develop`에 머지되어도 프로덕션 콘솔 오류는 즉시 사라지지 않습니다.**
+> Vercel은 `main` push 시에만 배포(CLAUDE.md "Deploy Web: push to main")하는데, `main`에는 #103 fix(`suppressHydrationWarning`)가 아직 반영되지 않았습니다.
+> 프로덕션(https://zipath-web.vercel.app/real-price · /real-price/compare)의 React #418/#423/#425 8건을 실제로 없애려면 **`develop` → `main` 릴리즈 PR**이 필요합니다.
+> 코드 레벨에서는 이미 방어가 완료(dev 0건, build/lint 통과)되어 있으므로, #109의 실질 잔여 작업은 릴리즈 한 건입니다.
