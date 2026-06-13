@@ -188,26 +188,24 @@ export default function SubscriptionPage() {
           </button>
         </form>
 
-        {showColdStartHint && (
-          <div
-            className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6"
-            aria-live="polite"
-          >
-            <p className="text-sm text-amber-700">
-              서버가 잠시 준비 중입니다 (콜드 스타트). 보통 30초 이내에 응답해요.
-              잠시만 기다려주세요. (경과 {elapsedSeconds}초)
-            </p>
-          </div>
-        )}
+        <div aria-live="polite">
+          {showColdStartHint && (
+            <div className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6">
+              <p className="text-sm text-amber-700">
+                서버가 잠시 준비 중입니다 (콜드 스타트). 보통 30초 이내에 응답해요.
+                잠시만 기다려주세요. (경과 {elapsedSeconds}초)
+              </p>
+            </div>
+          )}
+        </div>
 
-        {error && (
-          <div
-            className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6"
-            aria-live="polite"
-          >
-            <p className="text-sm text-red-600">{error}</p>
-          </div>
-        )}
+        <div aria-live="polite">
+          {error && (
+            <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+        </div>
 
         {result && (
           <div className="mt-8 space-y-6">
