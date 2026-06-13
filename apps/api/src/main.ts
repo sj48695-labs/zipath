@@ -28,7 +28,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  const port = app.get(ConfigService).get<number>("PORT") ?? 4000;
+  const port = app.get(ConfigService).getOrThrow<number>("PORT");
   await app.listen(port, "0.0.0.0");
   Logger.log(`Server running on 0.0.0.0:${port}`, "Bootstrap");
 }
