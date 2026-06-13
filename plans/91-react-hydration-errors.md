@@ -156,9 +156,22 @@ SSR 결과와 첫 CSR 렌더 결과가 달라지는 원인을 제거한다. 주�
 
 ## 완료 기준
 
-- hydration warning 원인 8건이 코드상 제거 또는 안전 경로로 분류되어 기록된다.
-- `/real-price/compare`와 `/real-price`가 SSR 첫 렌더에서 현재 날짜 기반 DOM을 만들지 않는다.
-- Recharts 렌더링은 SSR과 분리되거나 첫 렌더 안정성이 보장된다.
-- 날짜/locale 문자열은 서버/클라이언트 환경 차이에 흔들리지 않는다.
-- `any` 타입을 추가하지 않는다.
-- 커밋은 자동 생성하지 않는다. 커밋이 필요하면 별도 확인 후 진행한다.
+- [x] hydration warning 원인 8건이 코드상 제거 또는 안전 경로로 분류되어 기록된다.
+- [x] `/real-price/compare`와 `/real-price`가 SSR 첫 렌더에서 현재 날짜 기반 DOM을 만들지 않는다.
+- [x] Recharts 렌더링은 SSR과 분리되거나 첫 렌더 안정성이 보장된다.
+- [x] 날짜/locale 문자열은 서버/클라이언트 환경 차이에 흔들리지 않는다.
+- [x] `any` 타입을 추가하지 않는다.
+- [x] 커밋은 자동 생성하지 않는다. 커밋이 필요하면 별도 확인 후 진행한다.
+
+## 구현 결과
+
+- `/real-price`의 월 옵션과 기본 조회 기간을 마운트 이후 계산하도록 변경했다.
+- `/real-price/compare`의 월 옵션과 기본 계약월을 마운트 이후 state로 고정하고, Recharts 렌더링을 client-only 컴포넌트로 분리했다.
+- `/real-price`의 월별 추이 차트와 가격 차트를 `next/dynamic({ ssr: false })` 경로로 분리했다.
+- 공고 목록/상세, 알림, 프로필의 날짜 포맷을 `apps/web/src/lib/dateFormat.ts`로 통일했다.
+- 공고 접수중/마감 계산은 렌더 중 `new Date()` 대신 마운트 이후 고정한 `todayKey`를 사용한다.
+
+## 검증
+
+- `npm run lint -w @zipath/web` 통과
+- `npm run build -w @zipath/web` 통과

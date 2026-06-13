@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import {
+  formatDotDate,
+  getTodayKey,
+  isDateOnOrAfterToday,
+} from "@/lib/dateFormat";
 
 import MatchForm from "./_components/MatchForm";
 import MatchResultPanel from "./_components/MatchResultPanel";
@@ -11,16 +16,6 @@ import type {
   MatchFormData,
   MatchResult,
 } from "./_components/types";
-
-function formatDate(dateStr: string) {
-  if (!dateStr) return "-";
-  const d = new Date(dateStr);
-  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-}
-
-function isActive(endDate: string) {
-  return new Date(endDate) >= new Date();
-}
 
 const INITIAL_FORM: MatchFormData = {
   age: "",
@@ -41,6 +36,7 @@ export default function AnnouncementDetailPage() {
   );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [todayKey, setTodayKey] = useState("");
 
   const [formData, setFormData] = useState<MatchFormData>(INITIAL_FORM);
   const [matchResult, setMatchResult] = useState<MatchResult | null>(null);
@@ -49,6 +45,7 @@ export default function AnnouncementDetailPage() {
 
   useEffect(() => {
     const controller = new AbortController();
+    setTodayKey(getTodayKey());
 
     async function fetchDetail() {
       setLoading(true);
@@ -133,7 +130,9 @@ export default function AnnouncementDetailPage() {
     }
   }
 
-  const active = announcement ? isActive(announcement.endDate) : false;
+  const active = announcement && todayKey
+    ? isDateOnOrAfterToday(announcement.endDate, todayKey)
+    : null;
 
   return (
     <div className="min-h-screen">
@@ -184,7 +183,7 @@ export default function AnnouncementDetailPage() {
 
         {!loading && !error && announcement && (
           <>
-            {!active && (
+            {active === false && (
               <div className="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4">
                 <p className="text-sm font-medium text-yellow-800">
                   이 공고는 마감되었습니다. 자격 확인은 참고용으로만 사용하세요.
@@ -200,15 +199,16 @@ export default function AnnouncementDetailPage() {
                 <span className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
                   {announcement.region}
                 </span>
-                {active ? (
-                  <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                    접수중
-                  </span>
-                ) : (
-                  <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                    마감
-                  </span>
-                )}
+                {active !== null &&
+                  (active ? (
+                    <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                      접수중
+                    </span>
+                  ) : (
+                    <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                      마감
+                    </span>
+                  ))}
               </div>
 
               <h1 className="mb-4 text-2xl font-bold">{announcement.title}</h1>
@@ -225,8 +225,8 @@ export default function AnnouncementDetailPage() {
                     접수 기간
                   </p>
                   <p className="font-medium">
-                    {formatDate(announcement.startDate)} ~{" "}
-                    {formatDate(announcement.endDate)}
+                    {formatDotDate(announcement.startDate)} ~{" "}
+                    {formatDotDate(announcement.endDate)}
                   </p>
                 </div>
                 <div className="rounded-lg border p-4">

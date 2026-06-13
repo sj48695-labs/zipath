@@ -1,22 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo, useCallback } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ScatterChart,
-  Scatter,
-} from "recharts";
-import MonthlyPriceTrendChart from "./_components/MonthlyPriceTrendChart";
+import dynamic from "next/dynamic";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import AreaFilter from "./_components/AreaFilter";
 import SupportedRegionNotice from "./_components/SupportedRegionNotice";
 import { REGIONS } from "./_lib/regions";
+
+const MonthlyPriceTrendChart = dynamic(
+  () => import("./_components/MonthlyPriceTrendChart"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-lg border p-6 text-center text-muted-foreground">
+        차트를 불러오는 중입니다.
+      </div>
+    ),
+  },
+);
+
+const RealPriceCharts = dynamic(() => import("./_components/RealPriceCharts"), {
+  ssr: false,
+  loading: () => (
+    <div className="rounded-lg border p-6 text-center text-muted-foreground">
+      차트를 불러오는 중입니다.
+    </div>
+  ),
+});
 
 interface Trade {
   aptNm: string;
@@ -48,6 +58,37 @@ interface AreaRange {
 
 type ViewMode = "table" | "chart" | "trend";
 
+function getRecord(value: unknown): Record<string, unknown> | null {
+  if (typeof value !== "object" || value === null) return null;
+  return value as Record<string, unknown>;
+}
+
+function getTradeItems(data: unknown): Trade[] {
+  const root = getRecord(data);
+  if (!root) return [];
+
+  const response = getRecord(root.response);
+  const responseBody = getRecord(response?.body);
+  const responseItems = getRecord(responseBody?.items);
+  const body = getRecord(root.body);
+  const bodyItems = getRecord(body?.items);
+
+  const items =
+    root.trades ?? responseItems?.item ?? bodyItems?.item ?? [];
+
+  return Array.isArray(items) ? (items as Trade[]) : items ? [items as Trade] : [];
+}
+
+function getErrorMessage(data: unknown): string | null {
+  const error = getRecord(data)?.error;
+  return typeof error === "string" ? error : null;
+}
+
+function getMonthlyItems(data: unknown): MonthlyPriceSummaryItem[] {
+  const monthly = getRecord(data)?.monthly;
+  return Array.isArray(monthly) ? (monthly as MonthlyPriceSummaryItem[]) : [];
+}
+
 function getMonthOptions() {
   const options: { value: string; label: string }[] = [];
   const now = new Date();
@@ -62,23 +103,34 @@ function getMonthOptions() {
 
 export default function RealPricePage() {
   const [regionCode, setRegionCode] = useState("11680");
-  const [dealYmd, setDealYmd] = useState(() => getMonthOptions()[0].value);
+  const [dealYmd, setDealYmd] = useState("");
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [areaFilter, setAreaFilter] = useState<AreaRange>({});
+  const [monthOptions, setMonthOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   // Trend-related state
-  const [trendFromMonth, setTrendFromMonth] = useState(() => getMonthOptions()[5].value);
-  const [trendToMonth, setTrendToMonth] = useState(() => getMonthOptions()[0].value);
+  const [trendFromMonth, setTrendFromMonth] = useState("");
+  const [trendToMonth, setTrendToMonth] = useState("");
   const [trendData, setTrendData] = useState<MonthlyPriceSummaryItem[]>([]);
   const [trendLoading, setTrendLoading] = useState(false);
   const [trendError, setTrendError] = useState<string | null>(null);
   const [trendSearched, setTrendSearched] = useState(false);
 
-  const monthOptions = getMonthOptions();
+  useEffect(() => {
+    const options = getMonthOptions();
+    setMonthOptions(options);
+    setDealYmd((prev) => prev || options[0]?.value || "");
+    setTrendFromMonth(
+      (prev) => prev || options[5]?.value || options[0]?.value || "",
+    );
+    setTrendToMonth((prev) => prev || options[0]?.value || "");
+  }, []);
 
   // 법정동별 평균 가격
   const avgByDong = useMemo(() => {
@@ -111,6 +163,11 @@ export default function RealPricePage() {
   }, [trades]);
 
   async function handleSearch() {
+    if (!dealYmd) {
+      setError("계약월을 불러온 후 다시 시도해주세요.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSearched(true);
@@ -120,24 +177,24 @@ export default function RealPricePage() {
         DEAL_YMD: dealYmd,
         numOfRows: "50",
       });
-      if (areaFilter.min !== undefined) params.set("minArea", String(areaFilter.min));
-      if (areaFilter.max !== undefined) params.set("maxArea", String(areaFilter.max));
+      if (areaFilter.min !== undefined) {
+        params.set("minArea", String(areaFilter.min));
+      }
+      if (areaFilter.max !== undefined) {
+        params.set("maxArea", String(areaFilter.max));
+      }
       const res = await fetch(`/api/real-price?${params.toString()}`);
-      const data = await res.json();
+      const data: unknown = await res.json();
 
-      if (data.error) {
-        setError(data.error);
+      const errorMessage = getErrorMessage(data);
+      if (errorMessage) {
+        setError(errorMessage);
         setTrades([]);
         return;
       }
 
       // 백엔드 RealPriceResponse 포맷 지원 + 기존 공공API 포맷 fallback
-      const items =
-        data?.trades ??
-        data?.response?.body?.items?.item ??
-        data?.body?.items?.item ??
-        [];
-      setTrades(Array.isArray(items) ? items : items ? [items] : []);
+      setTrades(getTradeItems(data));
     } catch {
       setError("데이터를 불러오는 데 실패했습니다.");
       setTrades([]);
@@ -147,6 +204,11 @@ export default function RealPricePage() {
   }
 
   const handleTrendSearch = useCallback(async () => {
+    if (!trendFromMonth || !trendToMonth) {
+      setTrendError("조회 기간을 불러온 후 다시 시도해주세요.");
+      return;
+    }
+
     if (trendFromMonth > trendToMonth) {
       setTrendError("시작월이 종료월보다 이후입니다.");
       return;
@@ -156,18 +218,18 @@ export default function RealPricePage() {
     setTrendSearched(true);
     try {
       const res = await fetch(
-        `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`
+        `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`,
       );
-      const data = await res.json();
+      const data: unknown = await res.json();
 
-      if (data.error) {
-        setTrendError(data.error);
+      const errorMessage = getErrorMessage(data);
+      if (errorMessage) {
+        setTrendError(errorMessage);
         setTrendData([]);
         return;
       }
 
-      const monthly: MonthlyPriceSummaryItem[] = data?.monthly ?? [];
-      setTrendData(monthly);
+      setTrendData(getMonthlyItems(data));
     } catch {
       setTrendError("추이 데이터를 불러오는 데 실패했습니다.");
       setTrendData([]);
@@ -255,13 +317,18 @@ export default function RealPricePage() {
                 <select
                   value={trendFromMonth}
                   onChange={(e) => setTrendFromMonth(e.target.value)}
+                  disabled={monthOptions.length === 0}
                   className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 >
-                  {monthOptions.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
+                  {monthOptions.length > 0 ? (
+                    monthOptions.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">불러오는 중...</option>
+                  )}
                 </select>
               </div>
               <div className="min-w-[160px]">
@@ -269,18 +336,23 @@ export default function RealPricePage() {
                 <select
                   value={trendToMonth}
                   onChange={(e) => setTrendToMonth(e.target.value)}
+                  disabled={monthOptions.length === 0}
                   className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 >
-                  {monthOptions.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
+                  {monthOptions.length > 0 ? (
+                    monthOptions.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">불러오는 중...</option>
+                  )}
                 </select>
               </div>
               <button
                 onClick={handleTrendSearch}
-                disabled={trendLoading}
+                disabled={trendLoading || monthOptions.length === 0}
                 className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 {trendLoading ? "조회 중..." : "추이 조회"}
@@ -293,18 +365,23 @@ export default function RealPricePage() {
                 <select
                   value={dealYmd}
                   onChange={(e) => setDealYmd(e.target.value)}
+                  disabled={monthOptions.length === 0}
                   className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 >
-                  {monthOptions.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
+                  {monthOptions.length > 0 ? (
+                    monthOptions.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">불러오는 중...</option>
+                  )}
                 </select>
               </div>
               <button
                 onClick={handleSearch}
-                disabled={loading}
+                disabled={loading || monthOptions.length === 0}
                 className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 {loading ? "조회 중..." : "조회"}
@@ -375,61 +452,10 @@ export default function RealPricePage() {
             {!loading && trades.length > 0 && (
               <>
                 {viewMode === "chart" && (
-                  <div className="space-y-8">
-                    {/* 법정동별 평균 가격 */}
-                    {avgByDong.length > 0 && (
-                      <div className="rounded-lg border bg-card p-4">
-                        <h3 className="mb-4 text-sm font-semibold">법정동별 평균 거래가격 (만원)</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart data={avgByDong} layout="vertical" margin={{ left: 60 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis type="number" tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`} />
-                            <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12 }} />
-                            <Tooltip
-                              formatter={(value: unknown) => [`${Number(value).toLocaleString()}만원`, "평균가"]}
-                              labelFormatter={(label: unknown) => String(label)}
-                            />
-                            <Bar dataKey="avg" fill="hsl(221, 83%, 53%)" radius={[0, 4, 4, 0]} />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
-
-                    {/* 면적 vs 가격 산점도 */}
-                    {areaVsPrice.length > 0 && (
-                      <div className="rounded-lg border bg-card p-4">
-                        <h3 className="mb-4 text-sm font-semibold">전용면적별 거래가격 분포</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <ScatterChart margin={{ bottom: 20 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis
-                              type="number"
-                              dataKey="area"
-                              name="면적"
-                              unit="m²"
-                              tick={{ fontSize: 12 }}
-                            />
-                            <YAxis
-                              type="number"
-                              dataKey="price"
-                              name="가격"
-                              tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`}
-                              tick={{ fontSize: 12 }}
-                            />
-                            <Tooltip
-                              formatter={(value: unknown, name: unknown) => {
-                                const v = Number(value);
-                                const n = String(name);
-                                if (n === "가격") return [`${v.toLocaleString()}만원`, n];
-                                return [`${v}m²`, n];
-                              }}
-                            />
-                            <Scatter data={areaVsPrice} fill="hsl(221, 83%, 53%)" fillOpacity={0.6} />
-                          </ScatterChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
-                  </div>
+                  <RealPriceCharts
+                    avgByDong={avgByDong}
+                    areaVsPrice={areaVsPrice}
+                  />
                 )}
 
                 {viewMode === "table" && (

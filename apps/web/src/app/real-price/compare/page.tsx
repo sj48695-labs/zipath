@@ -1,24 +1,26 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { useState, useCallback, useEffect } from "react";
-import { useIsClient } from "@/lib/useIsClient";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
 import SupportedRegionNotice from "../_components/SupportedRegionNotice";
 import {
   REGIONS,
   isUnsupportedRegionQuery,
   type Region,
 } from "../_lib/regions";
+
+const RegionCompareCharts = dynamic(
+  () => import("./_components/RegionCompareCharts"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-lg border p-6 text-center text-muted-foreground">
+        차트를 불러오는 중입니다.
+      </div>
+    ),
+  },
+);
 
 interface Trade {
   aptNm: string;
@@ -111,9 +113,11 @@ function computeStats(trades: Trade[], region: Region): RegionStats {
 }
 
 export default function RegionComparePage() {
-  const isClient = useIsClient();
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [dealYmd, setDealYmd] = useState("");
+  const [monthOptions, setMonthOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [regionStats, setRegionStats] = useState<RegionStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -122,16 +126,11 @@ export default function RegionComparePage() {
 
   // 월 목록은 `new Date()`에 의존하므로 SSR/CSR 결과가 달라질 수 있다.
   // 하이드레이션 불일치를 피하기 위해 클라이언트 마운트 이후에만 계산한다.
-  const monthOptions = isClient ? getMonthOptions() : [];
-
   useEffect(() => {
-    if (!dealYmd) {
-      const options = getMonthOptions();
-      if (options.length > 0) {
-        setDealYmd(options[0].value);
-      }
-    }
-  }, [dealYmd]);
+    const options = getMonthOptions();
+    setMonthOptions(options);
+    setDealYmd((prev) => prev || options[0]?.value || "");
+  }, []);
 
   const trimmedQuery = searchQuery.trim();
   const filteredRegions = trimmedQuery
@@ -163,6 +162,11 @@ export default function RegionComparePage() {
   const handleCompare = useCallback(async () => {
     if (selectedRegions.length < MIN_REGIONS) {
       setError(`최소 ${MIN_REGIONS}개 지역을 선택해주세요.`);
+      return;
+    }
+
+    if (!dealYmd) {
+      setError("계약월을 불러온 후 다시 시도해주세요.");
       return;
     }
 
@@ -368,10 +372,10 @@ export default function RegionComparePage() {
             <select
               value={dealYmd}
               onChange={(e) => setDealYmd(e.target.value)}
-              disabled={!isClient}
+              disabled={monthOptions.length === 0}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
-              {isClient ? (
+              {monthOptions.length > 0 ? (
                 monthOptions.map((m) => (
                   <option key={m.value} value={m.value}>
                     {m.label}
@@ -384,7 +388,7 @@ export default function RegionComparePage() {
           </div>
           <button
             onClick={handleCompare}
-            disabled={loading || selectedRegions.length < MIN_REGIONS}
+            disabled={loading || selectedRegions.length < MIN_REGIONS || !dealYmd}
             className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
             {loading ? "비교 중..." : "비교 조회"}
@@ -426,97 +430,7 @@ export default function RegionComparePage() {
         {/* Results */}
         {!loading && regionStats.length > 0 && (
           <div className="space-y-8">
-            {/* Bar chart - average price comparison */}
-            <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-4 text-sm font-semibold">
-                지역별 평균 거래가격 비교 (만원)
-              </h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} margin={{ bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                    angle={-15}
-                    textAnchor="end"
-                  />
-                  <YAxis
-                    tickFormatter={(v: number) => {
-                      if (v >= 10000) return `${(v / 10000).toFixed(1)}억`;
-                      return `${v.toLocaleString()}`;
-                    }}
-                    tick={{ fontSize: 12 }}
-                    width={70}
-                  />
-                  <Tooltip
-                    formatter={(value: unknown, name: unknown) => {
-                      const v = Number(value);
-                      const n = String(name);
-                      if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                      if (n === "minPrice") return [formatPrice(v), "최저가"];
-                      if (n === "maxPrice") return [formatPrice(v), "최고가"];
-                      return [formatPrice(v), n];
-                    }}
-                    labelFormatter={(label: unknown) => String(label)}
-                  />
-                  <Legend
-                    formatter={(value: unknown) => {
-                      const v = String(value);
-                      if (v === "avgPrice") return "평균가";
-                      if (v === "minPrice") return "최저가";
-                      if (v === "maxPrice") return "최고가";
-                      return v;
-                    }}
-                  />
-                  <Bar
-                    dataKey="avgPrice"
-                    fill="hsl(221, 83%, 53%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="minPrice"
-                    fill="hsl(142, 71%, 45%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="maxPrice"
-                    fill="hsl(0, 72%, 51%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Trade count bar chart */}
-            <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-4 text-sm font-semibold">지역별 거래 건수</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={chartData} margin={{ bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                    angle={-15}
-                    textAnchor="end"
-                  />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip
-                    formatter={(value: unknown) => [
-                      `${Number(value)}건`,
-                      "거래 건수",
-                    ]}
-                    labelFormatter={(label: unknown) => String(label)}
-                  />
-                  <Bar
-                    dataKey="tradeCount"
-                    fill="hsl(221, 83%, 53%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
+            <RegionCompareCharts data={chartData} />
 
             {/* Data table */}
             <div className="overflow-x-auto rounded-lg border">

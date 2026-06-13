@@ -1,3 +1,5 @@
+import { formatKoreanDate, formatKoreanDateTime } from "@/lib/dateFormat";
+
 type ProviderLabel = "google" | "kakao" | "naver";
 
 const PROVIDER_LABELS: Record<ProviderLabel, string> = {
@@ -5,26 +7,6 @@ const PROVIDER_LABELS: Record<ProviderLabel, string> = {
   kakao: "카카오",
   naver: "네이버",
 };
-
-function formatDate(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function formatDateTime(dateString: string): string {
-  const date = new Date(dateString);
-  return date.toLocaleDateString("ko-KR", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-}
 
 function getProviderLabel(provider: string | null): string {
   if (!provider) return "알 수 없음";
@@ -79,12 +61,14 @@ export function UserInfo({ user }: UserInfoProps) {
         </div>
         <div className="flex justify-between">
           <dt className="text-sm text-muted-foreground">가입일</dt>
-          <dd className="text-sm font-medium">{formatDate(user.createdAt)}</dd>
+          <dd className="text-sm font-medium">
+            {formatKoreanDate(user.createdAt)}
+          </dd>
         </div>
         <div className="flex justify-between">
           <dt className="text-sm text-muted-foreground">마지막 활동</dt>
           <dd className="text-sm font-medium">
-            {formatDateTime(user.lastActiveAt)}
+            {formatKoreanDateTime(user.lastActiveAt)}
           </dd>
         </div>
       </dl>
