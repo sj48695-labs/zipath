@@ -6,6 +6,7 @@ export interface UserProfile {
   email: string | null;
   nickname: string | null;
   provider: SsoProvider | null;
+  interestRegions: string[];
   createdAt: string;
   lastActiveAt: string;
 }

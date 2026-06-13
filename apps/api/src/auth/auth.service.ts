@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "@zipath/db";
+import type { UserProfile } from "@zipath/types";
 
 interface OAuthProfile {
   provider: string;
@@ -96,26 +97,18 @@ export class AuthService {
   }
 
   private normalizeRegions(regions: string[]): string[] {
-    const seen = new Set<string>();
-    const result: string[] = [];
-    for (const region of regions) {
-      const trimmed = region.trim();
-      if (trimmed.length === 0 || seen.has(trimmed)) continue;
-      seen.add(trimmed);
-      result.push(trimmed);
-    }
-    return result;
+    return [...new Set(regions.map((r) => r.trim()).filter((r) => r.length > 0))];
   }
 
-  private toProfile(user: User) {
+  private toProfile(user: User): UserProfile {
     return {
       id: user.id,
       email: user.email,
       nickname: user.nickname,
-      provider: user.provider,
+      provider: user.provider as UserProfile["provider"],
       interestRegions: user.interestRegions ?? [],
-      createdAt: user.createdAt,
-      lastActiveAt: user.lastActiveAt,
+      createdAt: user.createdAt.toISOString(),
+      lastActiveAt: user.lastActiveAt.toISOString(),
     };
   }
 
