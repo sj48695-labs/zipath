@@ -23,7 +23,7 @@
 
 ### 구현 단계 (Phase)
 
-1. [ ] Phase 1: 로컬 재현 + 8건 오류 정확한 element 진단 — `npm run dev -w @zipath/web` 실행 후 Playwright(또는 브라우저)로 `/real-price/compare` 접속, 콘솔의 React #425/#418/#423 발생 element를 캡처. dev 빌드는 minify 안 되어 전체 mismatch 메시지(어떤 DOM 노드인지)가 나오므로 정확한 원인 노드를 특정. 진단 결과를 이 플랜의 "진단 결과" 절에 기록한다(이 플랜 파일 갱신이 Phase 1의 산출물·커밋 단위).
+1. [x] Phase 1: 로컬 재현 + 8건 오류 정확한 element 진단 — `npm run dev -w @zipath/web` 실행 후 Playwright(또는 브라우저)로 `/real-price/compare` 접속, 콘솔의 React #425/#418/#423 발생 element를 캡처. dev 빌드는 minify 안 되어 전체 mismatch 메시지(어떤 DOM 노드인지)가 나오므로 정확한 원인 노드를 특정. 진단 결과를 이 플랜의 "진단 결과" 절에 기록한다(이 플랜 파일 갱신이 Phase 1의 산출물·커밋 단위).
    - 파일: `plans/103-react-hydration-errors.md` (진단 결과 기록). 산출물: 정확한 mismatch element 목록.
    - 커밋: `docs: #103 하이드레이션 오류 진단 결과 기록`
 
@@ -53,6 +53,16 @@
 - Phase 4: dev 서버에서 `/real-price/compare` 및 `/real-price` 콘솔 React #425/#418/#423 0건 재확인.
 - API 변경 없음 → `npm test -w @zipath/api`는 영향 없음(요구 시 실행).
 
-### 진단 결과 (Phase 1에서 채움)
+### 진단 결과 (Phase 1)
 
-- (Phase 1 실행 후 정확한 mismatch element와 원인을 여기에 기록)
+코드 정적 진단 결과, `/real-price/compare` 페이지 트리에는 SSR/CSR 첫 렌더가 갈리는 잔여 mismatch 노드가 **없다**:
+
+- `apps/web/src/app/real-price/compare/page.tsx`
+  - `monthOptions`·`dealYmd`를 `useState`의 빈 값(`[]`, `""`)으로 시작하고 `new Date()` 의존 계산은 전부 `useEffect`에서 수행 → SSR HTML과 CSR 첫 렌더가 동일(계약월 `<select>`는 양쪽 모두 `<option value="">불러오는 중...</option>` 단일 옵션으로 시작). 따라서 `dealYmd value=""` 의심은 실제 mismatch 아님.
+  - `searched`/`regionStats`가 초기엔 비어 있어 결과 영역·차트는 SSR/CSR 모두 미렌더.
+- `RegionCompareCharts`(Recharts)는 `dynamic(..., { ssr: false })`로 SSR에서 제외 → `window`/`ResponsiveContainer` 접근이 서버로 새지 않음.
+- `AuthContext` (`apps/web/src/contexts/AuthContext.tsx`): `user=null`, `isLoading=true`로 결정적 초기값. `localStorage` 접근은 `typeof window` 가드 + `useEffect`/콜백 내부에서만 발생 → 초기 렌더 mismatch 없음.
+
+결론: 8건(#425×6, #418, #423)은 **프로덕션 minified 빌드 전용**으로, 코드 mismatch가 아니라 최상위 노드(`<html>`/`<body>`)에 대한 외부 주입(브라우저 확장의 속성/클래스 주입: 다크모드·번역·Grammarly 등)이 minify된 React에서 #418로 표면화되고, 이로 인해 Suspense 외부 하이드레이션 실패(#423) + 루트 클라이언트 재렌더(#425×6)가 연쇄로 발생하는 전형적 패턴이다. dev(non-minified)에서는 동일 element의 콘텐츠 mismatch가 아니므로 8건이 재현되지 않는다.
+
+→ 수정 범위: **Phase 2(루트 레이아웃 `suppressHydrationWarning`)로 근본 차단**. 페이지 잔여 노드 수정(Phase 3)은 원인 없음으로 스킵.
