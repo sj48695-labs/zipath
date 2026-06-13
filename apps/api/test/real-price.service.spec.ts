@@ -135,6 +135,7 @@ describe("RealPriceService", () => {
       global.fetch = jest.fn().mockResolvedValue({
         ok: false,
         status: 500,
+        text: jest.fn().mockResolvedValue("Internal Server Error"),
       });
 
       const result = await service.search("11680", "202603");
@@ -258,7 +259,7 @@ describe("RealPriceService", () => {
       expect(month.tradeCount).toBe(3);
     });
 
-    it("should handle month with no trades", async () => {
+    it("거래가 0건인 월은 avg/min/max 를 null, tradeCount 는 0 으로 반환한다", async () => {
       cacheRepo.findOne.mockResolvedValue(null);
       configService.get.mockReturnValue(undefined); // no API key → empty trades
 
@@ -266,10 +267,37 @@ describe("RealPriceService", () => {
 
       expect(result.monthly).toHaveLength(1);
       const month = result.monthly[0];
-      expect(month.avgPrice).toBe(0);
-      expect(month.minPrice).toBe(0);
-      expect(month.maxPrice).toBe(0);
+      expect(month.avgPrice).toBeNull();
+      expect(month.minPrice).toBeNull();
+      expect(month.maxPrice).toBeNull();
       expect(month.tradeCount).toBe(0);
+    });
+
+    it("일부 월만 데이터가 있을 때 빈 월은 null, 데이터 월은 숫자로 섞여 반환된다", async () => {
+      // 202601: 데이터 있음 / 202602: 데이터 없음
+      cacheRepo.findOne
+        .mockResolvedValueOnce(
+          makeCacheEntity([makeTrade({ dealAmount: " 30,000" })], {
+            yearMonth: "202601",
+          }),
+        )
+        .mockResolvedValueOnce(null);
+      configService.get.mockReturnValue(undefined); // 빈 월은 API 키 없어 빈 거래
+
+      const result = await service.searchRange("11680", "202601", "202602");
+
+      expect(result.monthly).toHaveLength(2);
+      const [jan, feb] = result.monthly;
+
+      expect(jan.avgPrice).toBe(30000);
+      expect(jan.minPrice).toBe(30000);
+      expect(jan.maxPrice).toBe(30000);
+      expect(jan.tradeCount).toBe(1);
+
+      expect(feb.avgPrice).toBeNull();
+      expect(feb.minPrice).toBeNull();
+      expect(feb.maxPrice).toBeNull();
+      expect(feb.tradeCount).toBe(0);
     });
 
     it("should generate correct month range across year boundary", async () => {

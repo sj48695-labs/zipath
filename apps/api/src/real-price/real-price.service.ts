@@ -96,12 +96,13 @@ export class RealPriceService {
         .map((t) => parseInt(t.dealAmount?.replace(/,/g, "").trim() || "0", 10))
         .filter((p) => p > 0);
 
-      const avg =
-        prices.length > 0
-          ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
-          : 0;
-      const min = prices.length > 0 ? Math.min(...prices) : 0;
-      const max = prices.length > 0 ? Math.max(...prices) : 0;
+      // 거래가 0건인 월은 null 로 반환 → 차트에서 0 으로 급락하지 않고 gap 표시.
+      const hasData = prices.length > 0;
+      const avg = hasData
+        ? Math.round(prices.reduce((a, b) => a + b, 0) / prices.length)
+        : null;
+      const min = hasData ? Math.min(...prices) : null;
+      const max = hasData ? Math.max(...prices) : null;
 
       return {
         yearMonth: r.yearMonth,
