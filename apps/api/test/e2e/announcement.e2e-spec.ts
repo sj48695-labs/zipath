@@ -15,7 +15,7 @@ const mockAnnouncements = [
     region: "서울",
     supplyType: "공공분양",
     startDate: new Date("2026-03-01"),
-    endDate: new Date("2026-03-15"),
+    endDate: new Date("2099-03-15"),
     detailUrl: "https://example.com",
     summary: "테스트 아파트 | 서울 | 총 100세대",
     rawData: {},
@@ -142,6 +142,7 @@ describe("AnnouncementController (e2e)", () => {
 
       expect(res.body.matchedCount).toBe(res.body.matches.length);
       expect(Array.isArray(res.body.matches)).toBe(true);
+      expect(res.body.matchedCount).toBeGreaterThan(0);
       expect(res.body.matches[0].overallEligible).toBe(true);
       expect(res.body.disclaimer).toContain("법적 효력");
     });
