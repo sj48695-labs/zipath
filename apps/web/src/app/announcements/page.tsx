@@ -2,6 +2,11 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import {
+  formatDotDate,
+  getTodayKey,
+  isDateOnOrAfterToday,
+} from "@/lib/dateFormat";
 
 interface AnnouncementItem {
   id: number;
@@ -29,9 +34,12 @@ export default function AnnouncementsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [todayKey, setTodayKey] = useState("");
   const limit = 10;
 
   useEffect(() => {
+    setTodayKey(getTodayKey());
+
     async function fetchData() {
       setLoading(true);
       setError(null);
@@ -59,16 +67,6 @@ export default function AnnouncementsPage() {
   }, [page]);
 
   const totalPages = Math.ceil(totalCount / limit);
-
-  function formatDate(dateStr: string) {
-    if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-  }
-
-  function isActive(endDate: string) {
-    return new Date(endDate) >= new Date();
-  }
 
   return (
     <div className="min-h-screen">
@@ -132,15 +130,16 @@ export default function AnnouncementsPage() {
                         <span className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
                           {item.region}
                         </span>
-                        {isActive(item.endDate) ? (
-                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                            접수중
-                          </span>
-                        ) : (
-                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                            마감
-                          </span>
-                        )}
+                        {todayKey &&
+                          (isDateOnOrAfterToday(item.endDate, todayKey) ? (
+                            <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                              접수중
+                            </span>
+                          ) : (
+                            <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                              마감
+                            </span>
+                          ))}
                       </div>
                       <Link
                         href={`/announcements/${item.id}`}
@@ -167,8 +166,8 @@ export default function AnnouncementsPage() {
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-                    <span>접수시작: {formatDate(item.startDate)}</span>
-                    <span>접수마감: {formatDate(item.endDate)}</span>
+                    <span>접수시작: {formatDotDate(item.startDate)}</span>
+                    <span>접수마감: {formatDotDate(item.endDate)}</span>
                   </div>
                 </div>
               ))}
