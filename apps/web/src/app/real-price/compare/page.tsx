@@ -554,7 +554,7 @@ export default function RegionComparePage() {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              * 각 지역 최대 50건 기준 통계이며, 참고용이며 법적 효력 없음.
+              * 각 지역 최대 50건 기준 통계입니다. 참고용이며 법적 효력이 없습니다.
             </p>
           </div>
         )}
