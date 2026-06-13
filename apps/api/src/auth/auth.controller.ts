@@ -39,7 +39,9 @@ const refreshSchema = z.object({
 });
 
 const interestRegionsSchema = z.object({
-  interestRegions: z.array(z.string()).max(20),
+  interestRegions: z
+    .array(z.string().refine((v) => !v.includes(","), "지역명에 쉼표를 포함할 수 없습니다."))
+    .max(20),
 });
 
 @Controller("auth")

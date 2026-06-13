@@ -483,7 +483,7 @@ export default function RegionComparePage() {
                     angle={-15}
                     textAnchor="end"
                   />
-                  <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                  <YAxis tick={{ fontSize: 12 }} />
                   <Tooltip
                     formatter={(value: unknown) => [
                       `${Number(value)}건`,
@@ -554,7 +554,7 @@ export default function RegionComparePage() {
             </div>
 
             <p className="text-xs text-muted-foreground">
-              * 각 지역 최대 50건 기준 통계입니다. 참고용이며 법적 효력이 없습니다.
+              * 각 지역 최대 50건 기준 통계이며, 참고용 데이터입니다.
             </p>
           </div>
         )}
