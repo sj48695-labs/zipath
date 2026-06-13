@@ -27,11 +27,11 @@
    - 파일: `plans/103-react-hydration-errors.md` (진단 결과 기록). 산출물: 정확한 mismatch element 목록.
    - 커밋: `docs: #103 하이드레이션 오류 진단 결과 기록`
 
-2. [ ] Phase 2: 루트 레이아웃 `<html>`/`<body>` 하이드레이션 방어 — `apps/web/src/app/layout.tsx`의 `<html lang="ko">`와 `<body>`에 `suppressHydrationWarning`을 추가한다. 브라우저 확장(예: 다크모드/번역/그래멀리)이 `<body>`에 속성을 주입해 프로덕션 minified 빌드에서 #418로 표면화되는 클래스의 오류를 근본 차단(React 공식 권장). 이는 페이지 콘텐츠의 실제 mismatch는 가리지 않고, 최상위 노드의 속성 차이만 무시한다.
+2. [x] Phase 2: 루트 레이아웃 `<html>`/`<body>` 하이드레이션 방어 — `apps/web/src/app/layout.tsx`의 `<html lang="ko">`와 `<body>`에 `suppressHydrationWarning`을 추가한다. 브라우저 확장(예: 다크모드/번역/그래멀리)이 `<body>`에 속성을 주입해 프로덕션 minified 빌드에서 #418로 표면화되는 클래스의 오류를 근본 차단(React 공식 권장). 이는 페이지 콘텐츠의 실제 mismatch는 가리지 않고, 최상위 노드의 속성 차이만 무시한다.
    - 파일: `apps/web/src/app/layout.tsx`
    - 커밋: `fix(web): #103 루트 레이아웃에 suppressHydrationWarning 추가`
 
-3. [ ] Phase 3: Phase 1에서 특정된 페이지 잔여 mismatch 수정 (조건부) — Phase 1 진단에서 `/real-price/compare` 또는 그 자식(`RegionCompareCharts`, `AuthContext` 소비 노드 등)에 실제 코드 mismatch가 확인되면 해당 element만 좁게 수정한다. 우선순위: (a) `dealYmd` select가 `value=""`로 시작하는 부분이 실제 mismatch면 placeholder를 SSR/CSR 동일하게 고정하거나 `suppressHydrationWarning` 부여, (b) Recharts/`window` 접근이 새어나오면 client-only 격리 보강. 진단에서 페이지 잔여 원인이 없으면(예상 시나리오) 이 Phase는 "원인 없음 — Phase 2로 충분"으로 기록하고 스킵.
+3. [~] Phase 3: (스킵) 원인 없음 — Phase 1 진단에서 `/real-price/compare` 트리에 잔여 코드 mismatch가 확인되지 않아 Phase 2(루트 레이아웃)로 충분. 페이지 잔여 mismatch 수정 (조건부) — Phase 1 진단에서 `/real-price/compare` 또는 그 자식(`RegionCompareCharts`, `AuthContext` 소비 노드 등)에 실제 코드 mismatch가 확인되면 해당 element만 좁게 수정한다. 우선순위: (a) `dealYmd` select가 `value=""`로 시작하는 부분이 실제 mismatch면 placeholder를 SSR/CSR 동일하게 고정하거나 `suppressHydrationWarning` 부여, (b) Recharts/`window` 접근이 새어나오면 client-only 격리 보강. 진단에서 페이지 잔여 원인이 없으면(예상 시나리오) 이 Phase는 "원인 없음 — Phase 2로 충분"으로 기록하고 스킵.
    - 파일(조건부): `apps/web/src/app/real-price/compare/page.tsx`, `apps/web/src/app/real-price/compare/_components/RegionCompareCharts.tsx`
    - 커밋(조건부): `fix(web): #103 /real-price/compare 잔여 하이드레이션 노드 수정`
 
