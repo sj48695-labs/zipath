@@ -13,7 +13,9 @@ const mockCacheRepo = {
     dealType: "매매",
     yearMonth: "202601",
     data: [
-      { aptNm: "테스트아파트", dealAmount: "50,000", dealYear: "2026", dealMonth: "01" },
+      { aptNm: "소형", dealAmount: "30,000", excluUseAr: "59", dealYear: "2026", dealMonth: "01" },
+      { aptNm: "중형", dealAmount: "50,000", excluUseAr: "84", dealYear: "2026", dealMonth: "01" },
+      { aptNm: "대형", dealAmount: "80,000", excluUseAr: "120", dealYear: "2026", dealMonth: "01" },
     ],
   }),
   create: jest.fn(),
@@ -53,7 +55,7 @@ describe("RealPriceController (e2e)", () => {
         .expect(200);
 
       expect(res.body.trades).toBeDefined();
-      expect(res.body.totalCount).toBe(1);
+      expect(res.body.totalCount).toBe(3);
       expect(res.body.cached).toBe(true);
       expect(res.body.regionCode).toBe("11110");
       expect(res.body.yearMonth).toBe("202601");
@@ -75,6 +77,40 @@ describe("RealPriceController (e2e)", () => {
       await request(app.getHttpServer())
         .get("/api/real-price/search?regionCode=111&yearMonth=202601")
         .expect(400);
+    });
+
+    it("minArea가 음수이면 400을 반환한다", async () => {
+      await request(app.getHttpServer())
+        .get("/api/real-price/search?regionCode=11110&yearMonth=202601&minArea=-1")
+        .expect(400);
+    });
+
+    it("maxArea가 음수이면 400을 반환한다", async () => {
+      await request(app.getHttpServer())
+        .get("/api/real-price/search?regionCode=11110&yearMonth=202601&maxArea=-5")
+        .expect(400);
+    });
+
+    it("minArea/maxArea 로 평형 필터를 적용한다", async () => {
+      const res = await request(app.getHttpServer())
+        .get(
+          "/api/real-price/search?regionCode=11110&yearMonth=202601&minArea=60&maxArea=85",
+        )
+        .expect(200);
+
+      expect(res.body.trades).toHaveLength(1);
+      expect(res.body.trades[0].aptNm).toBe("중형");
+      expect(res.body.totalCount).toBe(1);
+      expect(res.body.cached).toBe(true);
+    });
+
+    it("필터 미지정 호출은 기존 동작과 동일하다", async () => {
+      const res = await request(app.getHttpServer())
+        .get("/api/real-price/search?regionCode=11110&yearMonth=202601")
+        .expect(200);
+
+      expect(res.body.trades).toHaveLength(3);
+      expect(res.body.totalCount).toBe(3);
     });
   });
 });

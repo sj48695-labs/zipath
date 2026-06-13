@@ -26,6 +26,12 @@ const PRESETS: PresetOption[] = [
   { label: "135㎡~ (초대형)", value: "xlarge", min: 135 },
 ];
 
+function presetBtnClass(isActive: boolean) {
+  return `rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+    isActive ? "bg-primary text-primary-foreground" : "border hover:bg-accent"
+  }`;
+}
+
 export default function AreaFilter({ onFilterChange }: AreaFilterProps) {
   const [selected, setSelected] = useState("all");
   const [customMin, setCustomMin] = useState("");
@@ -73,22 +79,14 @@ export default function AreaFilter({ onFilterChange }: AreaFilterProps) {
           <button
             key={preset.value}
             onClick={() => handlePresetClick(preset)}
-            className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-              selected === preset.value
-                ? "bg-primary text-primary-foreground"
-                : "border hover:bg-accent"
-            }`}
+            className={presetBtnClass(selected === preset.value)}
           >
             {preset.label}
           </button>
         ))}
         <button
           onClick={() => setSelected("custom")}
-          className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-            selected === "custom"
-              ? "bg-primary text-primary-foreground"
-              : "border hover:bg-accent"
-          }`}
+          className={presetBtnClass(selected === "custom")}
         >
           직접 입력
         </button>

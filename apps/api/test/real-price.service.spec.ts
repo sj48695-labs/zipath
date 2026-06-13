@@ -222,6 +222,104 @@ describe("RealPriceService", () => {
     });
   });
 
+  // ----- search (area filter) -----
+  describe("search - area filter", () => {
+    it("should return all trades when minArea/maxArea are not provided", async () => {
+      const trades = [
+        makeTrade({ excluUseAr: "59.99" }),
+        makeTrade({ excluUseAr: "84.99" }),
+        makeTrade({ excluUseAr: "120.5" }),
+      ];
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(trades));
+
+      const result = await service.search("11680", "202603");
+
+      expect(result.trades).toHaveLength(3);
+      expect(result.totalCount).toBe(3);
+    });
+
+    it("should filter trades by minArea and maxArea (inclusive)", async () => {
+      const trades = [
+        makeTrade({ aptNm: "소형", excluUseAr: "59.99" }),
+        makeTrade({ aptNm: "중형", excluUseAr: "84.99" }),
+        makeTrade({ aptNm: "대형", excluUseAr: "120.5" }),
+      ];
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(trades));
+
+      const result = await service.search("11680", "202603", 60, 85);
+
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].aptNm).toBe("중형");
+      expect(result.totalCount).toBe(1);
+      expect(result.cached).toBe(true);
+    });
+
+    const tradesSmallMediumLarge = [
+      makeTrade({ aptNm: "소형", excluUseAr: "40" }),
+      makeTrade({ aptNm: "중형", excluUseAr: "85" }),
+      makeTrade({ aptNm: "대형", excluUseAr: "120" }),
+    ];
+
+    it("should filter trades by minArea only", async () => {
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(tradesSmallMediumLarge));
+
+      const result = await service.search("11680", "202603", 60);
+
+      expect(result.trades).toHaveLength(2);
+      expect(result.trades.map((t) => t.aptNm)).toEqual(["중형", "대형"]);
+    });
+
+    it("should filter trades by maxArea only", async () => {
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(tradesSmallMediumLarge));
+
+      const result = await service.search("11680", "202603", undefined, 85);
+
+      expect(result.trades).toHaveLength(2);
+      expect(result.trades.map((t) => t.aptNm)).toEqual(["소형", "중형"]);
+    });
+
+    it("should exclude trades with NaN excluUseAr from filtered results", async () => {
+      const trades = [
+        makeTrade({ aptNm: "정상", excluUseAr: "84.99" }),
+        makeTrade({ aptNm: "이상", excluUseAr: "invalid" }),
+      ];
+      cacheRepo.findOne.mockResolvedValue(makeCacheEntity(trades));
+
+      const result = await service.search("11680", "202603", 60, 85);
+
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].aptNm).toBe("정상");
+    });
+
+    it("should apply area filter even on cache miss (after fetching from API)", async () => {
+      cacheRepo.findOne.mockResolvedValue(null);
+      configService.get.mockReturnValue("test-api-key");
+
+      const apiTrades = [
+        makeTrade({ aptNm: "소형", excluUseAr: "59" }),
+        makeTrade({ aptNm: "중형", excluUseAr: "75" }),
+      ];
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: true,
+        text: jest.fn().mockResolvedValue(
+          JSON.stringify({
+            response: { header: { resultCode: "000" }, body: { items: { item: apiTrades } } },
+          }),
+        ),
+      });
+
+      cacheRepo.create.mockReturnValue(makeCacheEntity(apiTrades));
+      cacheRepo.save.mockResolvedValue(makeCacheEntity(apiTrades));
+
+      const result = await service.search("11680", "202603", 60, 85);
+
+      expect(result.cached).toBe(false);
+      expect(result.trades).toHaveLength(1);
+      expect(result.trades[0].aptNm).toBe("중형");
+      expect(result.totalCount).toBe(1);
+    });
+  });
+
   // ----- searchRange -----
   describe("searchRange", () => {
     it("should aggregate monthly data across range", async () => {

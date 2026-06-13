@@ -201,8 +201,11 @@ export default function RealPricePage() {
             지역 간 비교 &rarr;
           </Link>
         </div>
-        <p className="mb-8 text-muted-foreground">
+        <p className="mb-2 text-muted-foreground">
           국토교통부 아파트 매매 실거래가 데이터를 조회합니다.
+        </p>
+        <p className="mb-8 text-xs text-muted-foreground">
+          * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은 국토교통부 실거래가 공개시스템을 확인해주세요.
         </p>
 
         {/* View mode tabs */}
