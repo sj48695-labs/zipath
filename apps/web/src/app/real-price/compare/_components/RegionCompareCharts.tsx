@@ -109,7 +109,7 @@ export default function RegionCompareCharts({ data }: RegionCompareChartsProps) 
               angle={-15}
               textAnchor="end"
             />
-            <YAxis tick={{ fontSize: 12 }} />
+            <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
             <Tooltip
               formatter={(value: unknown) => [
                 `${Number(value)}건`,
