@@ -6,7 +6,6 @@ import { useState, useCallback, useEffect } from "react";
 import SupportedRegionNotice from "../_components/SupportedRegionNotice";
 import {
   REGIONS,
-  isUnsupportedRegionQuery,
   type Region,
 } from "../_lib/regions";
 
@@ -142,11 +141,6 @@ export default function RegionComparePage() {
         r.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
       )
     : REGIONS;
-
-  const showUnsupportedNotice = isUnsupportedRegionQuery(
-    trimmedQuery,
-    filteredRegions.length,
-  );
 
   const handleToggleRegion = useCallback(
     (code: string) => {
@@ -287,6 +281,7 @@ export default function RegionComparePage() {
 
         {/* Region selection */}
         <div className="mb-6 rounded-lg border bg-card p-4">
+          <SupportedRegionNotice variant="inline" className="mb-3" />
           <div className="mb-3 flex items-center justify-between">
             <label className="text-sm font-medium">
               지역 선택 ({selectedRegions.length}/{MAX_REGIONS})
@@ -334,10 +329,6 @@ export default function RegionComparePage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="mb-3 w-full rounded-lg border bg-background px-3 py-2 text-sm"
           />
-
-          {showUnsupportedNotice && (
-            <SupportedRegionNotice variant="inline" className="mb-3" />
-          )}
 
           <div className="grid max-h-48 grid-cols-2 gap-1 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
             {filteredRegions.map((r) => {
