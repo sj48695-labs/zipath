@@ -48,6 +48,8 @@ interface MockQueryBuilder {
   getManyAndCount: jest.Mock;
   where: jest.Mock;
   getMany: jest.Mock;
+  select: jest.Mock;
+  getRawOne: jest.Mock;
 }
 
 interface MockRepository {
@@ -72,12 +74,15 @@ function createMockQueryBuilder(
     getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
     where: jest.fn(),
     getMany: jest.fn().mockResolvedValue([]),
+    select: jest.fn(),
+    getRawOne: jest.fn().mockResolvedValue(undefined),
   };
   qb.orderBy.mockReturnValue(qb);
   qb.andWhere.mockReturnValue(qb);
   qb.skip.mockReturnValue(qb);
   qb.take.mockReturnValue(qb);
   qb.where.mockReturnValue(qb);
+  qb.select.mockReturnValue(qb);
   Object.assign(qb, overrides);
   return qb;
 }
@@ -118,8 +123,10 @@ describe("AnnouncementService", () => {
   describe("findAll", () => {
     it("should return paginated items from DB", async () => {
       const announcement = makeAnnouncement();
+      const syncedAt = new Date("2026-06-01T03:00:00.000Z");
       const qb = createMockQueryBuilder({
         getManyAndCount: jest.fn().mockResolvedValue([[announcement], 1]),
+        getRawOne: jest.fn().mockResolvedValue({ max: syncedAt }),
       });
       announcementRepo.createQueryBuilder.mockReturnValue(qb);
 
@@ -130,6 +137,33 @@ describe("AnnouncementService", () => {
       expect(result.items[0].title).toBe("테스트 공고");
       expect(result.page).toBe(1);
       expect(result.limit).toBe(10);
+    });
+
+    it("should include lastSyncedAt as ISO string when data exists", async () => {
+      const announcement = makeAnnouncement();
+      const syncedAt = new Date("2026-06-01T03:00:00.000Z");
+      const qb = createMockQueryBuilder({
+        getManyAndCount: jest.fn().mockResolvedValue([[announcement], 1]),
+        getRawOne: jest.fn().mockResolvedValue({ max: syncedAt }),
+      });
+      announcementRepo.createQueryBuilder.mockReturnValue(qb);
+
+      const result = await service.findAll(1, 10);
+
+      expect(result.lastSyncedAt).toBe(syncedAt.toISOString());
+    });
+
+    it("should return lastSyncedAt as null when no data exists", async () => {
+      const qb = createMockQueryBuilder({
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+        getRawOne: jest.fn().mockResolvedValue({ max: null }),
+      });
+      announcementRepo.createQueryBuilder.mockReturnValue(qb);
+      configService.get.mockReturnValue(undefined); // syncFromApi에서 key 없으면 return
+
+      const result = await service.findAll(1, 10);
+
+      expect(result.lastSyncedAt).toBeNull();
     });
 
     it("should apply region filter when provided", async () => {

@@ -68,6 +68,7 @@ export class AnnouncementService {
         totalCount: syncedCount,
         page,
         limit,
+        lastSyncedAt: await this.getLastSyncedAt(),
       };
     }
 
@@ -76,7 +77,20 @@ export class AnnouncementService {
       totalCount,
       page,
       limit,
+      lastSyncedAt: await this.getLastSyncedAt(),
     };
+  }
+
+  /** 가장 최근 동기화 시각(MAX(updatedAt))을 ISO 문자열로 반환, 데이터 없으면 null */
+  private async getLastSyncedAt(): Promise<string | null> {
+    const raw = await this.announcementRepo
+      .createQueryBuilder("a")
+      .select("MAX(a.updatedAt)", "max")
+      .getRawOne<{ max: Date | string | null }>();
+
+    const max = raw?.max ?? null;
+    if (!max) return null;
+    return max instanceof Date ? max.toISOString() : new Date(max).toISOString();
   }
 
   /** 상세 조회 */
