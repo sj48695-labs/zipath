@@ -3,7 +3,7 @@ import { RegistryService } from "./registry.service";
 
 // 주소 해시(hashCode)에 따라 결정적 결과가 나오므로, 분석 분기별로
 // 미리 검증된 주소 케이스를 사용한다.
-const DANGER_ADDRESS = "서울특별시 강남구 테헤란로 152"; // 근저당 5만만원 → danger
+const DANGER_ADDRESS = "서울특별시 강남구 테헤란로 152"; // 해시 결과 근저당 고액(30,000만원 초과) → danger
 const SAFE_ADDRESS = "서울 마포구 월드컵로 100"; // 권리 설정 없음 → safe
 
 describe("RegistryService", () => {
