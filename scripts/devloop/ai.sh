@@ -50,7 +50,7 @@ devloop_ai_print() {
     fi
 
     command -v codex >/dev/null 2>&1 || return 127
-    local args=(codex exec -C "${project_dir:-$(pwd)}" --ask-for-approval never --sandbox workspace-write --color never)
+    local args=(codex --ask-for-approval never exec -C "${project_dir:-$(pwd)}" --sandbox workspace-write --color never)
     [ -n "$provider_model" ] && args+=(--model "$provider_model")
     "${args[@]}" "$prompt"
 }
