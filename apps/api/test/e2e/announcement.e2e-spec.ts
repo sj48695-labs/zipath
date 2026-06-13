@@ -26,10 +26,12 @@ const createQueryBuilder = {
   orderBy: jest.fn().mockReturnThis(),
   andWhere: jest.fn().mockReturnThis(),
   where: jest.fn().mockReturnThis(),
+  select: jest.fn().mockReturnThis(),
   skip: jest.fn().mockReturnThis(),
   take: jest.fn().mockReturnThis(),
   getManyAndCount: jest.fn().mockResolvedValue([mockAnnouncements, 1]),
   getMany: jest.fn().mockResolvedValue(mockAnnouncements),
+  getRawOne: jest.fn().mockResolvedValue({ max: new Date("2026-03-01") }),
 };
 
 const mockAnnouncementRepo = {
