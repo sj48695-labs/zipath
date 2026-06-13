@@ -26,7 +26,7 @@
 
 ### 구현 단계 (Phase)
 
-1. [ ] Phase 1: dev 재현 + 정확한 mismatch element 진단 (산출물 = 이 플랜 갱신)
+1. [x] Phase 1: dev 재현 + 정확한 mismatch element 진단 (산출물 = 이 플랜 갱신)
    - `npm run dev -w @zipath/web` 실행 후 Playwright로 `/real-price`·`/real-price/compare` 직접 접속, 콘솔 React 경고 캡처. dev 빌드는 non-minified라 #418/#425가 발생한다면 "어떤 DOM 노드/텍스트"인지 전체 메시지가 나온다. dev에서 0건이면 "프로덕션 전용(외부 주입) + 배포 누락" 가설 확정.
    - 결과를 이 플랜의 "진단 결과 (Phase 1)" 절에 기록.
    - 파일: `plans/109-react-hydration-error.md`
@@ -66,7 +66,17 @@
 
 ### 진단 결과 (Phase 1)
 
-(Phase 1 실행 시 기록)
+**dev 재현 결과: React #418/#423/#425 0건 (가설 확정).**
+
+- 실행: `PORT=3199 npm run dev -w @zipath/web` (Next.js non-minified dev 빌드) 기동 후 Playwright(chromium, headless)로 `/real-price`·`/real-price/compare` 직접 접속(`waitUntil: networkidle` + 2s 대기), `console`/`pageerror` 이벤트 전수 캡처.
+- 측정값:
+  - `/real-price` — 전체 console error/warning **0건**, 하이드레이션 관련(`#418`/`#423`/`#425`/`did not match`/`Text content`) **0건**.
+  - `/real-price/compare` — 전체 console error/warning **0건**, 하이드레이션 관련 **0건**.
+- 해석: dev 빌드는 non-minified라 실제 SSR/CSR mismatch가 있으면 어느 DOM 노드/텍스트인지 전체 메시지가 노출되는데, 두 페이지 모두 **0건**. 즉 페이지 코드 트리에 자식 노드 mismatch가 없음을 동적으로 확정. → 프로덕션(#418×1·#423×1·#425×5)은 **minified 빌드 전용 + 배포 누락** 가설로 확정됨.
+- 결론(Phase 2/3 분기):
+  - Phase 2: 루트 레이아웃 `apps/web/src/app/layout.tsx`의 `<html lang="ko" suppressHydrationWarning>` / `<body ... suppressHydrationWarning>` 이미 적용됨 → 코드 변경 없음.
+  - Phase 3: dev 재현 0건이므로 잔여 자식 노드 mismatch 없음 → 스킵(원인 없음).
+  - 핵심 잔여 작업은 코드가 아니라 `develop` → `main` 릴리즈(Vercel은 `main`에서만 배포, `main`에 #103 fix 미반영).
 
 핵심 사전 조사 결론(코드 정적 분석):
 - `develop`의 `apps/web/src/app/layout.tsx`는 `suppressHydrationWarning` 적용됨. `main`(프로덕션 배포 소스)에는 **미적용** → 프로덕션이 미수정 빌드를 서빙해 오류 재현.
