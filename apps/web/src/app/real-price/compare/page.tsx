@@ -287,6 +287,7 @@ export default function RegionComparePage() {
 
         {/* Region selection */}
         <div className="mb-6 rounded-lg border bg-card p-4">
+          <SupportedRegionNotice variant="inline" className="mb-3" />
           <div className="mb-3 flex items-center justify-between">
             <label className="text-sm font-medium">
               지역 선택 ({selectedRegions.length}/{MAX_REGIONS})
