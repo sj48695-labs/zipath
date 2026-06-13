@@ -5,6 +5,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import NotificationBell from "../_components/NotificationBell";
+import { formatKoreanDateTime } from "@/lib/dateFormat";
 
 interface NotificationPreference {
   id: number;
@@ -259,17 +260,6 @@ export default function NotificationsPage() {
     } catch {
       // 전체 읽음 처리 실패는 무시
     }
-  };
-
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("ko-KR", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
   };
 
   if (authLoading) {
@@ -597,7 +587,7 @@ export default function NotificationsPage() {
                             </span>
                           </div>
                           <span className="text-xs text-muted-foreground">
-                            {formatDate(notif.createdAt)}
+                            {formatKoreanDateTime(notif.createdAt)}
                           </span>
                         </div>
                         <h3 className="mb-1 font-medium">{notif.title}</h3>

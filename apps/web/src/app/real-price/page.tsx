@@ -1,88 +1,32 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo, useCallback } from "react";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ScatterChart,
-  Scatter,
-} from "recharts";
-import MonthlyPriceTrendChart from "./_components/MonthlyPriceTrendChart";
+import dynamic from "next/dynamic";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import AreaFilter from "./_components/AreaFilter";
+import SupportedRegionNotice from "./_components/SupportedRegionNotice";
+import { REGIONS } from "./_lib/regions";
 
-const REGIONS = [
-  { code: "11110", name: "서울 종로구" },
-  { code: "11140", name: "서울 중구" },
-  { code: "11170", name: "서울 용산구" },
-  { code: "11200", name: "서울 성동구" },
-  { code: "11215", name: "서울 광진구" },
-  { code: "11230", name: "서울 동대문구" },
-  { code: "11260", name: "서울 중랑구" },
-  { code: "11290", name: "서울 성북구" },
-  { code: "11305", name: "서울 강북구" },
-  { code: "11320", name: "서울 도봉구" },
-  { code: "11350", name: "서울 노원구" },
-  { code: "11380", name: "서울 은평구" },
-  { code: "11410", name: "서울 서대문구" },
-  { code: "11440", name: "서울 마포구" },
-  { code: "11470", name: "서울 양천구" },
-  { code: "11500", name: "서울 강서구" },
-  { code: "11530", name: "서울 구로구" },
-  { code: "11545", name: "서울 금천구" },
-  { code: "11560", name: "서울 영등포구" },
-  { code: "11590", name: "서울 동작구" },
-  { code: "11620", name: "서울 관악구" },
-  { code: "11650", name: "서울 서초구" },
-  { code: "11680", name: "서울 강남구" },
-  { code: "11710", name: "서울 송파구" },
-  { code: "11740", name: "서울 강동구" },
-  { code: "41111", name: "경기 수원시 장안구" },
-  { code: "41113", name: "경기 수원시 권선구" },
-  { code: "41115", name: "경기 수원시 팔달구" },
-  { code: "41117", name: "경기 수원시 영통구" },
-  { code: "41131", name: "경기 성남시 수정구" },
-  { code: "41133", name: "경기 성남시 중원구" },
-  { code: "41135", name: "경기 성남시 분당구" },
-  { code: "41281", name: "경기 고양시 덕양구" },
-  { code: "41285", name: "경기 고양시 일산동구" },
-  { code: "41287", name: "경기 고양시 일산서구" },
-  { code: "41390", name: "경기 화성시" },
-  { code: "41410", name: "경기 파주시" },
-  { code: "41461", name: "경기 용인시 처인구" },
-  { code: "41463", name: "경기 용인시 기흥구" },
-  { code: "41465", name: "경기 용인시 수지구" },
-  { code: "41480", name: "경기 김포시" },
-  { code: "28110", name: "인천 중구" },
-  { code: "28140", name: "인천 동구" },
-  { code: "28177", name: "인천 미추홀구" },
-  { code: "28185", name: "인천 연수구" },
-  { code: "28200", name: "인천 남동구" },
-  { code: "28237", name: "인천 부평구" },
-  { code: "28245", name: "인천 계양구" },
-  { code: "28260", name: "인천 서구" },
-  { code: "26110", name: "부산 중구" },
-  { code: "26140", name: "부산 서구" },
-  { code: "26170", name: "부산 동구" },
-  { code: "26200", name: "부산 영도구" },
-  { code: "26230", name: "부산 부산진구" },
-  { code: "26260", name: "부산 동래구" },
-  { code: "26290", name: "부산 남구" },
-  { code: "26320", name: "부산 북구" },
-  { code: "26350", name: "부산 해운대구" },
-  { code: "26380", name: "부산 사하구" },
-  { code: "26410", name: "부산 금정구" },
-  { code: "26440", name: "부산 강서구" },
-  { code: "26470", name: "부산 연제구" },
-  { code: "26500", name: "부산 수영구" },
-  { code: "26530", name: "부산 사상구" },
-  { code: "26710", name: "부산 기장군" },
-];
+const MonthlyPriceTrendChart = dynamic(
+  () => import("./_components/MonthlyPriceTrendChart"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-lg border p-6 text-center text-muted-foreground">
+        차트를 불러오는 중입니다.
+      </div>
+    ),
+  },
+);
+
+const RealPriceCharts = dynamic(() => import("./_components/RealPriceCharts"), {
+  ssr: false,
+  loading: () => (
+    <div className="rounded-lg border p-6 text-center text-muted-foreground">
+      차트를 불러오는 중입니다.
+    </div>
+  ),
+});
 
 interface Trade {
   aptNm: string;
@@ -100,9 +44,10 @@ interface Trade {
 
 interface MonthlyPriceSummaryItem {
   yearMonth: string;
-  avgPrice: number;
-  minPrice: number;
-  maxPrice: number;
+  // 거래가 0건인 월은 null (차트 gap 표시)
+  avgPrice: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
   tradeCount: number;
 }
 
@@ -112,6 +57,37 @@ interface AreaRange {
 }
 
 type ViewMode = "table" | "chart" | "trend";
+
+function getRecord(value: unknown): Record<string, unknown> | null {
+  if (typeof value !== "object" || value === null) return null;
+  return value as Record<string, unknown>;
+}
+
+function getTradeItems(data: unknown): Trade[] {
+  const root = getRecord(data);
+  if (!root) return [];
+
+  const response = getRecord(root.response);
+  const responseBody = getRecord(response?.body);
+  const responseItems = getRecord(responseBody?.items);
+  const body = getRecord(root.body);
+  const bodyItems = getRecord(body?.items);
+
+  const items =
+    root.trades ?? responseItems?.item ?? bodyItems?.item ?? [];
+
+  return Array.isArray(items) ? (items as Trade[]) : items ? [items as Trade] : [];
+}
+
+function getErrorMessage(data: unknown): string | null {
+  const error = getRecord(data)?.error;
+  return typeof error === "string" ? error : null;
+}
+
+function getMonthlyItems(data: unknown): MonthlyPriceSummaryItem[] {
+  const monthly = getRecord(data)?.monthly;
+  return Array.isArray(monthly) ? (monthly as MonthlyPriceSummaryItem[]) : [];
+}
 
 function getMonthOptions() {
   const options: { value: string; label: string }[] = [];
@@ -127,23 +103,34 @@ function getMonthOptions() {
 
 export default function RealPricePage() {
   const [regionCode, setRegionCode] = useState("11680");
-  const [dealYmd, setDealYmd] = useState(() => getMonthOptions()[0].value);
+  const [dealYmd, setDealYmd] = useState("");
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [areaFilter, setAreaFilter] = useState<AreaRange>({});
+  const [monthOptions, setMonthOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
 
   // Trend-related state
-  const [trendFromMonth, setTrendFromMonth] = useState(() => getMonthOptions()[5].value);
-  const [trendToMonth, setTrendToMonth] = useState(() => getMonthOptions()[0].value);
+  const [trendFromMonth, setTrendFromMonth] = useState("");
+  const [trendToMonth, setTrendToMonth] = useState("");
   const [trendData, setTrendData] = useState<MonthlyPriceSummaryItem[]>([]);
   const [trendLoading, setTrendLoading] = useState(false);
   const [trendError, setTrendError] = useState<string | null>(null);
   const [trendSearched, setTrendSearched] = useState(false);
 
-  const monthOptions = getMonthOptions();
+  useEffect(() => {
+    const options = getMonthOptions();
+    setMonthOptions(options);
+    setDealYmd((prev) => prev || options[0]?.value || "");
+    setTrendFromMonth(
+      (prev) => prev || options[5]?.value || options[0]?.value || "",
+    );
+    setTrendToMonth((prev) => prev || options[0]?.value || "");
+  }, []);
 
   // 법정동별 평균 가격
   const avgByDong = useMemo(() => {
@@ -176,6 +163,11 @@ export default function RealPricePage() {
   }, [trades]);
 
   async function handleSearch() {
+    if (!dealYmd) {
+      setError("계약월을 불러온 후 다시 시도해주세요.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSearched(true);
@@ -185,24 +177,24 @@ export default function RealPricePage() {
         DEAL_YMD: dealYmd,
         numOfRows: "50",
       });
-      if (areaFilter.min !== undefined) params.set("minArea", String(areaFilter.min));
-      if (areaFilter.max !== undefined) params.set("maxArea", String(areaFilter.max));
+      if (areaFilter.min !== undefined) {
+        params.set("minArea", String(areaFilter.min));
+      }
+      if (areaFilter.max !== undefined) {
+        params.set("maxArea", String(areaFilter.max));
+      }
       const res = await fetch(`/api/real-price?${params.toString()}`);
-      const data = await res.json();
+      const data: unknown = await res.json();
 
-      if (data.error) {
-        setError(data.error);
+      const errorMessage = getErrorMessage(data);
+      if (errorMessage) {
+        setError(errorMessage);
         setTrades([]);
         return;
       }
 
       // 백엔드 RealPriceResponse 포맷 지원 + 기존 공공API 포맷 fallback
-      const items =
-        data?.trades ??
-        data?.response?.body?.items?.item ??
-        data?.body?.items?.item ??
-        [];
-      setTrades(Array.isArray(items) ? items : items ? [items] : []);
+      setTrades(getTradeItems(data));
     } catch {
       setError("데이터를 불러오는 데 실패했습니다.");
       setTrades([]);
@@ -212,6 +204,11 @@ export default function RealPricePage() {
   }
 
   const handleTrendSearch = useCallback(async () => {
+    if (!trendFromMonth || !trendToMonth) {
+      setTrendError("조회 기간을 불러온 후 다시 시도해주세요.");
+      return;
+    }
+
     if (trendFromMonth > trendToMonth) {
       setTrendError("시작월이 종료월보다 이후입니다.");
       return;
@@ -221,18 +218,18 @@ export default function RealPricePage() {
     setTrendSearched(true);
     try {
       const res = await fetch(
-        `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`
+        `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`,
       );
-      const data = await res.json();
+      const data: unknown = await res.json();
 
-      if (data.error) {
-        setTrendError(data.error);
+      const errorMessage = getErrorMessage(data);
+      if (errorMessage) {
+        setTrendError(errorMessage);
         setTrendData([]);
         return;
       }
 
-      const monthly: MonthlyPriceSummaryItem[] = data?.monthly ?? [];
-      setTrendData(monthly);
+      setTrendData(getMonthlyItems(data));
     } catch {
       setTrendError("추이 데이터를 불러오는 데 실패했습니다.");
       setTrendData([]);
@@ -266,8 +263,11 @@ export default function RealPricePage() {
             지역 간 비교 &rarr;
           </Link>
         </div>
-        <p className="mb-8 text-muted-foreground">
+        <p className="mb-2 text-muted-foreground">
           국토교통부 아파트 매매 실거래가 데이터를 조회합니다.
+        </p>
+        <p className="mb-8 text-xs text-muted-foreground">
+          * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은 국토교통부 실거래가 공개시스템을 확인해주세요.
         </p>
 
         {/* View mode tabs */}
@@ -294,6 +294,8 @@ export default function RealPricePage() {
           })}
         </div>
 
+        <SupportedRegionNotice className="mb-4" />
+
         {/* Search controls - single month for table/chart, date range for trend */}
         <div className="mb-8 flex flex-wrap items-end gap-4 rounded-lg border bg-card p-4">
           <div className="flex-1 min-w-[200px]">
@@ -318,13 +320,18 @@ export default function RealPricePage() {
                 <select
                   value={trendFromMonth}
                   onChange={(e) => setTrendFromMonth(e.target.value)}
+                  disabled={monthOptions.length === 0}
                   className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 >
-                  {monthOptions.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
+                  {monthOptions.length > 0 ? (
+                    monthOptions.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">불러오는 중...</option>
+                  )}
                 </select>
               </div>
               <div className="min-w-[160px]">
@@ -332,18 +339,23 @@ export default function RealPricePage() {
                 <select
                   value={trendToMonth}
                   onChange={(e) => setTrendToMonth(e.target.value)}
+                  disabled={monthOptions.length === 0}
                   className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 >
-                  {monthOptions.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
+                  {monthOptions.length > 0 ? (
+                    monthOptions.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">불러오는 중...</option>
+                  )}
                 </select>
               </div>
               <button
                 onClick={handleTrendSearch}
-                disabled={trendLoading}
+                disabled={trendLoading || monthOptions.length === 0}
                 className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 {trendLoading ? "조회 중..." : "추이 조회"}
@@ -356,18 +368,23 @@ export default function RealPricePage() {
                 <select
                   value={dealYmd}
                   onChange={(e) => setDealYmd(e.target.value)}
+                  disabled={monthOptions.length === 0}
                   className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
                 >
-                  {monthOptions.map((m) => (
-                    <option key={m.value} value={m.value}>
-                      {m.label}
-                    </option>
-                  ))}
+                  {monthOptions.length > 0 ? (
+                    monthOptions.map((m) => (
+                      <option key={m.value} value={m.value}>
+                        {m.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="">불러오는 중...</option>
+                  )}
                 </select>
               </div>
               <button
                 onClick={handleSearch}
-                disabled={loading}
+                disabled={loading || monthOptions.length === 0}
                 className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
               >
                 {loading ? "조회 중..." : "조회"}
@@ -400,7 +417,13 @@ export default function RealPricePage() {
               </div>
             )}
             {(trendSearched || trendLoading) && (
-              <MonthlyPriceTrendChart data={trendData} loading={trendLoading} />
+              <>
+                <MonthlyPriceTrendChart data={trendData} loading={trendLoading} />
+                <p className="mt-3 text-center text-xs text-muted-foreground">
+                  거래가 없는 월은 차트에서 빈 구간(gap)으로 표시됩니다. 본 정보는
+                  참고용이며 법적 효력이 없습니다.
+                </p>
+              </>
             )}
           </>
         )}
@@ -432,61 +455,10 @@ export default function RealPricePage() {
             {!loading && trades.length > 0 && (
               <>
                 {viewMode === "chart" && (
-                  <div className="space-y-8">
-                    {/* 법정동별 평균 가격 */}
-                    {avgByDong.length > 0 && (
-                      <div className="rounded-lg border bg-card p-4">
-                        <h3 className="mb-4 text-sm font-semibold">법정동별 평균 거래가격 (만원)</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <BarChart data={avgByDong} layout="vertical" margin={{ left: 60 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis type="number" tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`} />
-                            <YAxis type="category" dataKey="name" width={80} tick={{ fontSize: 12 }} />
-                            <Tooltip
-                              formatter={(value: unknown) => [`${Number(value).toLocaleString()}만원`, "평균가"]}
-                              labelFormatter={(label: unknown) => String(label)}
-                            />
-                            <Bar dataKey="avg" fill="hsl(221, 83%, 53%)" radius={[0, 4, 4, 0]} />
-                          </BarChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
-
-                    {/* 면적 vs 가격 산점도 */}
-                    {areaVsPrice.length > 0 && (
-                      <div className="rounded-lg border bg-card p-4">
-                        <h3 className="mb-4 text-sm font-semibold">전용면적별 거래가격 분포</h3>
-                        <ResponsiveContainer width="100%" height={300}>
-                          <ScatterChart margin={{ bottom: 20 }}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis
-                              type="number"
-                              dataKey="area"
-                              name="면적"
-                              unit="m²"
-                              tick={{ fontSize: 12 }}
-                            />
-                            <YAxis
-                              type="number"
-                              dataKey="price"
-                              name="가격"
-                              tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`}
-                              tick={{ fontSize: 12 }}
-                            />
-                            <Tooltip
-                              formatter={(value: unknown, name: unknown) => {
-                                const v = Number(value);
-                                const n = String(name);
-                                if (n === "가격") return [`${v.toLocaleString()}만원`, n];
-                                return [`${v}m²`, n];
-                              }}
-                            />
-                            <Scatter data={areaVsPrice} fill="hsl(221, 83%, 53%)" fillOpacity={0.6} />
-                          </ScatterChart>
-                        </ResponsiveContainer>
-                      </div>
-                    )}
-                  </div>
+                  <RealPriceCharts
+                    avgByDong={avgByDong}
+                    areaVsPrice={areaVsPrice}
+                  />
                 )}
 
                 {viewMode === "table" && (

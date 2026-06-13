@@ -1,90 +1,26 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useCallback } from "react";
+import dynamic from "next/dynamic";
+import { useState, useCallback, useEffect } from "react";
+import SupportedRegionNotice from "../_components/SupportedRegionNotice";
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Legend,
-} from "recharts";
+  REGIONS,
+  isUnsupportedRegionQuery,
+  type Region,
+} from "../_lib/regions";
 
-const REGIONS = [
-  { code: "11110", name: "서울 종로구" },
-  { code: "11140", name: "서울 중구" },
-  { code: "11170", name: "서울 용산구" },
-  { code: "11200", name: "서울 성동구" },
-  { code: "11215", name: "서울 광진구" },
-  { code: "11230", name: "서울 동대문구" },
-  { code: "11260", name: "서울 중랑구" },
-  { code: "11290", name: "서울 성북구" },
-  { code: "11305", name: "서울 강북구" },
-  { code: "11320", name: "서울 도봉구" },
-  { code: "11350", name: "서울 노원구" },
-  { code: "11380", name: "서울 은평구" },
-  { code: "11410", name: "서울 서대문구" },
-  { code: "11440", name: "서울 마포구" },
-  { code: "11470", name: "서울 양천구" },
-  { code: "11500", name: "서울 강서구" },
-  { code: "11530", name: "서울 구로구" },
-  { code: "11545", name: "서울 금천구" },
-  { code: "11560", name: "서울 영등포구" },
-  { code: "11590", name: "서울 동작구" },
-  { code: "11620", name: "서울 관악구" },
-  { code: "11650", name: "서울 서초구" },
-  { code: "11680", name: "서울 강남구" },
-  { code: "11710", name: "서울 송파구" },
-  { code: "11740", name: "서울 강동구" },
-  { code: "41111", name: "경기 수원시 장안구" },
-  { code: "41113", name: "경기 수원시 권선구" },
-  { code: "41115", name: "경기 수원시 팔달구" },
-  { code: "41117", name: "경기 수원시 영통구" },
-  { code: "41131", name: "경기 성남시 수정구" },
-  { code: "41133", name: "경기 성남시 중원구" },
-  { code: "41135", name: "경기 성남시 분당구" },
-  { code: "41281", name: "경기 고양시 덕양구" },
-  { code: "41285", name: "경기 고양시 일산동구" },
-  { code: "41287", name: "경기 고양시 일산서구" },
-  { code: "41390", name: "경기 화성시" },
-  { code: "41410", name: "경기 파주시" },
-  { code: "41461", name: "경기 용인시 처인구" },
-  { code: "41463", name: "경기 용인시 기흥구" },
-  { code: "41465", name: "경기 용인시 수지구" },
-  { code: "41480", name: "경기 김포시" },
-  { code: "28110", name: "인천 중구" },
-  { code: "28140", name: "인천 동구" },
-  { code: "28177", name: "인천 미추홀구" },
-  { code: "28185", name: "인천 연수구" },
-  { code: "28200", name: "인천 남동구" },
-  { code: "28237", name: "인천 부평구" },
-  { code: "28245", name: "인천 계양구" },
-  { code: "28260", name: "인천 서구" },
-  { code: "26110", name: "부산 중구" },
-  { code: "26140", name: "부산 서구" },
-  { code: "26170", name: "부산 동구" },
-  { code: "26200", name: "부산 영도구" },
-  { code: "26230", name: "부산 부산진구" },
-  { code: "26260", name: "부산 동래구" },
-  { code: "26290", name: "부산 남구" },
-  { code: "26320", name: "부산 북구" },
-  { code: "26350", name: "부산 해운대구" },
-  { code: "26380", name: "부산 사하구" },
-  { code: "26410", name: "부산 금정구" },
-  { code: "26440", name: "부산 강서구" },
-  { code: "26470", name: "부산 연제구" },
-  { code: "26500", name: "부산 수영구" },
-  { code: "26530", name: "부산 사상구" },
-  { code: "26710", name: "부산 기장군" },
-];
-
-interface Region {
-  code: string;
-  name: string;
-}
+const RegionCompareCharts = dynamic(
+  () => import("./_components/RegionCompareCharts"),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="rounded-lg border p-6 text-center text-muted-foreground">
+        차트를 불러오는 중입니다.
+      </div>
+    ),
+  },
+);
 
 interface Trade {
   aptNm: string;
@@ -127,7 +63,7 @@ const REGION_COLORS = [
   "hsl(45, 93%, 47%)",
 ];
 
-function getMonthOptions() {
+function buildMonthOptions() {
   const options: { value: string; label: string }[] = [];
   const now = new Date();
   for (let i = 0; i < 12; i++) {
@@ -147,6 +83,10 @@ function formatPrice(value: number): string {
     return `${eok}억 ${remainder.toLocaleString()}`;
   }
   return `${value.toLocaleString()}만원`;
+}
+
+function fmtPrice(value: number): string {
+  return value > 0 ? formatPrice(value) : "-";
 }
 
 function computeStats(trades: Trade[], region: Region): RegionStats {
@@ -178,20 +118,35 @@ function computeStats(trades: Trade[], region: Region): RegionStats {
 
 export default function RegionComparePage() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const [dealYmd, setDealYmd] = useState(() => getMonthOptions()[0].value);
+  const [dealYmd, setDealYmd] = useState("");
+  const [monthOptions, setMonthOptions] = useState<
+    { value: string; label: string }[]
+  >([]);
   const [regionStats, setRegionStats] = useState<RegionStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [searched, setSearched] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  const monthOptions = getMonthOptions();
+  // 월 목록은 `new Date()`에 의존하므로 SSR/CSR 결과가 달라질 수 있다.
+  // 하이드레이션 불일치를 피하기 위해 클라이언트 마운트 이후에만 계산한다.
+  useEffect(() => {
+    const options = buildMonthOptions();
+    setMonthOptions(options);
+    setDealYmd((prev) => prev || options[0]?.value || "");
+  }, []);
 
-  const filteredRegions = searchQuery
+  const trimmedQuery = searchQuery.trim();
+  const filteredRegions = trimmedQuery
     ? REGIONS.filter((r) =>
-        r.name.toLowerCase().includes(searchQuery.toLowerCase()),
+        r.name.toLowerCase().includes(trimmedQuery.toLowerCase()),
       )
     : REGIONS;
+
+  const showUnsupportedNotice = isUnsupportedRegionQuery(
+    trimmedQuery,
+    filteredRegions.length,
+  );
 
   const handleToggleRegion = useCallback(
     (code: string) => {
@@ -211,6 +166,11 @@ export default function RegionComparePage() {
   const handleCompare = useCallback(async () => {
     if (selectedRegions.length < MIN_REGIONS) {
       setError(`최소 ${MIN_REGIONS}개 지역을 선택해주세요.`);
+      return;
+    }
+
+    if (!dealYmd) {
+      setError("계약월을 불러온 후 다시 시도해주세요.");
       return;
     }
 
@@ -375,7 +335,10 @@ export default function RegionComparePage() {
             className="mb-3 w-full rounded-lg border bg-background px-3 py-2 text-sm"
           />
 
-          {/* Region checkboxes */}
+          {showUnsupportedNotice && (
+            <SupportedRegionNotice variant="inline" className="mb-3" />
+          )}
+
           <div className="grid max-h-48 grid-cols-2 gap-1 overflow-y-auto sm:grid-cols-3 md:grid-cols-4">
             {filteredRegions.map((r) => {
               const isSelected = selectedRegions.includes(r.code);
@@ -413,18 +376,23 @@ export default function RegionComparePage() {
             <select
               value={dealYmd}
               onChange={(e) => setDealYmd(e.target.value)}
+              disabled={monthOptions.length === 0}
               className="w-full rounded-lg border bg-background px-3 py-2 text-sm"
             >
-              {monthOptions.map((m) => (
-                <option key={m.value} value={m.value}>
-                  {m.label}
-                </option>
-              ))}
+              {monthOptions.length > 0 ? (
+                monthOptions.map((m) => (
+                  <option key={m.value} value={m.value}>
+                    {m.label}
+                  </option>
+                ))
+              ) : (
+                <option value="">불러오는 중...</option>
+              )}
             </select>
           </div>
           <button
             onClick={handleCompare}
-            disabled={loading || selectedRegions.length < MIN_REGIONS}
+            disabled={loading || selectedRegions.length < MIN_REGIONS || !dealYmd}
             className="rounded-lg bg-primary px-6 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
             {loading ? "비교 중..." : "비교 조회"}
@@ -466,100 +434,55 @@ export default function RegionComparePage() {
         {/* Results */}
         {!loading && regionStats.length > 0 && (
           <div className="space-y-8">
-            {/* Bar chart - average price comparison */}
-            <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-4 text-sm font-semibold">
-                지역별 평균 거래가격 비교 (만원)
-              </h3>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={chartData} margin={{ bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                    angle={-15}
-                    textAnchor="end"
-                  />
-                  <YAxis
-                    tickFormatter={(v: number) => {
-                      if (v >= 10000) return `${(v / 10000).toFixed(1)}억`;
-                      return `${v.toLocaleString()}`;
-                    }}
-                    tick={{ fontSize: 12 }}
-                    width={70}
-                  />
-                  <Tooltip
-                    formatter={(value: unknown, name: unknown) => {
-                      const v = Number(value);
-                      const n = String(name);
-                      if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                      if (n === "minPrice") return [formatPrice(v), "최저가"];
-                      if (n === "maxPrice") return [formatPrice(v), "최고가"];
-                      return [formatPrice(v), n];
-                    }}
-                    labelFormatter={(label: unknown) => String(label)}
-                  />
-                  <Legend
-                    formatter={(value: unknown) => {
-                      const v = String(value);
-                      if (v === "avgPrice") return "평균가";
-                      if (v === "minPrice") return "최저가";
-                      if (v === "maxPrice") return "최고가";
-                      return v;
-                    }}
-                  />
-                  <Bar
-                    dataKey="avgPrice"
-                    fill="hsl(221, 83%, 53%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="minPrice"
-                    fill="hsl(142, 71%, 45%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                  <Bar
-                    dataKey="maxPrice"
-                    fill="hsl(0, 72%, 51%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
+            <RegionCompareCharts data={chartData} />
+
+            {/* Mobile: card grid (no horizontal scroll) */}
+            <div className="grid grid-cols-2 gap-3 sm:hidden">
+              {regionStats.map((s) => (
+                <div
+                  key={s.regionCode}
+                  className="rounded-lg border bg-card p-3"
+                >
+                  <div className="mb-2 flex items-center gap-2 font-medium">
+                    <span
+                      className="inline-block h-3 w-3 shrink-0 rounded-full"
+                      style={{
+                        backgroundColor:
+                          REGION_COLORS[selectedRegions.indexOf(s.regionCode)],
+                      }}
+                    />
+                    <span className="truncate text-sm">{s.regionName}</span>
+                  </div>
+                  <dl className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">평균가</dt>
+                      <dd className="font-medium text-primary">
+                        {fmtPrice(s.avgPrice)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">최저가</dt>
+                      <dd className="text-green-600">
+                        {fmtPrice(s.minPrice)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">최고가</dt>
+                      <dd className="text-red-600">
+                        {fmtPrice(s.maxPrice)}
+                      </dd>
+                    </div>
+                    <div className="flex justify-between">
+                      <dt className="text-muted-foreground">거래</dt>
+                      <dd>{s.tradeCount}건</dd>
+                    </div>
+                  </dl>
+                </div>
+              ))}
             </div>
 
-            {/* Trade count bar chart */}
-            <div className="rounded-lg border bg-card p-4">
-              <h3 className="mb-4 text-sm font-semibold">지역별 거래 건수</h3>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={chartData} margin={{ bottom: 20 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis
-                    dataKey="name"
-                    tick={{ fontSize: 12 }}
-                    interval={0}
-                    angle={-15}
-                    textAnchor="end"
-                  />
-                  <YAxis tick={{ fontSize: 12 }} />
-                  <Tooltip
-                    formatter={(value: unknown) => [
-                      `${Number(value)}건`,
-                      "거래 건수",
-                    ]}
-                    labelFormatter={(label: unknown) => String(label)}
-                  />
-                  <Bar
-                    dataKey="tradeCount"
-                    fill="hsl(221, 83%, 53%)"
-                    radius={[4, 4, 0, 0]}
-                  />
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-
-            {/* Data table */}
-            <div className="overflow-x-auto rounded-lg border">
+            {/* Desktop: data table */}
+            <div className="hidden overflow-x-auto rounded-lg border sm:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b bg-secondary/30 text-left">
@@ -579,7 +502,7 @@ export default function RegionComparePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {regionStats.map((s, idx) => (
+                  {regionStats.map((s) => (
                     <tr
                       key={s.regionCode}
                       className="border-b hover:bg-secondary/10"
@@ -588,19 +511,22 @@ export default function RegionComparePage() {
                         <span
                           className="mr-2 inline-block h-3 w-3 rounded-full"
                           style={{
-                            backgroundColor: REGION_COLORS[idx],
+                            backgroundColor:
+                              REGION_COLORS[
+                                selectedRegions.indexOf(s.regionCode)
+                              ],
                           }}
                         />
                         {s.regionName}
                       </td>
                       <td className="px-4 py-3 text-right font-medium text-primary">
-                        {s.avgPrice > 0 ? formatPrice(s.avgPrice) : "-"}
+                        {fmtPrice(s.avgPrice)}
                       </td>
                       <td className="px-4 py-3 text-right text-green-600">
-                        {s.minPrice > 0 ? formatPrice(s.minPrice) : "-"}
+                        {fmtPrice(s.minPrice)}
                       </td>
                       <td className="px-4 py-3 text-right text-red-600">
-                        {s.maxPrice > 0 ? formatPrice(s.maxPrice) : "-"}
+                        {fmtPrice(s.maxPrice)}
                       </td>
                       <td className="px-4 py-3 text-right">
                         {s.tradeCount}건

@@ -160,6 +160,10 @@ npm test -w @zipath/api
 # 백엔드 E2E 테스트 (로컬 DB 필요)
 npm run test:e2e -w @zipath/api
 
+# 웹 E2E (Playwright, dev URL 대상, optional)
+npm test -w @zipath/web-e2e
+# 환경변수: ZIPATH_BASE_URL (default: https://zipath-web.vercel.app)
+
 # DB 컨테이너 시작
 npm run db:up
 ```

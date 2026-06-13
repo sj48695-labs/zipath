@@ -19,10 +19,15 @@ import { ContractAnalysisModule } from "./contract-analysis/contract-analysis.mo
 import { NotificationModule } from "./notification/notification.module";
 import { RegistryModule } from "./registry/registry.module";
 import { PaymentModule } from "./payment/payment.module";
+import { envValidationSchema, envValidationOptions } from "./config/env.validation";
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),
+    ConfigModule.forRoot({
+      isGlobal: true,
+      validationSchema: envValidationSchema,
+      validationOptions: envValidationOptions,
+    }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
