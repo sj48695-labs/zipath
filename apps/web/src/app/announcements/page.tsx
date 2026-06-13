@@ -56,6 +56,9 @@ export default function AnnouncementsPage() {
 
         if (data.error) {
           setError(data.error);
+          setAnnouncements([]);
+          setTotalCount(0);
+          setLastSyncedAt(null);
           return;
         }
 
@@ -64,6 +67,9 @@ export default function AnnouncementsPage() {
         setLastSyncedAt(data.lastSyncedAt ?? null);
       } catch {
         setError("데이터를 불러오는 데 실패했습니다.");
+        setAnnouncements([]);
+        setTotalCount(0);
+        setLastSyncedAt(null);
       } finally {
         setLoading(false);
       }

@@ -89,6 +89,8 @@ describe("AnnouncementController (e2e)", () => {
       expect(res.body.page).toBe(1);
       expect(res.body.limit).toBe(10);
       expect(res.body.items[0].title).toBe("테스트 아파트");
+      expect(res.body.lastSyncedAt).toBeDefined();
+      expect(typeof res.body.lastSyncedAt).toBe("string");
     });
 
     it("페이지네이션이 동작한다", async () => {
