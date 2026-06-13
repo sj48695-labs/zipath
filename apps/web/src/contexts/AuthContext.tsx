@@ -64,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
 
       if (!res.ok) {
-        // Token expired or invalid
+        // 토큰이 만료되었거나 유효하지 않다.
         removeStoredToken("accessToken");
         removeStoredToken("refreshToken");
         setUser(null);
