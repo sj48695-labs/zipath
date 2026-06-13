@@ -7,6 +7,7 @@ import { Announcement, SubscriptionCriteria } from "@zipath/db";
 import { Cron } from "@nestjs/schedule";
 import { MatchRequestDto } from "./dto/match-request.dto";
 import { MatchResultDto, MatchCriterionResult } from "./dto/match-result.dto";
+import { MatchAllResultDto, MATCH_DISCLAIMER } from "./dto/match-all-result.dto";
 
 interface ApiAnnouncement {
   HOUSE_MANAGE_NO: string;
@@ -201,7 +202,43 @@ export class AnnouncementService {
       where: { id: announcementId },
     });
     if (!announcement) return null;
+    return this.computeMatchForEntity(announcement, input);
+  }
 
+  /**
+   * 사용자 조건으로 신청 가능한 전체 공고를 자동 매칭한다.
+   * 마감 전(`endDate >= now`) 공고만 대상으로 하며,
+   * 지원 가능(`overallEligible === true`)한 공고만 반환한다.
+   */
+  async matchAllAnnouncements(
+    input: MatchRequestDto,
+  ): Promise<MatchAllResultDto> {
+    const activeAnnouncements = await this.announcementRepo
+      .createQueryBuilder("a")
+      .where("a.endDate >= :now", { now: new Date() })
+      .orderBy("a.endDate", "ASC")
+      .getMany();
+
+    const matches: MatchResultDto[] = [];
+    for (const announcement of activeAnnouncements) {
+      const result = await this.computeMatchForEntity(announcement, input);
+      if (result.overallEligible) {
+        matches.push(result);
+      }
+    }
+
+    return {
+      matchedCount: matches.length,
+      matches,
+      disclaimer: MATCH_DISCLAIMER,
+    };
+  }
+
+  /** 이미 로드된 엔티티로 매칭 결과를 계산한다 (DB 재조회 없음) */
+  private async computeMatchForEntity(
+    announcement: Announcement,
+    input: MatchRequestDto,
+  ): Promise<MatchResultDto> {
     // 해당 공고의 청약 기준 조회 (DB에 저장된 기준이 있으면 활용)
     const criteriaQb = this.criteriaRepo.createQueryBuilder("c");
     if (announcement.region) {
