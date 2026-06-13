@@ -31,6 +31,10 @@ function InterestRegionsSection({ regions }: { regions: string[] }) {
     setError(null);
     setJustSaved(false);
     if (!value) return;
+    if (value.includes(",")) {
+      setError("지역명에 쉼표를 포함할 수 없습니다.");
+      return;
+    }
     if (draft.includes(value)) {
       setError("이미 추가된 지역입니다.");
       return;
