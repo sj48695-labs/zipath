@@ -10,6 +10,7 @@ function makeUser(overrides: Partial<User> = {}): User {
     nickname: "테스터",
     provider: "google",
     providerId: "google-123",
+    interestRegions: [],
     createdAt: new Date("2026-01-01"),
     updatedAt: new Date("2026-01-01"),
     lastActiveAt: new Date("2026-01-01"),
@@ -222,7 +223,7 @@ describe("AuthService", () => {
   // ----- getProfile -----
   describe("getProfile", () => {
     it("should return profile for existing user", async () => {
-      const user = makeUser();
+      const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
 
       const result = await service.getProfile(1);
@@ -231,6 +232,7 @@ describe("AuthService", () => {
       expect(result.email).toBe("test@example.com");
       expect(result.nickname).toBe("테스터");
       expect(result.provider).toBe("google");
+      expect(result.interestRegions).toEqual(["서울 강남구"]);
     });
 
     it("should throw UnauthorizedException when user not found", async () => {
@@ -239,6 +241,61 @@ describe("AuthService", () => {
       await expect(service.getProfile(999)).rejects.toThrow(
         UnauthorizedException,
       );
+    });
+  });
+
+  // ----- updateInterestRegions -----
+  describe("updateInterestRegions", () => {
+    it("should save and return updated interest regions", async () => {
+      const user = makeUser({ interestRegions: ["서울 강남구"] });
+      userRepo.findOne.mockResolvedValue(user);
+      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+
+      const result = await service.updateInterestRegions(1, [
+        "서울 강남구",
+        "경기 성남시",
+      ]);
+
+      expect(user.interestRegions).toEqual(["서울 강남구", "경기 성남시"]);
+      expect(userRepo.save).toHaveBeenCalledWith(user);
+      expect(result.interestRegions).toEqual(["서울 강남구", "경기 성남시"]);
+    });
+
+    it("should trim, drop empties and dedupe regions", async () => {
+      const user = makeUser();
+      userRepo.findOne.mockResolvedValue(user);
+      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+
+      const result = await service.updateInterestRegions(1, [
+        "  서울 강남구  ",
+        "",
+        "서울 강남구",
+        "   ",
+        "부산 해운대구",
+      ]);
+
+      expect(result.interestRegions).toEqual([
+        "서울 강남구",
+        "부산 해운대구",
+      ]);
+    });
+
+    it("should allow clearing all regions with empty array", async () => {
+      const user = makeUser({ interestRegions: ["서울 강남구"] });
+      userRepo.findOne.mockResolvedValue(user);
+      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+
+      const result = await service.updateInterestRegions(1, []);
+
+      expect(result.interestRegions).toEqual([]);
+    });
+
+    it("should throw UnauthorizedException when user not found", async () => {
+      userRepo.findOne.mockResolvedValue(null);
+
+      await expect(
+        service.updateInterestRegions(999, ["서울 강남구"]),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 });

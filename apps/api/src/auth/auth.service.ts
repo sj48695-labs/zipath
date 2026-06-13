@@ -77,11 +77,43 @@ export class AuthService {
       throw new UnauthorizedException("유저를 찾을 수 없습니다.");
     }
 
+    return this.toProfile(user);
+  }
+
+  async updateInterestRegions(userId: number, regions: string[]) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("유저를 찾을 수 없습니다.");
+    }
+
+    user.interestRegions = this.normalizeRegions(regions);
+    await this.userRepo.save(user);
+
+    return this.toProfile(user);
+  }
+
+  private normalizeRegions(regions: string[]): string[] {
+    const seen = new Set<string>();
+    const result: string[] = [];
+    for (const region of regions) {
+      const trimmed = region.trim();
+      if (trimmed.length === 0 || seen.has(trimmed)) continue;
+      seen.add(trimmed);
+      result.push(trimmed);
+    }
+    return result;
+  }
+
+  private toProfile(user: User) {
     return {
       id: user.id,
       email: user.email,
       nickname: user.nickname,
       provider: user.provider,
+      interestRegions: user.interestRegions ?? [],
       createdAt: user.createdAt,
       lastActiveAt: user.lastActiveAt,
     };
