@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { fetchApi, ApiError } from "@/lib/api";
+
+/** 콜드 스타트 안내를 노출하기 시작하는 경과 시간(초). */
+const COLD_START_HINT_SECONDS = 10;
 
 interface SimulationResult {
   type: string;
@@ -37,6 +40,22 @@ export default function SubscriptionPage() {
   const [result, setResult] = useState<SimulationResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+
+  // loading 동안 1초 간격으로 경과 시간을 추적, 종료 시 정리.
+  useEffect(() => {
+    if (!loading) {
+      setElapsedSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const id = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [loading]);
+
+  const showColdStartHint = loading && elapsedSeconds >= COLD_START_HINT_SECONDS;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,6 +68,7 @@ export default function SubscriptionPage() {
         "/subscription/simulate",
         {
           method: "POST",
+          timeoutMs: 60_000,
           body: JSON.stringify({
             age: Number(form.age),
             income: Number(form.income),
@@ -160,12 +180,31 @@ export default function SubscriptionPage() {
             disabled={loading}
             className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            {loading ? "확인 중..." : "자격 확인하기"}
+            {!loading
+              ? "자격 확인하기"
+              : showColdStartHint
+                ? "서버 준비 중..."
+                : "확인 중..."}
           </button>
         </form>
 
+        {showColdStartHint && (
+          <div
+            className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6"
+            aria-live="polite"
+          >
+            <p className="text-sm text-amber-700">
+              서버가 잠시 준비 중입니다 (콜드 스타트). 보통 30초 이내에 응답해요.
+              잠시만 기다려주세요. (경과 {elapsedSeconds}초)
+            </p>
+          </div>
+        )}
+
         {error && (
-          <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6">
+          <div
+            className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6"
+            aria-live="polite"
+          >
             <p className="text-sm text-red-600">{error}</p>
           </div>
         )}
