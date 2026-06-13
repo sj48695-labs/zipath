@@ -125,7 +125,6 @@ export default function MonthlyPriceTrendChart({
                   const v = value === null || value === undefined ? null : Number(value);
                   const n = String(name);
                   if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                  if (n === "tradeCount") return [`${v ?? 0}건`, "거래 건수"];
                   return [formatPrice(v), n];
                 }}
                 labelFormatter={(label: unknown) => String(label)}
@@ -134,7 +133,6 @@ export default function MonthlyPriceTrendChart({
                 formatter={(value: unknown) => {
                   const v = String(value);
                   if (v === "avgPrice") return "평균가";
-                  if (v === "tradeCount") return "거래 건수";
                   return v;
                 }}
               />
