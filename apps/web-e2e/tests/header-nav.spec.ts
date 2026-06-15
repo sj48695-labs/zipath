@@ -1,7 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-// 이슈 #108 회귀 방지: /subscription·/loan·/checklist 헤더에 nav 링크가
-// 표시되지 않던 버그(로고만 노출)를 검증한다.
+// 이슈 #108 회귀 방지: /subscription·/loan·/checklist 헤더 nav 누락 버그
 const paths = ['/subscription', '/loan', '/checklist'];
 
 for (const path of paths) {
