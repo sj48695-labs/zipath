@@ -31,13 +31,13 @@
 
 ### 구현 단계 (Phase)
 
-1. [ ] **Phase 1: 공용 `SiteHeader` 컴포넌트 신설** — 파일: `apps/web/src/components/layout/SiteHeader.tsx`(신규), `apps/web/src/components/layout/Header.tsx`(삭제). 구현: 로고(`/` 링크) + nav(청약/대출/체크리스트/실거래가) + `NotificationBell`을 포함하는 client 컴포넌트. `maxWidth?: string`(기본 `"max-w-5xl"`) prop으로 컨테이너 폭 제어. 기존 `NotificationBell`(`apps/web/src/app/_components/NotificationBell.tsx`) 재사용. 미사용·불일치 `Header.tsx` 삭제. 커밋: `feat(web): #108 공용 SiteHeader 컴포넌트 추가`
+1. [x] **Phase 1: 공용 `SiteHeader` 컴포넌트 신설** — 파일: `apps/web/src/components/layout/SiteHeader.tsx`(신규), `apps/web/src/components/layout/Header.tsx`(삭제). 구현: 로고(`/` 링크) + nav(청약/대출/체크리스트/실거래가) + `NotificationBell`을 포함하는 client 컴포넌트. `maxWidth?: string`(기본 `"max-w-5xl"`) prop으로 컨테이너 폭 제어. 기존 `NotificationBell`(`apps/web/src/app/_components/NotificationBell.tsx`) 재사용. 미사용·불일치 `Header.tsx` 삭제. 커밋: `feat(web): #108 공용 SiteHeader 컴포넌트 추가`
 
-2. [ ] **Phase 2: 버그 대상 3개 페이지에 SiteHeader 적용** — 파일: `apps/web/src/app/subscription/page.tsx`, `apps/web/src/app/loan/page.tsx`, `apps/web/src/app/checklist/page.tsx`. 구현: 각 페이지의 인라인 `<header>…</header>` 블록을 `<SiteHeader maxWidth="max-w-3xl" />`로 교체(세 페이지 모두 기존 `max-w-3xl` 유지). 이슈에서 지적된 nav 누락 직접 해결. 커밋: `fix(web): #108 청약/대출/체크리스트 페이지 헤더 nav 복구`
+2. [x] **Phase 2: 버그 대상 3개 페이지에 SiteHeader 적용** — 파일: `apps/web/src/app/subscription/page.tsx`, `apps/web/src/app/loan/page.tsx`, `apps/web/src/app/checklist/page.tsx`. 구현: 각 페이지의 인라인 `<header>…</header>` 블록을 `<SiteHeader maxWidth="max-w-3xl" />`로 교체(세 페이지 모두 기존 `max-w-3xl` 유지). 이슈에서 지적된 nav 누락 직접 해결. 커밋: `fix(web): #108 청약/대출/체크리스트 페이지 헤더 nav 복구`
 
-3. [ ] **Phase 3: 나머지 페이지 헤더 SiteHeader로 통합** — 파일: `apps/web/src/app/page.tsx`(max-w-5xl), `real-price/page.tsx`(5xl), `real-price/compare/page.tsx`(5xl), `announcements/page.tsx`(5xl), `announcements/[id]/page.tsx`(5xl), `checklist/[type]/page.tsx`(3xl, "체크리스트로" 뒤로가기 링크는 페이지에 잔존 가능), `contract/page.tsx`(4xl), `registry/page.tsx`(4xl), `glossary/page.tsx`(5xl), `notifications/page.tsx`(4xl), `login/page.tsx`(5xl), `profile/page.tsx`(5xl). 구현: 각 인라인 헤더를 페이지 기존 폭에 맞춘 `<SiteHeader maxWidth=… />`로 교체. 중복 제거 및 전 페이지 nav 일관성 확보. 커밋: `refactor(web): #108 전 페이지 헤더 SiteHeader로 통합`
+3. [x] **Phase 3: 나머지 페이지 헤더 SiteHeader로 통합** — 파일: `apps/web/src/app/page.tsx`(max-w-5xl), `real-price/page.tsx`(5xl), `real-price/compare/page.tsx`(5xl), `announcements/page.tsx`(5xl), `announcements/[id]/page.tsx`(5xl), `checklist/[type]/page.tsx`(3xl, "체크리스트로" 뒤로가기 링크는 페이지에 잔존 가능), `contract/page.tsx`(4xl), `registry/page.tsx`(4xl), `glossary/page.tsx`(5xl), `notifications/page.tsx`(4xl), `login/page.tsx`(5xl), `profile/page.tsx`(5xl). 구현: 각 인라인 헤더를 페이지 기존 폭에 맞춘 `<SiteHeader maxWidth=… />`로 교체. 중복 제거 및 전 페이지 nav 일관성 확보. 커밋: `refactor(web): #108 전 페이지 헤더 SiteHeader로 통합`
 
-4. [ ] **Phase 4: nav 표시 e2e 테스트 추가** — 파일: `apps/web-e2e/tests/header-nav.spec.ts`(신규). 구현: `/subscription`, `/loan`, `/checklist` 각 경로에서 `navigation` role 및 "청약"/"대출"/"체크리스트" 링크가 보이는지 `expect(...).toBeVisible()`로 검증(기존 `real-price-compare.spec.ts` 패턴 준용). 회귀 방지. 커밋: `test(web): #108 헤더 nav 표시 e2e 추가`
+4. [x] **Phase 4: nav 표시 e2e 테스트 추가** — 파일: `apps/web-e2e/tests/header-nav.spec.ts`(신규). 구현: `/subscription`, `/loan`, `/checklist` 각 경로에서 `navigation` role 및 "청약"/"대출"/"체크리스트" 링크가 보이는지 `expect(...).toBeVisible()`로 검증(기존 `real-price-compare.spec.ts` 패턴 준용). 회귀 방지. 커밋: `test(web): #108 헤더 nav 표시 e2e 추가`
 
 ### 영향 범위
 
