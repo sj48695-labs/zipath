@@ -1,5 +1,5 @@
 import Link from "next/link";
-import NotificationBell from "./_components/NotificationBell";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 const features = [
   {
@@ -44,23 +44,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-          <span className="text-xl font-bold text-primary">Zipath</span>
-          <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-            <Link href="/subscription" className="hover:text-foreground">
-              청약
-            </Link>
-            <Link href="/loan" className="hover:text-foreground">
-              대출
-            </Link>
-            <Link href="/checklist" className="hover:text-foreground">
-              체크리스트
-            </Link>
-            <NotificationBell />
-          </nav>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-5xl" />
 
       {/* Hero */}
       <section className="flex flex-1 flex-col items-center justify-center px-4 py-24 text-center">

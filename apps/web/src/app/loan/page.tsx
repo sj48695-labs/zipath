@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
+import SiteHeader from "@/components/layout/SiteHeader";
 import { fetchApi, ApiError } from "@/lib/api";
 
 interface LoanResult {
@@ -60,13 +60,7 @@ export default function LoanPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-3xl items-center px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-3xl" />
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">대출 한도 계산기</h1>

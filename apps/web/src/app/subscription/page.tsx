@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import SiteHeader from "@/components/layout/SiteHeader";
 import { fetchApi, ApiError } from "@/lib/api";
 
 /** 콜드 스타트 안내를 노출하기 시작하는 경과 시간(초). */
@@ -93,13 +93,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-3xl items-center px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-3xl" />
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">청약 자격 시뮬레이션</h1>

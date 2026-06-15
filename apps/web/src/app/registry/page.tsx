@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { fetchApi, ApiError } from "@/lib/api";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 type RiskLevel = "safe" | "caution" | "danger";
 
@@ -96,13 +96,7 @@ export default function RegistryPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-4xl items-center px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-4xl" />
 
       <main className="mx-auto max-w-4xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">등기부등본 분석</h1>
