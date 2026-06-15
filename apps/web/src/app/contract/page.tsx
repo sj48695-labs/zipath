@@ -1,8 +1,8 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 interface ChecklistItem {
   id: string;
@@ -99,21 +99,7 @@ export default function ContractAnalysisPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-          <nav className="flex gap-6 text-sm text-muted-foreground">
-            <Link href="/checklist" className="hover:text-foreground">
-              체크리스트
-            </Link>
-            <Link href="/glossary" className="hover:text-foreground">
-              용어사전
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-4xl" />
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         <h1 className="mb-2 text-3xl font-bold">계약서 분석 체크리스트</h1>

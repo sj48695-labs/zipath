@@ -3,6 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useState, useCallback, useEffect } from "react";
+import SiteHeader from "@/components/layout/SiteHeader";
 import SupportedRegionNotice from "../_components/SupportedRegionNotice";
 import {
   REGIONS,
@@ -243,27 +244,7 @@ export default function RegionComparePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-          <nav className="flex gap-6 text-sm text-muted-foreground">
-            <Link href="/subscription" className="hover:text-foreground">
-              청약
-            </Link>
-            <Link href="/real-price" className="hover:text-foreground">
-              실거래가
-            </Link>
-            <Link href="/loan" className="hover:text-foreground">
-              대출
-            </Link>
-            <Link href="/checklist" className="hover:text-foreground">
-              체크리스트
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-5xl" />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <div className="mb-2 flex items-center gap-3">

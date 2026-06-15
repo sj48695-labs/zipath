@@ -4,7 +4,7 @@ import Link from "next/link";
 import React, { useEffect, useState, useCallback } from "react";
 import { fetchApi } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
-import NotificationBell from "../_components/NotificationBell";
+import SiteHeader from "@/components/layout/SiteHeader";
 import { formatKoreanDateTime } from "@/lib/dateFormat";
 
 interface NotificationPreference {
@@ -94,14 +94,7 @@ const SAMPLE_KEYWORDS = [
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-          <NotificationBell />
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-4xl" />
       <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
         {children}
       </main>
@@ -291,25 +284,7 @@ export default function NotificationsPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-          <nav className="flex items-center gap-6 text-sm text-muted-foreground">
-            <Link href="/subscription" className="hover:text-foreground">
-              청약
-            </Link>
-            <Link href="/real-price" className="hover:text-foreground">
-              실거래가
-            </Link>
-            <Link href="/notifications" className="font-medium text-foreground">
-              알림
-            </Link>
-            <NotificationBell />
-          </nav>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-4xl" />
 
       <main className="mx-auto max-w-4xl px-4 py-8">
         <h1 className="mb-2 text-3xl font-bold">맞춤 알림</h1>
