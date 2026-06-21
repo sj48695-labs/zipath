@@ -36,7 +36,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: 타임아웃 45초 조정 + 재시도 버튼 (커밋 단위)
+### Phase 1 (완료): 타임아웃 45초 조정 + 재시도 버튼 (커밋 단위)
 
 - 변경 파일: `apps/web/src/app/subscription/page.tsx`
 - 구현:
@@ -49,7 +49,7 @@
   - `npx turbo lint`, `npx turbo build` 통과.
   - 수동: 에러 상태에서 재시도 버튼 노출 및 클릭 시 동일 입력으로 재요청되는지 확인.
 
-### Phase 2: 로딩 스켈레톤 + 타임아웃 안내 메시지 정리 (커밋 단위)
+### Phase 2 (완료): 로딩 스켈레톤 + 타임아웃 안내 메시지 정리 (커밋 단위)
 
 - 의존성: Phase 1 (동일 파일 render/handler 정리 위에 작업)
 - 변경 파일: `apps/web/src/app/subscription/page.tsx`
