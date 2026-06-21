@@ -60,6 +60,7 @@ export interface SimulationInput {
   income: number;
   homelessMonths: number;
   dependents?: number;
+  savingsMonths?: number;
   region?: string;
   isMarried?: boolean;
   isFirstHome?: boolean;
@@ -143,7 +144,7 @@ export class SubscriptionService {
   }
 
   private calculatePoints(input: SimulationInput): PointBreakdown[] {
-    const { homelessMonths, dependents = 0, age } = input;
+    const { homelessMonths, dependents = 0, age, savingsMonths } = input;
     const points: PointBreakdown[] = [];
 
     // 1. 무주택 기간 (최대 32점)
@@ -163,14 +164,19 @@ export class SubscriptionService {
       description: `부양가족 ${dependents}명`,
     });
 
-    // 3. 청약통장 가입기간 (최대 17점) - 나이를 근사치로 활용
-    // 실제로는 청약통장 가입기간이 필요하지만, 나이로 추정
-    const estimatedSavingsYears = Math.max(0, age - 19);
+    // 3. 청약통장 가입기간 (최대 17점)
+    // 실제 가입 개월 수가 있으면 사용, 없으면 나이로 추정
+    const hasSavingsInput = savingsMonths !== undefined;
+    const savingsYears = hasSavingsInput
+      ? Math.floor(savingsMonths / 12)
+      : Math.max(0, age - 19);
     points.push({
       category: "청약통장 가입기간",
-      score: lookupScore(SAVINGS_SCORE_TABLE, estimatedSavingsYears),
+      score: lookupScore(SAVINGS_SCORE_TABLE, savingsYears),
       maxScore: 17,
-      description: `추정 가입기간 약 ${estimatedSavingsYears}년 (만 19세부터 계산)`,
+      description: hasSavingsInput
+        ? `가입 ${savingsYears}년 (${savingsMonths}개월)`
+        : `추정 가입기간 약 ${savingsYears}년 (만 19세부터 계산)`,
     });
 
     return points;

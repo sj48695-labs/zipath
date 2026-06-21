@@ -50,7 +50,7 @@
   - `apps/api/test/subscription.service.spec.ts`에 카테고리별 경계값 단위 검증 추가: 무주택 `homelessMonths`별 `points[0].score` (예: 14년→28, 15년→32), 부양가족 경계(6명→35), 가입기간 경계. 리팩토링 전후 동일 값 보장이 목적
 - **검증**: `npm test -w @zipath/api`
 
-### Phase 2: 청약통장 가입기간 실제 입력 추가 (커밋 단위)
+### Phase 2 (완료): 청약통장 가입기간 실제 입력 추가 (커밋 단위)
 
 - **의존성**: Phase 1 (리팩토링된 `SAVINGS_SCORE_TABLE`/`lookupScore` 사용)
 - **변경 파일**: `packages/types/src/index.ts`, `apps/api/src/subscription/subscription.controller.ts`, `apps/api/src/subscription/subscription.service.ts`, `apps/api/test/subscription.service.spec.ts`
