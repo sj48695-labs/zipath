@@ -17,3 +17,25 @@ for (const path of paths) {
     await expect(nav.getByRole('link', { name: '실거래가' })).toBeVisible();
   });
 }
+
+// 이슈 #121: 모바일 뷰포트 햄버거 메뉴 토글
+test('모바일 뷰포트에서 햄버거 메뉴로 nav 링크를 토글한다', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+
+  const response = await page.goto('/subscription');
+  expect(response?.status()).toBeLessThan(400);
+
+  const toggle = page.getByRole('button', { name: '메뉴 열기' });
+  await expect(toggle).toBeVisible();
+
+  // 클릭 전: 모바일 메뉴 패널 링크가 보이지 않는다
+  await expect(page.getByRole('link', { name: '청약' })).toBeHidden();
+
+  await toggle.click();
+
+  const panel = page.locator('#mobile-nav-menu');
+  await expect(panel.getByRole('link', { name: '청약' })).toBeVisible();
+  await expect(panel.getByRole('link', { name: '대출' })).toBeVisible();
+  await expect(panel.getByRole('link', { name: '체크리스트' })).toBeVisible();
+  await expect(panel.getByRole('link', { name: '실거래가' })).toBeVisible();
+});
