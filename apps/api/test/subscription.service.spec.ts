@@ -135,4 +135,21 @@ describe("SubscriptionService", () => {
     expect(savingsScore(33)).toBe(14); // 14년
     expect(savingsScore(34)).toBe(17); // 15년 점프
   });
+
+  it("should use savingsMonths input for 청약통장 점수 when provided", () => {
+    // age 20 → 폴백 추정 1년(1점)이지만, 실제 가입 15년(180개월) → 17점
+    const savings = service
+      .simulate({ age: 20, income: 5000, homelessMonths: 0, savingsMonths: 180 })
+      .points.find((p) => p.category === "청약통장 가입기간")!;
+    expect(savings.score).toBe(17);
+    expect(savings.description).toContain("180개월");
+  });
+
+  it("should fall back to age estimate when savingsMonths is omitted", () => {
+    const savings = service
+      .simulate({ age: 20, income: 5000, homelessMonths: 0 })
+      .points.find((p) => p.category === "청약통장 가입기간")!;
+    expect(savings.score).toBe(1);
+    expect(savings.description).toContain("추정");
+  });
 });
