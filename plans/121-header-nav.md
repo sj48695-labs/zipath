@@ -29,7 +29,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: SiteHeader 반응형 + 모바일 햄버거 메뉴 (커밋 단위)
+### Phase 1 (완료): SiteHeader 반응형 + 모바일 햄버거 메뉴 (커밋 단위)
 
 - 변경 파일: `apps/web/src/components/layout/SiteHeader.tsx`
 - 구현:
@@ -52,7 +52,7 @@
   - 데스크톱 뷰포트 수동 확인: 링크 4개 한 줄 노출, 햄버거 미노출.
   - 모바일 폭(<768px) 수동 확인: 링크 숨김 + 햄버거 노출 → 클릭 시 링크 패널.
 
-### Phase 2: 모바일 햄버거 e2e 테스트 (커밋 단위)
+### Phase 2 (완료): 모바일 햄버거 e2e 테스트 (커밋 단위)
 
 - 의존성: Phase 1
 - 변경 파일: `apps/web-e2e/tests/header-nav.spec.ts`
