@@ -97,4 +97,42 @@ describe("SubscriptionService", () => {
     expect(result.totalPoints).toBeGreaterThan(0);
     expect(result.maxPoints).toBe(84);
   });
+
+  const homelessScore = (months: number) =>
+    service.simulate({ age: 20, income: 5000, homelessMonths: months }).points.find(
+      (p) => p.category === "무주택 기간",
+    )!.score;
+
+  const dependentScore = (count: number) =>
+    service.simulate({ age: 20, income: 5000, homelessMonths: 0, dependents: count }).points.find(
+      (p) => p.category === "부양가족 수",
+    )!.score;
+
+  const savingsScore = (age: number) =>
+    service.simulate({ age, income: 5000, homelessMonths: 0 }).points.find(
+      (p) => p.category === "청약통장 가입기간",
+    )!.score;
+
+  it("should map 무주택 기간 boundaries to expected scores", () => {
+    expect(homelessScore(0)).toBe(0);
+    expect(homelessScore(12)).toBe(2); // 1년
+    expect(homelessScore(14 * 12)).toBe(28); // 14년
+    expect(homelessScore(15 * 12)).toBe(32); // 15년 점프
+    expect(homelessScore(20 * 12)).toBe(32); // 상한 유지
+  });
+
+  it("should map 부양가족 수 boundaries to expected scores", () => {
+    expect(dependentScore(0)).toBe(0);
+    expect(dependentScore(1)).toBe(5);
+    expect(dependentScore(5)).toBe(25);
+    expect(dependentScore(6)).toBe(35); // 6명 점프
+    expect(dependentScore(10)).toBe(35); // 상한 유지
+  });
+
+  it("should map 청약통장 가입기간 boundaries to expected scores", () => {
+    expect(savingsScore(19)).toBe(0); // 추정 0년
+    expect(savingsScore(20)).toBe(1); // 1년
+    expect(savingsScore(33)).toBe(14); // 14년
+    expect(savingsScore(34)).toBe(17); // 15년 점프
+  });
 });
