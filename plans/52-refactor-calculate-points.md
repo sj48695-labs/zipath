@@ -64,7 +64,7 @@
   - `savingsMonths` 제공 시 실제 입력 기반 점수 검증 케이스 추가 (예: `savingsMonths: 180`(15년)→17점, age로는 다른 값이 나오는 입력으로 폴백과 구분)
 - **검증**: `npm test -w @zipath/api`, `npx turbo build`
 
-### Phase 3: 웹 폼에 청약통장 가입기간 입력 필드 추가 (커밋 단위)
+### Phase 3 (완료): 웹 폼에 청약통장 가입기간 입력 필드 추가 (커밋 단위)
 
 - **의존성**: Phase 2 (API가 `savingsMonths` 수용)
 - **변경 파일**: `apps/web/src/app/subscription/page.tsx`
