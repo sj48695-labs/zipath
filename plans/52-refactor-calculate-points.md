@@ -31,7 +31,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1 (완료): if-chain → 점수 테이블 룩업 리팩토링 (커밋 단위)
+### Phase 1: if-chain → 점수 테이블 룩업 리팩토링 (커밋 단위) (완료)
 
 기능 변경 없이 동일 결과를 보장하는 순수 리팩토링. `refactor(api)`.
 
@@ -50,7 +50,7 @@
   - `apps/api/test/subscription.service.spec.ts`에 카테고리별 경계값 단위 검증 추가: 무주택 `homelessMonths`별 `points[0].score` (예: 14년→28, 15년→32), 부양가족 경계(6명→35), 가입기간 경계. 리팩토링 전후 동일 값 보장이 목적
 - **검증**: `npm test -w @zipath/api`
 
-### Phase 2 (완료): 청약통장 가입기간 실제 입력 추가 (커밋 단위)
+### Phase 2: 청약통장 가입기간 실제 입력 추가 (커밋 단위) (완료)
 
 - **의존성**: Phase 1 (리팩토링된 `SAVINGS_SCORE_TABLE`/`lookupScore` 사용)
 - **변경 파일**: `packages/types/src/index.ts`, `apps/api/src/subscription/subscription.controller.ts`, `apps/api/src/subscription/subscription.service.ts`, `apps/api/test/subscription.service.spec.ts`
@@ -64,7 +64,7 @@
   - `savingsMonths` 제공 시 실제 입력 기반 점수 검증 케이스 추가 (예: `savingsMonths: 180`(15년)→17점, age로는 다른 값이 나오는 입력으로 폴백과 구분)
 - **검증**: `npm test -w @zipath/api`, `npx turbo build`
 
-### Phase 3 (완료): 웹 폼에 청약통장 가입기간 입력 필드 추가 (커밋 단위)
+### Phase 3: 웹 폼에 청약통장 가입기간 입력 필드 추가 (커밋 단위) (완료)
 
 - **의존성**: Phase 2 (API가 `savingsMonths` 수용)
 - **변경 파일**: `apps/web/src/app/subscription/page.tsx`
