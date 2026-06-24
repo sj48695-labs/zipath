@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 const OAUTH_PROVIDERS = [
   {
@@ -37,13 +38,7 @@ function handleOAuthLogin(provider: string) {
 export default function LoginPage() {
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-5xl" />
 
       <main className="mx-auto flex max-w-md flex-col items-center px-4 py-20">
         <h1 className="mb-2 text-2xl font-bold">로그인</h1>

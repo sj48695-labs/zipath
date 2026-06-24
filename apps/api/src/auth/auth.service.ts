@@ -3,6 +3,7 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "@zipath/db";
+import type { UserProfile } from "@zipath/types";
 
 interface OAuthProfile {
   provider: string;
@@ -77,13 +78,37 @@ export class AuthService {
       throw new UnauthorizedException("유저를 찾을 수 없습니다.");
     }
 
+    return this.toProfile(user);
+  }
+
+  async updateInterestRegions(userId: number, regions: string[]) {
+    const user = await this.userRepo.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException("유저를 찾을 수 없습니다.");
+    }
+
+    user.interestRegions = this.normalizeRegions(regions);
+    await this.userRepo.save(user);
+
+    return this.toProfile(user);
+  }
+
+  private normalizeRegions(regions: string[]): string[] {
+    return [...new Set(regions.map((r) => r.trim()).filter((r) => r.length > 0))];
+  }
+
+  private toProfile(user: User): UserProfile {
     return {
       id: user.id,
       email: user.email,
       nickname: user.nickname,
-      provider: user.provider,
-      createdAt: user.createdAt,
-      lastActiveAt: user.lastActiveAt,
+      provider: user.provider as UserProfile["provider"],
+      interestRegions: user.interestRegions ?? [],
+      createdAt: user.createdAt.toISOString(),
+      lastActiveAt: user.lastActiveAt.toISOString(),
     };
   }
 

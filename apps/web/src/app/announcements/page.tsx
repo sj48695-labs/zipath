@@ -2,6 +2,15 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import SiteHeader from "@/components/layout/SiteHeader";
+import {
+  formatDotDate,
+  formatKoreanDateTime,
+  getTodayKey,
+  isDateOnOrAfterToday,
+} from "@/lib/dateFormat";
+
+const CHEONGYAKHOME_URL = "https://www.applyhome.co.kr/";
 
 interface AnnouncementItem {
   id: number;
@@ -20,18 +29,23 @@ interface ApiResponse {
   totalCount: number;
   page: number;
   limit: number;
+  lastSyncedAt?: string | null;
   error?: string;
 }
 
 export default function AnnouncementsPage() {
   const [announcements, setAnnouncements] = useState<AnnouncementItem[]>([]);
   const [totalCount, setTotalCount] = useState(0);
+  const [lastSyncedAt, setLastSyncedAt] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(1);
+  const [todayKey, setTodayKey] = useState("");
   const limit = 10;
 
   useEffect(() => {
+    setTodayKey(getTodayKey());
+
     async function fetchData() {
       setLoading(true);
       setError(null);
@@ -43,13 +57,20 @@ export default function AnnouncementsPage() {
 
         if (data.error) {
           setError(data.error);
+          setAnnouncements([]);
+          setTotalCount(0);
+          setLastSyncedAt(null);
           return;
         }
 
         setAnnouncements(data.items ?? []);
         setTotalCount(data.totalCount ?? 0);
+        setLastSyncedAt(data.lastSyncedAt ?? null);
       } catch {
         setError("데이터를 불러오는 데 실패했습니다.");
+        setAnnouncements([]);
+        setTotalCount(0);
+        setLastSyncedAt(null);
       } finally {
         setLoading(false);
       }
@@ -60,36 +81,9 @@ export default function AnnouncementsPage() {
 
   const totalPages = Math.ceil(totalCount / limit);
 
-  function formatDate(dateStr: string) {
-    if (!dateStr) return "-";
-    const d = new Date(dateStr);
-    return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
-  }
-
-  function isActive(endDate: string) {
-    return new Date(endDate) >= new Date();
-  }
-
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-5xl items-center justify-between px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-          <nav className="flex gap-6 text-sm text-muted-foreground">
-            <Link href="/subscription" className="hover:text-foreground">
-              청약
-            </Link>
-            <Link href="/loan" className="hover:text-foreground">
-              대출
-            </Link>
-            <Link href="/checklist" className="hover:text-foreground">
-              체크리스트
-            </Link>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-5xl" />
 
       <main className="mx-auto max-w-5xl px-4 py-8">
         <h1 className="mb-2 text-3xl font-bold">공공분양 공고</h1>
@@ -98,8 +92,26 @@ export default function AnnouncementsPage() {
         </p>
 
         {loading && (
-          <div className="flex justify-center py-20">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+          <div role="status" aria-live="polite" className="grid gap-4">
+            <span className="sr-only">공고를 불러오는 중</span>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div
+                key={i}
+                aria-hidden="true"
+                className="animate-pulse rounded-lg border bg-card p-6"
+              >
+                <div className="mb-3 flex gap-2">
+                  <div className="h-5 w-16 rounded bg-muted" />
+                  <div className="h-5 w-12 rounded bg-muted" />
+                </div>
+                <div className="mb-2 h-6 w-2/3 rounded bg-muted" />
+                <div className="h-4 w-1/2 rounded bg-muted" />
+                <div className="mt-4 flex gap-6">
+                  <div className="h-3 w-24 rounded bg-muted" />
+                  <div className="h-3 w-24 rounded bg-muted" />
+                </div>
+              </div>
+            ))}
           </div>
         )}
 
@@ -110,8 +122,24 @@ export default function AnnouncementsPage() {
         )}
 
         {!loading && !error && announcements.length === 0 && (
-          <div className="rounded-lg border p-6 text-center text-muted-foreground">
-            등록된 공고가 없습니다.
+          <div className="rounded-lg border p-6 text-center">
+            <p className="text-muted-foreground">등록된 공고가 없습니다.</p>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {lastSyncedAt
+                ? `마지막 동기화: ${formatKoreanDateTime(lastSyncedAt)}`
+                : "아직 동기화된 공고 정보가 없습니다."}
+            </p>
+            <a
+              href={CHEONGYAKHOME_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-block text-sm text-primary hover:underline"
+            >
+              청약홈에서 직접 확인하기 →
+            </a>
+            <p className="mt-4 text-xs text-muted-foreground">
+              본 정보는 참고용이며 법적 효력이 없습니다.
+            </p>
           </div>
         )}
 
@@ -132,15 +160,16 @@ export default function AnnouncementsPage() {
                         <span className="rounded bg-secondary px-2 py-0.5 text-xs text-muted-foreground">
                           {item.region}
                         </span>
-                        {isActive(item.endDate) ? (
-                          <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
-                            접수중
-                          </span>
-                        ) : (
-                          <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
-                            마감
-                          </span>
-                        )}
+                        {todayKey &&
+                          (isDateOnOrAfterToday(item.endDate, todayKey) ? (
+                            <span className="rounded bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700">
+                              접수중
+                            </span>
+                          ) : (
+                            <span className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-500">
+                              마감
+                            </span>
+                          ))}
                       </div>
                       <Link
                         href={`/announcements/${item.id}`}
@@ -167,8 +196,8 @@ export default function AnnouncementsPage() {
                   </div>
 
                   <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted-foreground">
-                    <span>접수시작: {formatDate(item.startDate)}</span>
-                    <span>접수마감: {formatDate(item.endDate)}</span>
+                    <span>접수시작: {formatDotDate(item.startDate)}</span>
+                    <span>접수마감: {formatDotDate(item.endDate)}</span>
                   </div>
                 </div>
               ))}

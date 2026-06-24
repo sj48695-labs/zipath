@@ -1,8 +1,23 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+import SiteHeader from "@/components/layout/SiteHeader";
 import { fetchApi, ApiError } from "@/lib/api";
+
+/** 콜드 스타트 안내를 노출하기 시작하는 경과 시간(초). */
+const COLD_START_HINT_SECONDS = 10;
+
+/** 청약 자격 확인 요청 안전 타임아웃(ms). 초과 시 408 로 변환된다. */
+const REQUEST_TIMEOUT_MS = 45_000;
+
+interface SimulationPayload {
+  age: number;
+  income: number;
+  homelessMonths: number;
+  dependents: number;
+  isMarried: boolean;
+  isFirstHome: boolean;
+}
 
 interface SimulationResult {
   type: string;
@@ -37,9 +52,25 @@ export default function SubscriptionPage() {
   const [result, setResult] = useState<SimulationResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const lastPayloadRef = useRef<SimulationPayload | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // loading 동안 1초 간격으로 경과 시간을 추적, 종료 시 정리.
+  useEffect(() => {
+    if (!loading) {
+      setElapsedSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const id = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [loading]);
+
+  const showColdStartHint = loading && elapsedSeconds >= COLD_START_HINT_SECONDS;
+
+  const runSimulation = async (payload: SimulationPayload) => {
     setLoading(true);
     setError(null);
     setResult(null);
@@ -49,20 +80,19 @@ export default function SubscriptionPage() {
         "/subscription/simulate",
         {
           method: "POST",
-          body: JSON.stringify({
-            age: Number(form.age),
-            income: Number(form.income),
-            homelessMonths: Number(form.homelessMonths),
-            dependents: form.dependents ? Number(form.dependents) : 0,
-            isMarried: form.isMarried,
-            isFirstHome: form.isFirstHome,
-          }),
+          timeoutMs: REQUEST_TIMEOUT_MS,
+          body: JSON.stringify(payload),
         },
       );
       setResult(data);
     } catch (err) {
       if (err instanceof ApiError) {
-        setError(err.message);
+        // 408(타임아웃)은 콜드 스타트 맥락으로 다듬어 재시도를 유도.
+        setError(
+          err.status === 408
+            ? "서버가 잠시 준비 중이에요. 잠시 후 다시 시도해주세요."
+            : err.message,
+        );
       } else {
         setError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
       }
@@ -71,15 +101,29 @@ export default function SubscriptionPage() {
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload: SimulationPayload = {
+      age: Number(form.age),
+      income: Number(form.income),
+      homelessMonths: Number(form.homelessMonths),
+      dependents: form.dependents ? Number(form.dependents) : 0,
+      isMarried: form.isMarried,
+      isFirstHome: form.isFirstHome,
+    };
+    lastPayloadRef.current = payload;
+    void runSimulation(payload);
+  };
+
+  const handleRetry = () => {
+    if (lastPayloadRef.current) {
+      void runSimulation(lastPayloadRef.current);
+    }
+  };
+
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-3xl items-center px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-3xl" />
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">청약 자격 시뮬레이션</h1>
@@ -160,13 +204,60 @@ export default function SubscriptionPage() {
             disabled={loading}
             className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
           >
-            {loading ? "확인 중..." : "자격 확인하기"}
+            {!loading
+              ? "자격 확인하기"
+              : showColdStartHint
+                ? "서버 준비 중..."
+                : "확인 중..."}
           </button>
         </form>
 
+        {showColdStartHint && (
+          <div
+            className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6"
+            aria-live="polite"
+          >
+            <p className="text-sm text-amber-700">
+              서버가 잠시 준비 중입니다 (콜드 스타트). 보통 30초 이내에 응답해요.
+              잠시만 기다려주세요. (경과 {elapsedSeconds}초)
+            </p>
+          </div>
+        )}
+
         {error && (
-          <div className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6">
+          <div
+            className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6"
+            role="alert"
+          >
             <p className="text-sm text-red-600">{error}</p>
+            <button
+              type="button"
+              onClick={handleRetry}
+              disabled={loading}
+              className="mt-4 rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+            >
+              다시 시도
+            </button>
+          </div>
+        )}
+
+        {loading && (
+          <div className="mt-8 space-y-6" aria-hidden="true">
+            <div className="rounded-lg border p-6">
+              <div className="mb-4 h-6 w-1/2 animate-pulse rounded bg-gray-200" />
+              <div className="space-y-3">
+                <div className="h-16 animate-pulse rounded-md bg-gray-100" />
+                <div className="h-16 animate-pulse rounded-md bg-gray-100" />
+              </div>
+            </div>
+            <div className="rounded-lg border p-6">
+              <div className="mb-4 h-6 w-1/3 animate-pulse rounded bg-gray-200" />
+              <div className="space-y-4">
+                <div className="h-2 animate-pulse rounded-full bg-gray-100" />
+                <div className="h-2 animate-pulse rounded-full bg-gray-100" />
+                <div className="h-2 animate-pulse rounded-full bg-gray-100" />
+              </div>
+            </div>
           </div>
         )}
 
@@ -224,6 +315,10 @@ export default function SubscriptionPage() {
             </p>
           </div>
         )}
+
+        <p className="mt-8 text-xs text-muted-foreground">
+          * 본 시뮬레이션 결과는 참고용이며 법적 효력이 없습니다.
+        </p>
       </main>
     </div>
   );

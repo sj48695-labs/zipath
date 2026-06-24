@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { Logger, RequestMethod, ValidationPipe } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { AppModule } from "./app.module";
 import { GlobalExceptionFilter } from "./common/http-exception.filter";
 import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
@@ -27,7 +28,7 @@ async function bootstrap() {
   app.useGlobalFilters(new GlobalExceptionFilter());
   app.useGlobalInterceptors(new TransformInterceptor());
 
-  const port = Number(process.env.PORT) || 4000;
+  const port = app.get(ConfigService).getOrThrow<number>("PORT");
   await app.listen(port, "0.0.0.0");
   Logger.log(`Server running on 0.0.0.0:${port}`, "Bootstrap");
 }

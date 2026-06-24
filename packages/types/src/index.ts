@@ -6,6 +6,7 @@ export interface UserProfile {
   email: string | null;
   nickname: string | null;
   provider: SsoProvider | null;
+  interestRegions: string[];
   createdAt: string;
   lastActiveAt: string;
 }
@@ -132,9 +133,10 @@ export interface RealPriceResponse {
 
 export interface MonthlyPriceSummary {
   yearMonth: string;
-  avgPrice: number;
-  minPrice: number;
-  maxPrice: number;
+  // 거래가 0건인 월은 null (차트에서 gap 으로 표시). tradeCount 는 항상 숫자.
+  avgPrice: number | null;
+  minPrice: number | null;
+  maxPrice: number | null;
   tradeCount: number;
 }
 

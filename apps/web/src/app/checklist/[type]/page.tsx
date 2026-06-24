@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { fetchApi } from "@/lib/api";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 interface ChecklistItem {
   category: string;
@@ -65,17 +65,7 @@ export default function ChecklistDetailPage() {
 
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-3xl items-center gap-4 px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-          <span className="text-muted-foreground">/</span>
-          <Link href="/checklist" className="text-sm text-muted-foreground hover:text-foreground">
-            체크리스트
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-3xl" />
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">{checklist.title}</h1>

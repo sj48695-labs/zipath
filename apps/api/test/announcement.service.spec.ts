@@ -48,6 +48,8 @@ interface MockQueryBuilder {
   getManyAndCount: jest.Mock;
   where: jest.Mock;
   getMany: jest.Mock;
+  select: jest.Mock;
+  getRawOne: jest.Mock;
 }
 
 interface MockRepository {
@@ -72,12 +74,15 @@ function createMockQueryBuilder(
     getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
     where: jest.fn(),
     getMany: jest.fn().mockResolvedValue([]),
+    select: jest.fn(),
+    getRawOne: jest.fn().mockResolvedValue(undefined),
   };
   qb.orderBy.mockReturnValue(qb);
   qb.andWhere.mockReturnValue(qb);
   qb.skip.mockReturnValue(qb);
   qb.take.mockReturnValue(qb);
   qb.where.mockReturnValue(qb);
+  qb.select.mockReturnValue(qb);
   Object.assign(qb, overrides);
   return qb;
 }
@@ -118,8 +123,10 @@ describe("AnnouncementService", () => {
   describe("findAll", () => {
     it("should return paginated items from DB", async () => {
       const announcement = makeAnnouncement();
+      const syncedAt = new Date("2026-06-01T03:00:00.000Z");
       const qb = createMockQueryBuilder({
         getManyAndCount: jest.fn().mockResolvedValue([[announcement], 1]),
+        getRawOne: jest.fn().mockResolvedValue({ max: syncedAt }),
       });
       announcementRepo.createQueryBuilder.mockReturnValue(qb);
 
@@ -130,6 +137,33 @@ describe("AnnouncementService", () => {
       expect(result.items[0].title).toBe("테스트 공고");
       expect(result.page).toBe(1);
       expect(result.limit).toBe(10);
+    });
+
+    it("should include lastSyncedAt as ISO string when data exists", async () => {
+      const announcement = makeAnnouncement();
+      const syncedAt = new Date("2026-06-01T03:00:00.000Z");
+      const qb = createMockQueryBuilder({
+        getManyAndCount: jest.fn().mockResolvedValue([[announcement], 1]),
+        getRawOne: jest.fn().mockResolvedValue({ max: syncedAt }),
+      });
+      announcementRepo.createQueryBuilder.mockReturnValue(qb);
+
+      const result = await service.findAll(1, 10);
+
+      expect(result.lastSyncedAt).toBe(syncedAt.toISOString());
+    });
+
+    it("should return lastSyncedAt as null when no data exists", async () => {
+      const qb = createMockQueryBuilder({
+        getManyAndCount: jest.fn().mockResolvedValue([[], 0]),
+        getRawOne: jest.fn().mockResolvedValue({ max: null }),
+      });
+      announcementRepo.createQueryBuilder.mockReturnValue(qb);
+      configService.get.mockReturnValue(undefined); // syncFromApi에서 key 없으면 return
+
+      const result = await service.findAll(1, 10);
+
+      expect(result.lastSyncedAt).toBeNull();
     });
 
     it("should apply region filter when provided", async () => {
@@ -390,6 +424,107 @@ describe("AnnouncementService", () => {
 
         expect(result!.message).toContain("어렵습니다");
       });
+    });
+  });
+
+  // ----- matchAllAnnouncements -----
+  describe("matchAllAnnouncements", () => {
+    const baseInput: MatchRequestDto = {
+      age: 30,
+      income: 5000,
+      homelessMonths: 36,
+    };
+
+    /** 활성 공고 조회 + 단일 매칭에 쓰이는 criteria QB 모킹 헬퍼 */
+    function setupRepos(
+      activeAnnouncements: Announcement[],
+      criteria: SubscriptionCriteria[] = [],
+    ) {
+      const listQb = createMockQueryBuilder({
+        getMany: jest.fn().mockResolvedValue(activeAnnouncements),
+      });
+      announcementRepo.createQueryBuilder.mockReturnValue(listQb);
+      announcementRepo.findOne.mockImplementation(
+        ({ where }: { where: { id: number } }) =>
+          Promise.resolve(
+            activeAnnouncements.find((a) => a.id === where.id) ?? null,
+          ),
+      );
+      const criteriaQb = createMockQueryBuilder({
+        getMany: jest.fn().mockResolvedValue(criteria),
+      });
+      criteriaRepo.createQueryBuilder.mockReturnValue(criteriaQb);
+      return { listQb };
+    }
+
+    it("should only query announcements that are not past deadline", async () => {
+      const { listQb } = setupRepos([]);
+
+      await service.matchAllAnnouncements(baseInput);
+
+      expect(listQb.where).toHaveBeenCalledWith(
+        "a.endDate >= :now",
+        expect.objectContaining({ now: expect.any(Date) }),
+      );
+    });
+
+    it("should only return eligible announcements", async () => {
+      const eligible = makeAnnouncement({ id: 1, region: "서울" });
+      const ineligible = makeAnnouncement({ id: 2, region: "부산" });
+      // 입력 region=서울 이면 부산 공고는 default criteria 에서 모두 부적격
+      setupRepos([eligible, ineligible]);
+
+      const result = await service.matchAllAnnouncements({
+        ...baseInput,
+        region: "서울",
+      });
+
+      expect(result.matchedCount).toBe(1);
+      expect(result.matches).toHaveLength(1);
+      expect(result.matches[0].announcementId).toBe(1);
+      expect(result.matches.every((m) => m.overallEligible)).toBe(true);
+    });
+
+    it("should keep matchedCount in sync with matches length", async () => {
+      const a1 = makeAnnouncement({ id: 1 });
+      const a2 = makeAnnouncement({ id: 2 });
+      setupRepos([a1, a2]);
+
+      const result = await service.matchAllAnnouncements(baseInput);
+
+      expect(result.matchedCount).toBe(result.matches.length);
+    });
+
+    it("should return empty result when no announcements match", async () => {
+      const a1 = makeAnnouncement({ id: 1, region: "서울" });
+      setupRepos([a1]);
+
+      const result = await service.matchAllAnnouncements({
+        age: 15,
+        income: 10000,
+        homelessMonths: 0,
+        region: "부산",
+      });
+
+      expect(result.matchedCount).toBe(0);
+      expect(result.matches).toEqual([]);
+    });
+
+    it("should return empty result when there are no active announcements", async () => {
+      setupRepos([]);
+
+      const result = await service.matchAllAnnouncements(baseInput);
+
+      expect(result.matchedCount).toBe(0);
+      expect(result.matches).toEqual([]);
+    });
+
+    it("should include the legal disclaimer", async () => {
+      setupRepos([]);
+
+      const result = await service.matchAllAnnouncements(baseInput);
+
+      expect(result.disclaimer).toContain("법적 효력");
     });
   });
 });

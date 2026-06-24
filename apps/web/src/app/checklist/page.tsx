@@ -1,4 +1,5 @@
 import Link from "next/link";
+import SiteHeader from "@/components/layout/SiteHeader";
 
 const types = [
   {
@@ -24,13 +25,7 @@ const types = [
 export default function ChecklistPage() {
   return (
     <div className="min-h-screen">
-      <header className="border-b">
-        <div className="mx-auto flex h-16 max-w-3xl items-center px-4">
-          <Link href="/" className="text-xl font-bold text-primary">
-            Zipath
-          </Link>
-        </div>
-      </header>
+      <SiteHeader maxWidth="max-w-3xl" />
 
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">계약서 체크리스트</h1>

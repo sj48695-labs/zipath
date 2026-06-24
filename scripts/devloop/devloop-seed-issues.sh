@@ -4,7 +4,7 @@
 #
 # 두 가지 소스:
 #   1) --from <file.json>   직접 정의한 이슈 JSON 배열 ([{title, description?, labels?}, ...])
-#   2) --ai "<목표>"        claude 로 repo 를 탐색해 목표 기반 이슈를 자동 생성
+#   2) --ai "<목표>"        AI provider 로 repo 를 탐색해 목표 기반 이슈를 자동 생성
 #
 # 공통 처리: 라벨 존재 보장(없으면 생성) → 기존 열린 이슈와 title 중복 스킵 →
 #            create_meeting_issues.sh(범용 엔진)로 gh/glab 이슈 생성.
@@ -17,7 +17,7 @@
 #
 # 옵션:
 #   --from <file>        이슈 정의 JSON 배열 파일
-#   --ai "<목표>"        claude 자동 생성 (repo 탐색 + 목표)
+#   --ai "<목표>"        AI 자동 생성 (repo 탐색 + 목표)
 #   --count <n>          --ai 생성 개수 힌트 (기본: 5)
 #   --label <csv>        기본 라벨 (기본: task). 각 이슈에 라벨 없으면 이걸 부여
 #   --model <model>      --ai 모델 (기본: sonnet)
@@ -29,6 +29,7 @@ set -euo pipefail
 # 자기 자신(심링크 가능)의 실제 디렉토리 → create_meeting_issues.sh 위치 해석.
 REAL_SRC="$(readlink -f "${BASH_SOURCE[0]}" 2>/dev/null || echo "${BASH_SOURCE[0]}")"
 SCRIPT_DIR="$(cd "$(dirname "$REAL_SRC")" && pwd)"
+source "$SCRIPT_DIR/ai.sh"
 
 PROJECT_DIR="."
 FROM_FILE=""
@@ -100,8 +101,9 @@ if [[ -n "$FROM_FILE" ]]; then
   [[ -f "$FROM_FILE" ]] || die "--from 파일 없음: $FROM_FILE"
   raw_json="$(cat "$FROM_FILE")"
 elif [[ -n "$AI_GOAL" ]]; then
-  command -v claude >/dev/null 2>&1 || die "claude CLI 미설치 (--ai 모드 필요)"
-  log "🤖 claude($MODEL) 로 이슈 자동 생성 중… (목표: $AI_GOAL)"
+  provider="$(devloop_ai_provider "$PROJECT_DIR")"
+  command -v "$provider" >/dev/null 2>&1 || die "$provider CLI 미설치 (--ai 모드 필요)"
+  log "🤖 $provider($MODEL) 로 이슈 자동 생성 중… (목표: $AI_GOAL)"
   ai_prompt="너는 이 저장소를 분석해 DevLoop 자동화가 작업할 GitHub/GitLab 이슈를 설계한다.
 
 목표: ${AI_GOAL}
@@ -117,7 +119,7 @@ elif [[ -n "$AI_GOAL" ]]; then
 
 출력: 오직 JSON 배열 하나만. 다른 설명/문장 금지. 형식:
 [{\"title\":\"...\",\"description\":\"...\",\"labels\":[\"task\"]}]"
-  ai_out="$(claude --model "$MODEL" --dangerously-skip-permissions -p "$ai_prompt" 2>/dev/null || true)"
+  ai_out="$(devloop_ai_print "$PROJECT_DIR" "pm" "$MODEL" "$ai_prompt" 2>/dev/null || true)"
   # 추출 전략 (견고하게): 코드펜스 제거 → 첫 '[' 부터 마지막 ']' 까지 greedy 슬라이스(멀티라인/중첩배열 대응).
   cleaned="$(printf '%s' "$ai_out" | sed 's/```json//g; s/```//g')"
   # 첫 '[' 부터 마지막 ']' 까지 greedy 슬라이스 (멀티라인/중첩배열 대응). perl -0777 로 전체 슬럽.
@@ -128,7 +130,7 @@ elif [[ -n "$AI_GOAL" ]]; then
   fi
   if ! printf '%s' "$raw_json" | jq -e 'type=="array"' >/dev/null 2>&1; then
     log "AI 원본 출력:"; printf '%s\n' "$ai_out" >&2
-    die "claude 출력에서 JSON 배열을 추출하지 못함"
+    die "$provider 출력에서 JSON 배열을 추출하지 못함"
   fi
 else
   die "이슈 소스 미지정 — --from <file.json> 또는 --ai \"<목표>\" 필요"
