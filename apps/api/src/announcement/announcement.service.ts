@@ -1,4 +1,4 @@
-import { Injectable, Logger } from "@nestjs/common";
+import { BadGatewayException, Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -133,7 +133,9 @@ export class AnnouncementService {
         this.logger.error(
           `API 응답 오류: ${res.status} | url=${this.apiBase} | body=${text.slice(0, 300)}`,
         );
-        return;
+        throw new BadGatewayException(
+          "공고 API 응답이 올바르지 않습니다. 잠시 후 다시 시도하세요.",
+        );
       }
 
       // data.go.kr 는 `type=json` 을 무시하고 XML 만 반환할 수 있음.
@@ -148,7 +150,9 @@ export class AnnouncementService {
         this.logger.error(
           `data.go.kr API error | code=${errHeader.returnReasonCode ?? ""} | auth=${errHeader.returnAuthMsg ?? ""} | err=${errHeader.errMsg ?? ""} | url=${this.apiBase}`,
         );
-        return;
+        throw new BadGatewayException(
+          "공고 API에서 오류 응답이 반환되었습니다. 잠시 후 다시 시도하세요.",
+        );
       }
 
       const resultCode = data?.response?.header?.resultCode;
@@ -157,7 +161,9 @@ export class AnnouncementService {
         this.logger.error(
           `data.go.kr result error | code=${resultCode} | msg=${resultMsg} | url=${this.apiBase}`,
         );
-        return;
+        throw new BadGatewayException(
+          "공고 API에서 실패 응답이 반환되었습니다. 잠시 후 다시 시도하세요.",
+        );
       }
 
       const rawItems = data?.response?.body?.items?.item;
@@ -201,8 +207,14 @@ export class AnnouncementService {
 
       this.logger.log(`공고 동기화 완료: ${created}건 신규 저장`);
     } catch (err) {
-      this.logger.error(
-        `동기화 실패: ${err instanceof Error ? err.message : String(err)}`,
+      if (err instanceof BadGatewayException) {
+        throw err;
+      }
+      const message =
+        err instanceof Error ? err.message : String(err);
+      this.logger.error(`동기화 실패: ${message}`);
+      throw new BadGatewayException(
+        "공고 API 동기화에 실패했습니다. 잠시 후 다시 시도하세요.",
       );
     }
   }
