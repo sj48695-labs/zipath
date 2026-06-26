@@ -7,6 +7,7 @@ const simulateSchema = z.object({
   income: z.number().min(0),
   homelessMonths: z.number().int().min(0),
   dependents: z.number().int().min(0).optional(),
+  savingsMonths: z.number().int().min(0).optional(),
   region: z.string().optional(),
   isMarried: z.boolean().optional(),
   isFirstHome: z.boolean().optional(),
