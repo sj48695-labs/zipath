@@ -12,6 +12,7 @@ describe("SubscriptionService", () => {
       age: 30,
       income: 5000,
       homelessMonths: 36,
+      savingsMonths: 120,
     });
 
     const first = result.results.find((r) => r.type === "1순위 일반공급");
@@ -24,6 +25,7 @@ describe("SubscriptionService", () => {
       age: 30,
       income: 7000,
       homelessMonths: 36,
+      savingsMonths: 120,
     });
 
     const first = result.results.find((r) => r.type === "1순위 일반공급");
@@ -37,6 +39,7 @@ describe("SubscriptionService", () => {
       age: 18,
       income: 3000,
       homelessMonths: 12,
+      savingsMonths: 12,
     });
 
     const first = result.results.find((r) => r.type === "1순위 일반공급");
@@ -48,6 +51,7 @@ describe("SubscriptionService", () => {
       age: 28,
       income: 6000,
       homelessMonths: 0,
+      savingsMonths: 36,
       isMarried: true,
     });
 
@@ -61,6 +65,7 @@ describe("SubscriptionService", () => {
       age: 25,
       income: 5000,
       homelessMonths: 0,
+      savingsMonths: 24,
       isFirstHome: true,
     });
 
@@ -74,13 +79,14 @@ describe("SubscriptionService", () => {
       age: 30,
       income: 5000,
       homelessMonths: 36,
+      savingsMonths: 120,
     });
 
     expect(result.message).toContain("가능한");
   });
 
   it("should include input in response", () => {
-    const input = { age: 30, income: 5000, homelessMonths: 36 };
+    const input = { age: 30, income: 5000, homelessMonths: 36, savingsMonths: 120 };
     const result = service.simulate(input);
     expect(result.input).toEqual(input);
   });
@@ -91,6 +97,7 @@ describe("SubscriptionService", () => {
       income: 5000,
       homelessMonths: 120,
       dependents: 3,
+      savingsMonths: 180,
     });
 
     expect(result.points).toBeDefined();
@@ -137,7 +144,6 @@ describe("SubscriptionService", () => {
   });
 
   it("should use savingsMonths input for 청약통장 점수 when provided", () => {
-    // age 20 → 폴백 추정 1년(1점)이지만, 실제 가입 15년(180개월) → 17점
     const savings = service
       .simulate({ age: 20, income: 5000, homelessMonths: 0, savingsMonths: 180 })
       .points.find((p) => p.category === "청약통장 가입기간")!;
