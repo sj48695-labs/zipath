@@ -15,6 +15,7 @@ interface SimulationPayload {
   income: number;
   homelessMonths: number;
   dependents: number;
+  savingsMonths?: number;
   isMarried: boolean;
   isFirstHome: boolean;
 }
@@ -46,6 +47,7 @@ export default function SubscriptionPage() {
     income: "",
     homelessMonths: "",
     dependents: "",
+    savingsMonths: "",
     isMarried: false,
     isFirstHome: false,
   });
@@ -108,6 +110,7 @@ export default function SubscriptionPage() {
       income: Number(form.income),
       homelessMonths: Number(form.homelessMonths),
       dependents: form.dependents ? Number(form.dependents) : 0,
+      savingsMonths: form.savingsMonths ? Number(form.savingsMonths) : undefined,
       isMarried: form.isMarried,
       isFirstHome: form.isFirstHome,
     };
@@ -173,6 +176,16 @@ export default function SubscriptionPage() {
                 placeholder="본인 제외"
                 value={form.dependents}
                 onChange={(e) => setForm({ ...form, dependents: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+              />
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium">청약통장 가입기간 (개월)</label>
+              <input
+                type="number"
+                placeholder="미입력 시 나이로 추정"
+                value={form.savingsMonths}
+                onChange={(e) => setForm({ ...form, savingsMonths: e.target.value })}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
               />
             </div>

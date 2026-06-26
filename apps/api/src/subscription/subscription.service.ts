@@ -1,10 +1,66 @@
 import { Injectable } from "@nestjs/common";
 
+interface ScoreTier {
+  threshold: number;
+  score: number;
+}
+
+// 각 카테고리: value >= threshold 인 첫 항목의 score (내림차순)
+const HOMELESS_SCORE_TABLE: ScoreTier[] = [
+  { threshold: 15, score: 32 },
+  { threshold: 14, score: 28 },
+  { threshold: 13, score: 26 },
+  { threshold: 12, score: 24 },
+  { threshold: 11, score: 22 },
+  { threshold: 10, score: 20 },
+  { threshold: 9, score: 18 },
+  { threshold: 8, score: 16 },
+  { threshold: 7, score: 14 },
+  { threshold: 6, score: 12 },
+  { threshold: 5, score: 10 },
+  { threshold: 4, score: 8 },
+  { threshold: 3, score: 6 },
+  { threshold: 2, score: 4 },
+  { threshold: 1, score: 2 },
+];
+
+const DEPENDENT_SCORE_TABLE: ScoreTier[] = [
+  { threshold: 6, score: 35 },
+  { threshold: 5, score: 25 },
+  { threshold: 4, score: 20 },
+  { threshold: 3, score: 15 },
+  { threshold: 2, score: 10 },
+  { threshold: 1, score: 5 },
+];
+
+const SAVINGS_SCORE_TABLE: ScoreTier[] = [
+  { threshold: 15, score: 17 },
+  { threshold: 14, score: 14 },
+  { threshold: 13, score: 13 },
+  { threshold: 12, score: 12 },
+  { threshold: 11, score: 11 },
+  { threshold: 10, score: 10 },
+  { threshold: 9, score: 9 },
+  { threshold: 8, score: 8 },
+  { threshold: 7, score: 7 },
+  { threshold: 6, score: 6 },
+  { threshold: 5, score: 5 },
+  { threshold: 4, score: 4 },
+  { threshold: 3, score: 3 },
+  { threshold: 2, score: 2 },
+  { threshold: 1, score: 1 },
+];
+
+function lookupScore(table: ScoreTier[], value: number): number {
+  return table.find((tier) => value >= tier.threshold)?.score ?? 0;
+}
+
 export interface SimulationInput {
   age: number;
   income: number;
   homelessMonths: number;
   dependents?: number;
+  savingsMonths?: number;
   region?: string;
   isMarried?: boolean;
   isFirstHome?: boolean;
@@ -88,76 +144,39 @@ export class SubscriptionService {
   }
 
   private calculatePoints(input: SimulationInput): PointBreakdown[] {
-    const { homelessMonths, dependents = 0, age } = input;
+    const { homelessMonths, dependents = 0, age, savingsMonths } = input;
     const points: PointBreakdown[] = [];
 
     // 1. 무주택 기간 (최대 32점)
     const homelessYears = Math.floor(homelessMonths / 12);
-    let homelessScore = 0;
-    if (homelessYears >= 1) homelessScore = 2;
-    if (homelessYears >= 2) homelessScore = 4;
-    if (homelessYears >= 3) homelessScore = 6;
-    if (homelessYears >= 4) homelessScore = 8;
-    if (homelessYears >= 5) homelessScore = 10;
-    if (homelessYears >= 6) homelessScore = 12;
-    if (homelessYears >= 7) homelessScore = 14;
-    if (homelessYears >= 8) homelessScore = 16;
-    if (homelessYears >= 9) homelessScore = 18;
-    if (homelessYears >= 10) homelessScore = 20;
-    if (homelessYears >= 11) homelessScore = 22;
-    if (homelessYears >= 12) homelessScore = 24;
-    if (homelessYears >= 13) homelessScore = 26;
-    if (homelessYears >= 14) homelessScore = 28;
-    if (homelessYears >= 15) homelessScore = 32;
-
     points.push({
       category: "무주택 기간",
-      score: homelessScore,
+      score: lookupScore(HOMELESS_SCORE_TABLE, homelessYears),
       maxScore: 32,
       description: `무주택 ${homelessYears}년 (${homelessMonths}개월)`,
     });
 
     // 2. 부양가족 수 (최대 35점)
-    let dependentScore = 0;
-    if (dependents >= 1) dependentScore = 5;
-    if (dependents >= 2) dependentScore = 10;
-    if (dependents >= 3) dependentScore = 15;
-    if (dependents >= 4) dependentScore = 20;
-    if (dependents >= 5) dependentScore = 25;
-    if (dependents >= 6) dependentScore = 35;
-
     points.push({
       category: "부양가족 수",
-      score: dependentScore,
+      score: lookupScore(DEPENDENT_SCORE_TABLE, dependents),
       maxScore: 35,
       description: `부양가족 ${dependents}명`,
     });
 
-    // 3. 청약통장 가입기간 (최대 17점) - 나이를 근사치로 활용
-    // 실제로는 청약통장 가입기간이 필요하지만, 나이로 추정
-    const estimatedSavingsYears = Math.max(0, age - 19);
-    let savingsScore = 0;
-    if (estimatedSavingsYears >= 1) savingsScore = 1;
-    if (estimatedSavingsYears >= 2) savingsScore = 2;
-    if (estimatedSavingsYears >= 3) savingsScore = 3;
-    if (estimatedSavingsYears >= 4) savingsScore = 4;
-    if (estimatedSavingsYears >= 5) savingsScore = 5;
-    if (estimatedSavingsYears >= 6) savingsScore = 6;
-    if (estimatedSavingsYears >= 7) savingsScore = 7;
-    if (estimatedSavingsYears >= 8) savingsScore = 8;
-    if (estimatedSavingsYears >= 9) savingsScore = 9;
-    if (estimatedSavingsYears >= 10) savingsScore = 10;
-    if (estimatedSavingsYears >= 11) savingsScore = 11;
-    if (estimatedSavingsYears >= 12) savingsScore = 12;
-    if (estimatedSavingsYears >= 13) savingsScore = 13;
-    if (estimatedSavingsYears >= 14) savingsScore = 14;
-    if (estimatedSavingsYears >= 15) savingsScore = 17;
-
+    // 3. 청약통장 가입기간 (최대 17점)
+    // 실제 가입 개월 수가 있으면 사용, 없으면 나이로 추정
+    const hasSavingsInput = savingsMonths !== undefined;
+    const savingsYears = hasSavingsInput
+      ? Math.floor(savingsMonths / 12)
+      : Math.max(0, age - 19);
     points.push({
       category: "청약통장 가입기간",
-      score: savingsScore,
+      score: lookupScore(SAVINGS_SCORE_TABLE, savingsYears),
       maxScore: 17,
-      description: `추정 가입기간 약 ${estimatedSavingsYears}년 (만 19세부터 계산)`,
+      description: hasSavingsInput
+        ? `가입 ${savingsYears}년 (${savingsMonths}개월)`
+        : `추정 가입기간 약 ${savingsYears}년 (만 19세부터 계산)`,
     });
 
     return points;
