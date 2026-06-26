@@ -46,7 +46,7 @@
 
 ### 구현 단계 (Phase)
 
-1. [ ] Phase 1: 구현 완료 상태 회귀 검증 — `npm test -w @zipath/api`로 announcement 유닛/e2e 테스트 통과 확인, `npx turbo lint`·`npx turbo build` 통과 확인. 코드 변경 없음, 커밋 없음.
+1. [x] Phase 1: 구현 완료 상태 회귀 검증 — `npm test -w @zipath/api` 184/184 통과 (announcement 23/23 포함), `turbo lint` 5/5·`turbo build` 3/3 통과 확인. 코드 변경 없음, 커밋 없음. (주의: `@zipath/db` dist 빌드 누락 시 auth/jwt/notification 스위트가 컴파일 에러로 실패 → `npm run build -w @zipath/db` 선행 필요.)
 
 ### 영향 범위
 
