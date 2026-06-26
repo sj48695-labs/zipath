@@ -1,4 +1,9 @@
-import { BadGatewayException, Injectable, Logger } from "@nestjs/common";
+import {
+  BadGatewayException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -213,8 +218,8 @@ export class AnnouncementService {
       const message =
         err instanceof Error ? err.message : String(err);
       this.logger.error(`동기화 실패: ${message}`);
-      throw new BadGatewayException(
-        "공고 API 동기화에 실패했습니다. 잠시 후 다시 시도하세요.",
+      throw new InternalServerErrorException(
+        "공고 API 동기화 중 내부 오류가 발생했습니다.",
       );
     }
   }

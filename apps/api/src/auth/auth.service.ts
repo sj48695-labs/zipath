@@ -5,6 +5,10 @@ import { Repository } from "typeorm";
 import { User } from "@zipath/db";
 import type { SsoProvider, UserProfile } from "@zipath/types";
 
+type UserWithInterestRegions = User & {
+  interestRegions: string[];
+};
+
 interface OAuthProfile {
   provider: SsoProvider;
   providerId: string;
@@ -21,18 +25,18 @@ interface JwtPayload {
 export class AuthService {
   constructor(
     @InjectRepository(User)
-    private readonly userRepo: Repository<User>,
+    private readonly userRepo: Repository<UserWithInterestRegions>,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateOAuthLogin(profile: OAuthProfile) {
     // 기존 유저 조회 (provider + providerId)
-    let user = await this.userRepo.findOne({
+    let user = (await this.userRepo.findOne({
       where: {
         provider: profile.provider,
         providerId: profile.providerId,
       },
-    });
+    })) as UserWithInterestRegions | null;
 
     if (!user) {
       // 신규 유저 생성
@@ -55,9 +59,9 @@ export class AuthService {
   }
 
   async validateJwtPayload(payload: JwtPayload) {
-    const user = await this.userRepo.findOne({
+    const user = (await this.userRepo.findOne({
       where: { id: payload.sub },
-    });
+    })) as UserWithInterestRegions | null;
 
     if (!user) {
       throw new UnauthorizedException("유저를 찾을 수 없습니다.");
@@ -70,9 +74,9 @@ export class AuthService {
   }
 
   async getProfile(userId: number) {
-    const user = await this.userRepo.findOne({
+    const user = (await this.userRepo.findOne({
       where: { id: userId },
-    });
+    })) as UserWithInterestRegions | null;
 
     if (!user) {
       throw new UnauthorizedException("유저를 찾을 수 없습니다.");
@@ -82,9 +86,9 @@ export class AuthService {
   }
 
   async updateInterestRegions(userId: number, regions: string[]) {
-    const user = await this.userRepo.findOne({
+    const user = (await this.userRepo.findOne({
       where: { id: userId },
-    });
+    })) as UserWithInterestRegions | null;
 
     if (!user) {
       throw new UnauthorizedException("유저를 찾을 수 없습니다.");
@@ -100,7 +104,7 @@ export class AuthService {
     return [...new Set(regions.map((r) => r.trim()).filter((r) => r.length > 0))];
   }
 
-  private toProfile(user: User): UserProfile {
+  private toProfile(user: UserWithInterestRegions): UserProfile {
     return {
       id: user.id,
       email: user.email,
@@ -112,7 +116,7 @@ export class AuthService {
     };
   }
 
-  private generateTokens(user: User) {
+  private generateTokens(user: UserWithInterestRegions) {
     const payload: JwtPayload = { sub: user.id, email: user.email };
 
     return {
