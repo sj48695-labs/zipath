@@ -9,6 +9,7 @@ import {
   getTodayKey,
   isDateOnOrAfterToday,
 } from "@/lib/dateFormat";
+import LegalDisclaimer from "./_components/LegalDisclaimer";
 
 const CHEONGYAKHOME_URL = "https://www.applyhome.co.kr/";
 
@@ -90,6 +91,9 @@ export default function AnnouncementsPage() {
         <p className="mb-8 text-muted-foreground">
           청약홈에서 제공하는 최신 APT 분양 공고 목록입니다.
         </p>
+        <div className="mb-6">
+          <LegalDisclaimer />
+        </div>
 
         {loading && (
           <div role="status" aria-live="polite" className="grid gap-4">
@@ -137,9 +141,6 @@ export default function AnnouncementsPage() {
             >
               청약홈에서 직접 확인하기 →
             </a>
-            <p className="mt-4 text-xs text-muted-foreground">
-              본 정보는 참고용이며 법적 효력이 없습니다.
-            </p>
           </div>
         )}
 
