@@ -12,6 +12,7 @@ import {
 import { ConfigService } from "@nestjs/config";
 import { Response } from "express";
 import { z } from "zod";
+import type { SsoProvider } from "@zipath/types";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./google-auth.guard";
 import { KakaoAuthGuard } from "./kakao-auth.guard";
@@ -21,7 +22,7 @@ import { Public } from "./public.decorator";
 import { AuthRequest } from "../common/interfaces/auth-request.interface";
 
 interface OAuthUser {
-  provider: string;
+  provider: SsoProvider;
   providerId: string;
   email: string | null;
   nickname: string | null;

@@ -18,7 +18,7 @@ export interface AuthTokens {
     id: number;
     email: string | null;
     nickname: string | null;
-    provider: string | null;
+    provider: SsoProvider | null;
   };
 }
 

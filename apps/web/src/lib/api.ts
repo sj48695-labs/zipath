@@ -66,7 +66,7 @@ export async function fetchApi<T>(
   if (auth) {
     const token =
       typeof window !== "undefined"
-        ? localStorage.getItem("accessToken")
+        ? window.localStorage.getItem("accessToken")
         : null;
     if (!token) {
       throw new ApiError("로그인이 필요합니다.", 401);
@@ -103,9 +103,7 @@ export async function fetchApi<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    const message =
-      (body as Record<string, unknown>)?.message ?? `API 오류 (${res.status})`;
-    throw new ApiError(String(message), res.status);
+    throw new ApiError(getBackendErrorMessage(body, res.status), res.status);
   }
 
   // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.
@@ -131,4 +129,26 @@ export function unwrapBackendData<T>(body: unknown): T {
     return (body as { data: T }).data;
   }
   return body as T;
+}
+
+export function getBackendErrorMessage(
+  body: unknown,
+  status: number,
+): string {
+  if (body !== null && typeof body === "object") {
+    const record = body as Record<string, unknown>;
+    const error = record.error;
+    if (error !== null && typeof error === "object") {
+      const errorRecord = error as Record<string, unknown>;
+      if (typeof errorRecord.message === "string") {
+        return errorRecord.message;
+      }
+    }
+
+    if (typeof record.message === "string") {
+      return record.message;
+    }
+  }
+
+  return `API 오류 (${status})`;
 }

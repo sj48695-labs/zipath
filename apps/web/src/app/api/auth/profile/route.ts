@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { unwrapBackendData } from "@/lib/api";
+import { getBackendErrorMessage, unwrapBackendData } from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -25,9 +25,7 @@ export async function GET(request: Request) {
       const body: unknown = await res.json().catch(() => null);
       return NextResponse.json(
         {
-          error:
-            (body as Record<string, string>)?.message ??
-            `Backend error: ${res.status}`,
+          error: getBackendErrorMessage(body, res.status),
         },
         { status: res.status },
       );
