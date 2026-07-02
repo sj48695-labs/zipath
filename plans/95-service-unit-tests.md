@@ -13,11 +13,11 @@
 - `checklist.service.ts` — 체크리스트 CRUD
 
 **완료 조건 (AC):**
-- [ ] `apps/api/src/payment/payment.service.spec.ts` 작성 — 결제 생성 성공·실패, 취소 흐름 커버
-- [ ] `apps/api/src/registry/registry.service.spec.ts` 작성 — 핵심 분석 메서드 커버
-- [ ] `apps/api/src/checklist/checklist.service.spec.ts` 작성 — 템플릿 조회·항목 생성·삭제 커버
-- [ ] `npm test -w @zipath/api` 전체 통과
-- [ ] 새로 추가한 스펙 파일만으로 각 서비스 주요 분기 커버
+- [x] `apps/api/src/payment/payment.service.spec.ts` 작성 — 결제 생성 성공·실패, 취소 흐름 커버
+- [x] `apps/api/src/registry/registry.service.spec.ts` 작성 — 핵심 분석 메서드 커버
+- [x] `apps/api/src/checklist/checklist.service.spec.ts` 작성 — 템플릿 조회·항목 생성·삭제 커버
+- [x] `npm test -w @zipath/api` 전체 통과
+- [x] 새로 추가한 스펙 파일만으로 각 서비스 주요 분기 커버
 
 ### 결정 사항 (Q&A)
 
@@ -29,17 +29,17 @@
 
 ### 구현 단계 (Phase)
 
-1. [ ] **Phase 1: payment.service 단위 테스트** — `apps/api/src/payment/payment.service.spec.ts` 신규 작성.
+1. [x] **Phase 1: payment.service 단위 테스트** — `apps/api/src/payment/payment.service.spec.ts` 신규 작성.
    - mock `paymentRepo`(create/save/findOne/find) + mock `ConfigService` 주입, `global.fetch` 스텁.
    - 커버: `getProducts`(상품 목록 반환), `createPayment`(존재 상품 → orderId/amount/clientKey 반환·save 호출 / 미존재 상품 → throw), `confirmPayment`(정상 confirmed / 결제 없음 throw / 금액 불일치 → status=failed throw / TOSS_SECRET_KEY 존재 시 fetch 실패 → failed throw), `getUserPayments`(confirmed 필터), `hasActiveProduct`(건당 true / premium-monthly 30일 만료 분기 / 결제 없음 false).
    - 커밋: `test(api): #95 payment.service 단위 테스트 추가`
 
-2. [ ] **Phase 2: registry.service 단위 테스트** — `apps/api/src/registry/registry.service.spec.ts` 신규 작성.
+2. [x] **Phase 2: registry.service 단위 테스트** — `apps/api/src/registry/registry.service.spec.ts` 신규 작성.
    - 의존성 없음 → `new RegistryService()` 또는 TestingModule로 인스턴스화.
    - 커버: `analyze(address)`(반환 구조 — address/overallRisk/gap/eul/warnings/tips/disclaimer 필드 존재, overallRisk가 `safe|caution|danger` 중 하나, disclaimer 문구 포함, danger 항목 존재 시 overallRisk=danger 검증 — 해시상 위험 항목이 나오는 주소 케이스 선정), `getTermExplanations`(갑구·을구·근저당권 등 용어 배열 반환).
    - 커밋: `test(api): #95 registry.service 단위 테스트 추가`
 
-3. [ ] **Phase 3: checklist.service 단위 테스트** — `apps/api/src/checklist/checklist.service.spec.ts` 신규 작성.
+3. [x] **Phase 3: checklist.service 단위 테스트** — `apps/api/src/checklist/checklist.service.spec.ts` 신규 작성.
    - mock `templateRepo`(count/create/save/findOne) + mock `itemRepo`(create/save) 주입.
    - 커버: `onModuleInit`(count=0 → 3개 타입 템플릿+항목 create/save 호출 / count>0 → 시드 스킵 / 예외 발생 시 warn 후 정상 종료), `getByType`(DB 템플릿 존재 → order 정렬·매핑 반환 / DB 조회 실패 → fallback SEED_DATA 반환 / 유효 타입 fallback / 미존재 타입 → NotFoundException).
    - 커밋: `test(api): #95 checklist.service 단위 테스트 추가`
