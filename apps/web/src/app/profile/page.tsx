@@ -31,6 +31,10 @@ function InterestRegionsSection({ regions }: { regions: string[] }) {
     setError(null);
     setJustSaved(false);
     if (!value) return;
+    if (value.includes(",")) {
+      setError("지역명에 쉼표를 포함할 수 없습니다.");
+      return;
+    }
     if (draft.includes(value)) {
       setError("이미 추가된 지역입니다.");
       return;
@@ -176,6 +180,10 @@ export default function ProfilePage() {
 
       <main className="mx-auto max-w-lg px-4 py-12">
         <h1 className="mb-8 text-2xl font-bold">내 프로필</h1>
+        <p className="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          참고용이며 법적 효력 없음. 프로필 정보와 관심 지역은 서비스 이용 편의를
+          위한 표시이며, 실제 계약이나 법적 판단의 근거로 사용할 수 없습니다.
+        </p>
 
         <UserInfo user={user} />
 

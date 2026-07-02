@@ -14,7 +14,9 @@
     "skipLibCheck": true,
     "strict": true,
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@zipath/db": ["../../packages/db/src/index.ts"],
+      "@zipath/types": ["../../packages/types/src/index.ts"]
     }
   },
   "include": ["src/**/*"],

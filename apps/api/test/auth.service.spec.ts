@@ -53,7 +53,7 @@ describe("AuthService", () => {
   // ----- validateOAuthLogin -----
   describe("validateOAuthLogin", () => {
     const profile = {
-      provider: "google",
+      provider: "google" as const,
       providerId: "google-123",
       email: "test@example.com",
       nickname: "테스터",
@@ -228,11 +228,15 @@ describe("AuthService", () => {
 
       const result = await service.getProfile(1);
 
-      expect(result.id).toBe(1);
-      expect(result.email).toBe("test@example.com");
-      expect(result.nickname).toBe("테스터");
-      expect(result.provider).toBe("google");
-      expect(result.interestRegions).toEqual(["서울 강남구"]);
+      expect(result).toEqual({
+        id: 1,
+        email: "test@example.com",
+        nickname: "테스터",
+        provider: "google",
+        interestRegions: ["서울 강남구"],
+        createdAt: "2026-01-01T00:00:00.000Z",
+        lastActiveAt: "2026-01-01T00:00:00.000Z",
+      });
     });
 
     it("should throw UnauthorizedException when user not found", async () => {
