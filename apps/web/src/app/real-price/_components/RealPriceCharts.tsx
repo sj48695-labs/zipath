@@ -44,10 +44,7 @@ export default function RealPriceCharts({
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={avgByDong} layout="vertical" margin={{ left: 60 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis
-                type="number"
-                tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`}
-              />
+              <XAxis type="number" tickFormatter={(v: number) => `${(v / 10000).toFixed(1)}억`} />
               <YAxis
                 type="category"
                 dataKey="name"
@@ -55,7 +52,10 @@ export default function RealPriceCharts({
                 tick={{ fontSize: 12 }}
               />
               <Tooltip
-                formatter={(value: unknown) => [formatWonAmount(Number(value)), "평균가"]}
+                formatter={(value: unknown) => [
+                  formatWonAmount(Number(value)),
+                  "평균가",
+                ]}
                 labelFormatter={(label: unknown) => String(label)}
               />
               <Bar

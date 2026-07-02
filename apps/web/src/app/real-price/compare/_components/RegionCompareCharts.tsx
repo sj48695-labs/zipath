@@ -24,10 +24,6 @@ interface RegionCompareChartsProps {
   data: ChartDataItem[];
 }
 
-function formatPrice(value: number): string {
-  return formatWonAmount(value);
-}
-
 export default function RegionCompareCharts({ data }: RegionCompareChartsProps) {
   return (
     <>
@@ -48,7 +44,7 @@ export default function RegionCompareCharts({ data }: RegionCompareChartsProps) 
             <YAxis
               tickFormatter={(v: number) => {
                 if (v >= 10000) return `${(v / 10000).toFixed(1)}억`;
-                return `${v.toLocaleString()}`;
+                return formatWonAmount(v);
               }}
               tick={{ fontSize: 12 }}
               width={70}
@@ -57,10 +53,10 @@ export default function RegionCompareCharts({ data }: RegionCompareChartsProps) 
               formatter={(value: unknown, name: unknown) => {
                 const v = Number(value);
                 const n = String(name);
-                if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                if (n === "minPrice") return [formatPrice(v), "최저가"];
-                if (n === "maxPrice") return [formatPrice(v), "최고가"];
-                return [formatPrice(v), n];
+                if (n === "avgPrice") return [formatWonAmount(v), "평균가"];
+                if (n === "minPrice") return [formatWonAmount(v), "최저가"];
+                if (n === "maxPrice") return [formatWonAmount(v), "최고가"];
+                return [formatWonAmount(v), n];
               }}
               labelFormatter={(label: unknown) => String(label)}
             />

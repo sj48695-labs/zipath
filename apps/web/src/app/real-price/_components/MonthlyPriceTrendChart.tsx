@@ -13,7 +13,10 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
-import { formatWonAmount } from "../_lib/formatWonAmount";
+import {
+  formatWonAmount,
+  formatWonAmountOrFallback,
+} from "../_lib/formatWonAmount";
 
 interface MonthlyPriceSummary {
   yearMonth: string;
@@ -35,11 +38,6 @@ function formatYearMonth(ym: string): string {
   const year = ym.slice(0, 4);
   const month = ym.slice(4, 6);
   return `${year}.${month}`;
-}
-
-function formatPrice(value: number | null | undefined): string {
-  if (value === null || value === undefined) return "거래 없음";
-  return formatWonAmount(value);
 }
 
 export default function MonthlyPriceTrendChart({
@@ -110,7 +108,7 @@ export default function MonthlyPriceTrendChart({
               <YAxis
                 tickFormatter={(v: number) => {
                   if (v >= 10000) return `${(v / 10000).toFixed(1)}억`;
-                  return `${v.toLocaleString()}`;
+                  return formatWonAmount(v);
                 }}
                 tick={{ fontSize: 12 }}
                 width={70}
@@ -119,8 +117,8 @@ export default function MonthlyPriceTrendChart({
                 formatter={(value: unknown, name: unknown) => {
                   const v = value === null || value === undefined ? null : Number(value);
                   const n = String(name);
-                  if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                  return [formatPrice(v), n];
+                  if (n === "avgPrice") return [formatWonAmountOrFallback(v), "평균가"];
+                  return [formatWonAmountOrFallback(v), n];
                 }}
                 labelFormatter={(label: unknown) => String(label)}
               />
@@ -152,7 +150,7 @@ export default function MonthlyPriceTrendChart({
               <YAxis
                 tickFormatter={(v: number) => {
                   if (v >= 10000) return `${(v / 10000).toFixed(1)}억`;
-                  return `${v.toLocaleString()}`;
+                  return formatWonAmount(v);
                 }}
                 tick={{ fontSize: 12 }}
                 width={70}
@@ -161,10 +159,10 @@ export default function MonthlyPriceTrendChart({
                 formatter={(value: unknown, name: unknown) => {
                   const v = value === null || value === undefined ? null : Number(value);
                   const n = String(name);
-                  if (n === "maxPrice") return [formatPrice(v), "최고가"];
-                  if (n === "avgPrice") return [formatPrice(v), "평균가"];
-                  if (n === "minPrice") return [formatPrice(v), "최저가"];
-                  return [formatPrice(v), n];
+                  if (n === "maxPrice") return [formatWonAmountOrFallback(v), "최고가"];
+                  if (n === "avgPrice") return [formatWonAmountOrFallback(v), "평균가"];
+                  if (n === "minPrice") return [formatWonAmountOrFallback(v), "최저가"];
+                  return [formatWonAmountOrFallback(v), n];
                 }}
                 labelFormatter={(label: unknown) => String(label)}
               />
@@ -237,13 +235,13 @@ export default function MonthlyPriceTrendChart({
                   ) : (
                     <>
                       <td className="px-3 py-2 text-right font-medium text-primary">
-                        {formatPrice(d.avgPrice)}
+                        {formatWonAmountOrFallback(d.avgPrice)}
                       </td>
                       <td className="px-3 py-2 text-right text-green-600">
-                        {formatPrice(d.minPrice)}
+                        {formatWonAmountOrFallback(d.minPrice)}
                       </td>
                       <td className="px-3 py-2 text-right text-red-600">
-                        {formatPrice(d.maxPrice)}
+                        {formatWonAmountOrFallback(d.maxPrice)}
                       </td>
                     </>
                   )}
