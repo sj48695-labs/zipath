@@ -1,0 +1,11 @@
+0000000000000000000000000000000000000000 0b3f722a90ab5b3588802272c2ac9e94ff657583 Sujeong Jo <josujeong00@mintech.kr> 1773240940 +0900	WIP on main: bc1112a feat: loop.sh를 PR 기반 워크플로우로 변경
+0b3f722a90ab5b3588802272c2ac9e94ff657583 30374f5882b001574946341b49e71dc0a7332dfd Sujeong Jo <josujeong00@mintech.kr> 1773240952 +0900	WIP on main: bc1112a feat: loop.sh를 PR 기반 워크플로우로 변경
+30374f5882b001574946341b49e71dc0a7332dfd 93cba5e73c5664b0f4a0f79dc081db35d06c4f28 Sujeong Jo <josujeong00@mintech.kr> 1773240961 +0900	On main: test
+93cba5e73c5664b0f4a0f79dc081db35d06c4f28 15a305a9fcf93a9256aa738cf953f93a1d178231 Sujeong Jo <josujeong00@mintech.kr> 1773240977 +0900	WIP on claude/plan-coding-session-A0EOI: bc1112a feat: loop.sh를 PR 기반 워크플로우로 변경
+15a305a9fcf93a9256aa738cf953f93a1d178231 152da6e1a84f45d6ba055a9863a4c8a2e4ce38c2 Sujeong Jo <josujung00@gmail.com> 1773935466 +0900	WIP on develop: 64347f2 chore: 데이터 정리 크론잡 구현 (CleanupService) #10 (#12)
+152da6e1a84f45d6ba055a9863a4c8a2e4ce38c2 67603ff135351b1f12cb433f59b69aafb06676e5 Sujeong Jo <josujung00@gmail.com> 1773935473 +0900	WIP on develop: 64347f2 chore: 데이터 정리 크론잡 구현 (CleanupService) #10 (#12)
+67603ff135351b1f12cb433f59b69aafb06676e5 c69ecb359235b7266832753d13b8262179c588fc Sujeong Jo <josujung00@gmail.com> 1773935479 +0900	WIP on develop: 64347f2 chore: 데이터 정리 크론잡 구현 (CleanupService) #10 (#12)
+c69ecb359235b7266832753d13b8262179c588fc ae635a7365f89ad94967ff1ae25167dabcf102a7 Sujeong Jo <josujung00@gmail.com> 1778006915 +0900	WIP on 62-google-oauth-login: 83f5551 feat(api): Google OAuth 로그인 (초기 커밋)
+ae635a7365f89ad94967ff1ae25167dabcf102a7 a0319a15aca9fd16b8c2607092f3f78742dee4ea Sujeong Jo <josujung00@gmail.com> 1781336634 +0900	WIP on develop: da8f8e1 fix(devloop): codex --ask-for-approval 플래그를 exec 앞으로 (벤더본 중앙 동기화)
+a0319a15aca9fd16b8c2607092f3f78742dee4ea 0556f7609edfc773d260cb8e85d6051d166e88e6 Sujeong Jo <josujung00@gmail.com> 1782669095 +0900	WIP on 58-announcement-api-backend: 349c6b7 chore: #58 브랜치 초기화
+0556f7609edfc773d260cb8e85d6051d166e88e6 6dd402faff034bc3e149a504ee1318e2d7944f20 Sujeong Jo <josujung00@gmail.com> 1783244224 +0900	On 50-global-api-error-handling: codex temp before rebase #50

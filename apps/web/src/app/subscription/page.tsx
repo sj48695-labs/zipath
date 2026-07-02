@@ -126,8 +126,7 @@ export default function SubscriptionPage() {
 
   return (
     <div className="min-h-screen">
-      <SiteHeader maxWidth="max-w-3xl" />
-
+      <SiteHeader maxWidth="max-w-5xl" />
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">청약 자격 시뮬레이션</h1>
         <p className="mb-8 text-muted-foreground">

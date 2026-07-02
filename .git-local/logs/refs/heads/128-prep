@@ -1,0 +1,11 @@
+0000000000000000000000000000000000000000 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783011781 +0900	branch: Created from develop
+24addabce39551ff3d025156c468114c55f3c806 c7d3ee5f914f9d5bc987acecff28c096afe9a1d9 Sujeong Jo <josujung00@gmail.com> 1783012266 +0900	commit: docs: #128 plan 작성
+c7d3ee5f914f9d5bc987acecff28c096afe9a1d9 970d259b5a066a098418ac63907c46e6ceb752e8 Sujeong Jo <josujung00@gmail.com> 1783058356 +0900	commit: wip: #128 pre-rebase
+970d259b5a066a098418ac63907c46e6ceb752e8 9c13a7f22c851c4c19cc1d11c5aead970b8512a8 Sujeong Jo <josujung00@gmail.com> 1783067508 +0900	commit: wip: #128 (중단 보존)
+9c13a7f22c851c4c19cc1d11c5aead970b8512a8 0adbf2fb9f1fbcfbaf1240df9db7a382b38ee9d0 Sujeong Jo <josujung00@gmail.com> 1783241738 +0900	rebase (finish): refs/heads/128-prep onto e6cbcae0af60e39bbf4c451140758e2f142b9448
+0adbf2fb9f1fbcfbaf1240df9db7a382b38ee9d0 84309261747aec72187be79216952d8ff1228013 Sujeong Jo <josujung00@gmail.com> 1783241983 +0900	reset: moving to HEAD~1
+84309261747aec72187be79216952d8ff1228013 af5a28d1268012ca532bfab72791016f1b785493 Sujeong Jo <josujung00@gmail.com> 1783241983 +0900	reset: moving to HEAD~1
+af5a28d1268012ca532bfab72791016f1b785493 facf0fc8ce635d33da126700839970e4c7ab846d Sujeong Jo <josujung00@gmail.com> 1783241983 +0900	commit (amend): docs: #128 plan 작성
+facf0fc8ce635d33da126700839970e4c7ab846d f258da4bcdd930345573f004f28a6ac34491e697 Sujeong Jo <josujung00@gmail.com> 1783244734 +0900	commit: wip: #128
+f258da4bcdd930345573f004f28a6ac34491e697 facf0fc8ce635d33da126700839970e4c7ab846d Sujeong Jo <josujung00@gmail.com> 1783245072 +0900	reset: moving to HEAD~1
+facf0fc8ce635d33da126700839970e4c7ab846d 7a868f090e4a40f78a942629cfb9af58853b38a7 Sujeong Jo <josujung00@gmail.com> 1783245072 +0900	commit (amend): docs: #128 plan 작성

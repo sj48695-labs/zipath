@@ -1,0 +1,24 @@
+[branch "claude/kind-liskov"]
+	gk-last-accessed = 2026-04-05T19:00:25.032Z
+[branch "develop"]
+	gk-last-accessed = 2026-07-05T09:34:26.473Z
+	gk-last-modified = 2026-04-07T16:10:39.091Z
+[branch "72-notification-controller-auth-fix"]
+	gk-last-accessed = 2026-05-05T18:44:06.125Z
+	gk-last-modified = 2026-05-05T18:34:17.333Z
+[branch "main"]
+	gk-last-accessed = 2026-05-07T10:35:45.502Z
+	gk-last-modified = 2026-05-07T10:35:45.502Z
+[branch "59-announcement-db-caching"]
+	gk-last-accessed = 2026-05-20T14:57:12.618Z
+	gk-last-modified = 2026-05-14T09:40:09.323Z
+[branch "75-in-app-notification-service"]
+	gk-last-accessed = 2026-05-19T15:51:16.497Z
+	gk-last-modified = 2026-05-19T15:51:16.497Z
+[branch "129-prep"]
+	gk-last-accessed = 2026-07-05T09:49:48.247Z
+[branch "122-subscription-timeout에"]
+	gk-last-accessed = 2026-07-05T09:31:31.686Z
+	gk-last-modified = 2026-07-05T09:31:31.686Z
+[branch "123-announcements-loading-state"]
+	gk-last-accessed = 2026-07-05T09:31:31.521Z

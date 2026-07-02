@@ -1,0 +1,307 @@
+0000000000000000000000000000000000000000 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujeong00@mintech.kr> 1773239889 +0900	clone: from https://github.com/sj48695-labs/zipath.git
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujeong00@mintech.kr> 1773240887 +0900	checkout: moving from claude/plan-coding-session-A0EOI to main
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujeong00@mintech.kr> 1773240971 +0900	checkout: moving from main to claude/plan-coding-session-A0EOI
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujeong00@mintech.kr> 1773241032 +0900	checkout: moving from claude/plan-coding-session-A0EOI to main
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujung00@gmail.com> 1773241165 +0900	checkout: moving from main to claude/plan-coding-session-A0EOI
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujung00@gmail.com> 1773333952 +0900	checkout: moving from claude/plan-coding-session-A0EOI to main
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujung00@gmail.com> 1773671697 +0900	checkout: moving from main to develop
+bc1112af12946dd701e6d51a695695d634e0f263 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujung00@gmail.com> 1773671891 +0900	checkout: moving from develop to claude/plan-coding-session-A0EOI
+bc1112af12946dd701e6d51a695695d634e0f263 f9e82f0caea6d8b6daa0558d006571f01caadb00 Sujeong Jo <josujung00@gmail.com> 1773671894 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+f9e82f0caea6d8b6daa0558d006571f01caadb00 fde4dbdbde00514a6c7697115a73f6e62194a8fb Sujeong Jo <josujung00@gmail.com> 1773755148 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+fde4dbdbde00514a6c7697115a73f6e62194a8fb ec2efd60f37bc21b2676f1862dfa9acc9f24b952 Sujeong Jo <josujung00@gmail.com> 1773935424 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+ec2efd60f37bc21b2676f1862dfa9acc9f24b952 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujung00@gmail.com> 1773935428 +0900	checkout: moving from claude/plan-coding-session-A0EOI to develop
+bc1112af12946dd701e6d51a695695d634e0f263 64347f2cf1f83dc0d6beb8bdd734dc452c692a61 Sujeong Jo <josujung00@gmail.com> 1773935430 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+64347f2cf1f83dc0d6beb8bdd734dc452c692a61 64347f2cf1f83dc0d6beb8bdd734dc452c692a61 Sujeong Jo <josujung00@gmail.com> 1773935452 +0900	merge claude/plan-coding-session-A0EOI: updating HEAD
+64347f2cf1f83dc0d6beb8bdd734dc452c692a61 bc1112af12946dd701e6d51a695695d634e0f263 Sujeong Jo <josujung00@gmail.com> 1773935503 +0900	checkout: moving from develop to main
+bc1112af12946dd701e6d51a695695d634e0f263 fb50c250fe32acb12b6af810cd4e0c60eaeaa29f Sujeong Jo <josujung00@gmail.com> 1773935506 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+fb50c250fe32acb12b6af810cd4e0c60eaeaa29f 64347f2cf1f83dc0d6beb8bdd734dc452c692a61 Sujeong Jo <josujung00@gmail.com> 1773935508 +0900	checkout: moving from main to develop
+64347f2cf1f83dc0d6beb8bdd734dc452c692a61 8d1f3b1adb8f3699125b8f3a955a3e3f7869f239 Sujeong Jo <josujung00@gmail.com> 1773966496 +0900	commit: docs: PLAN.md를 완료 현황 + 남은 기능 중심으로 간결하게 정리
+8d1f3b1adb8f3699125b8f3a955a3e3f7869f239 ec2efd60f37bc21b2676f1862dfa9acc9f24b952 Sujeong Jo <josujung00@gmail.com> 1774012995 +0900	checkout: moving from develop to claude/plan-coding-session-A0EOI
+ec2efd60f37bc21b2676f1862dfa9acc9f24b952 ec2efd60f37bc21b2676f1862dfa9acc9f24b952 Sujeong Jo <josujung00@gmail.com> 1774013631 +0900	reset: moving to HEAD
+ec2efd60f37bc21b2676f1862dfa9acc9f24b952 861504df8b7c46a08c98ee638c351f571bc62676 Sujeong Jo <josujung00@gmail.com> 1774013856 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+861504df8b7c46a08c98ee638c351f571bc62676 8d1f3b1adb8f3699125b8f3a955a3e3f7869f239 Sujeong Jo <josujung00@gmail.com> 1774013862 +0900	checkout: moving from claude/plan-coding-session-A0EOI to develop
+8d1f3b1adb8f3699125b8f3a955a3e3f7869f239 11e0b929db552391f0716bff72737a7dcef078c1 Sujeong Jo <josujung00@gmail.com> 1774013864 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+11e0b929db552391f0716bff72737a7dcef078c1 fb50c250fe32acb12b6af810cd4e0c60eaeaa29f Sujeong Jo <josujung00@gmail.com> 1774013879 +0900	checkout: moving from develop to main
+fb50c250fe32acb12b6af810cd4e0c60eaeaa29f 0fd88132d1c511b14c6ce14c7f639a560d152a20 Sujeong Jo <josujung00@gmail.com> 1774013882 +0900	merge develop: Merge made by the 'ort' strategy.
+0fd88132d1c511b14c6ce14c7f639a560d152a20 11e0b929db552391f0716bff72737a7dcef078c1 Sujeong Jo <josujung00@gmail.com> 1774060618 +0900	checkout: moving from main to develop
+11e0b929db552391f0716bff72737a7dcef078c1 043e642f1071b450163ebcc9e3575c87ef2e46f5 Sujeong Jo <josujung00@gmail.com> 1774060920 +0900	commit: fix: Dockerfile을 모노레포 구조에 맞게 수정
+043e642f1071b450163ebcc9e3575c87ef2e46f5 861504df8b7c46a08c98ee638c351f571bc62676 Sujeong Jo <josujung00@gmail.com> 1774060959 +0900	checkout: moving from develop to claude/plan-coding-session-A0EOI
+861504df8b7c46a08c98ee638c351f571bc62676 043e642f1071b450163ebcc9e3575c87ef2e46f5 Sujeong Jo <josujung00@gmail.com> 1774060965 +0900	rebase (start): checkout refs/heads/develop
+043e642f1071b450163ebcc9e3575c87ef2e46f5 043e642f1071b450163ebcc9e3575c87ef2e46f5 Sujeong Jo <josujung00@gmail.com> 1774060965 +0900	rebase (finish): returning to refs/heads/claude/plan-coding-session-A0EOI
+043e642f1071b450163ebcc9e3575c87ef2e46f5 043e642f1071b450163ebcc9e3575c87ef2e46f5 Sujeong Jo <josujung00@gmail.com> 1774101619 +0900	checkout: moving from claude/plan-coding-session-A0EOI to develop
+043e642f1071b450163ebcc9e3575c87ef2e46f5 64c939dffead9531f787149396c9307201e089d4 Sujeong Jo <josujung00@gmail.com> 1774101698 +0900	commit: chore: CI 파이프라인 자동화 및 개발 워크플로우 세팅
+64c939dffead9531f787149396c9307201e089d4 a9da4a9dee289db70d227be98d08e712d31c4a7d Sujeong Jo <josujung00@gmail.com> 1774104579 +0900	commit: ci: develop 푸시 시 Render 자동 배포 트리거 추가
+a9da4a9dee289db70d227be98d08e712d31c4a7d a561e7bfc7a0c8f1138bcf97b6e595c8b59829d6 Sujeong Jo <josujung00@gmail.com> 1774107273 +0900	commit: fix(api): Render 빌드 오류 수정
+a561e7bfc7a0c8f1138bcf97b6e595c8b59829d6 3f87d5f1fea20dc5d80b9f14993f791a1a5bd91d Sujeong Jo <josujung00@gmail.com> 1774147105 +0900	commit: fix(api): @types/passport-jwt를 dependencies로 이동
+3f87d5f1fea20dc5d80b9f14993f791a1a5bd91d 7a409a7ca201d13f3b4d22cbb2cacabc449197e5 Sujeong Jo <josujung00@gmail.com> 1774148497 +0900	commit: fix(api): RealPriceModule에 ConfigModule 추가
+7a409a7ca201d13f3b4d22cbb2cacabc449197e5 2b99065e76c63f3c6321548caad6f94ff67b7a6f Sujeong Jo <josujung00@gmail.com> 1774153863 +0900	commit: fix(api): ConfigModule.forRoot에 isGlobal: true 추가
+2b99065e76c63f3c6321548caad6f94ff67b7a6f 936c9e9a1ea010df646f8532119c0ac0ec6e8caf Sujeong Jo <josujung00@gmail.com> 1774162307 +0900	cherry-pick: fix(api): OAuth 환경변수 없을 때 앱 크래시 방지
+936c9e9a1ea010df646f8532119c0ac0ec6e8caf fde3f9d4dbab8cac30790effcf3f4922ed634be8 Sujeong Jo <josujung00@gmail.com> 1774178545 +0900	commit: fix: add explicit column types for all SubscriptionCriteria fields
+fde3f9d4dbab8cac30790effcf3f4922ed634be8 fde3f9d4dbab8cac30790effcf3f4922ed634be8 Sujeong Jo <josujung00@gmail.com> 1774178624 +0900	reset: moving to HEAD
+fde3f9d4dbab8cac30790effcf3f4922ed634be8 c2b0bfeca88f32f3a08074dfd14bb1a1bf4f994c Sujeong Jo <josujung00@gmail.com> 1774178625 +0900	pull --rebase origin develop (start): checkout c2b0bfeca88f32f3a08074dfd14bb1a1bf4f994c
+c2b0bfeca88f32f3a08074dfd14bb1a1bf4f994c 8b27f97536057b2357b9f04efdb1ed9892537812 Sujeong Jo <josujung00@gmail.com> 1774178625 +0900	pull --rebase origin develop (pick): fix: add explicit column types for all SubscriptionCriteria fields
+8b27f97536057b2357b9f04efdb1ed9892537812 8b27f97536057b2357b9f04efdb1ed9892537812 Sujeong Jo <josujung00@gmail.com> 1774178625 +0900	pull --rebase origin develop (finish): returning to refs/heads/develop
+8b27f97536057b2357b9f04efdb1ed9892537812 996006fd5b9e4ffb1dacdc23d054155eddacab8a Sujeong Jo <josujung00@gmail.com> 1774195420 +0900	commit: fix: eslint 의존성 및 설정 추가로 CI lint 에러 수정
+996006fd5b9e4ffb1dacdc23d054155eddacab8a cd1fdd9af27d41ce3d5ca95b0c3367ebbfbda96a Sujeong Jo <josujung00@gmail.com> 1774278600 +0900
+cd1fdd9af27d41ce3d5ca95b0c3367ebbfbda96a cd1fdd9af27d41ce3d5ca95b0c3367ebbfbda96a Sujeong Jo <josujung00@gmail.com> 1774403806 +0900	checkout: moving from develop to develop
+cd1fdd9af27d41ce3d5ca95b0c3367ebbfbda96a 724806c06137ddfd972a98e4b5072f55faf27662 Sujeong Jo <josujung00@gmail.com> 1774484095 +0900	commit: fix(api): jest maxWorkers=2로 병렬 실행 OOM SIGKILL 수정
+724806c06137ddfd972a98e4b5072f55faf27662 1a1567ff65ee3023d62d13af391535bdf26d6f46 Sujeong Jo <josujung00@gmail.com> 1774621951 +0900	commit: chore: 15차 배포 모니터링 리포트 업데이트
+1a1567ff65ee3023d62d13af391535bdf26d6f46 60f7baf220957bcd976f76c3373f85cd32f9f065 Sujeong Jo <josujung00@gmail.com> 1774718622 +0900	commit: fix(api): jest runInBand으로 변경해 CI OOM 수정
+60f7baf220957bcd976f76c3373f85cd32f9f065 da9847a9103a7486245bb0f5f5df5af233f6cee0 Sujeong Jo <josujung00@gmail.com> 1774723792 +0900	commit: fix(api): runInBand → maxWorkers: 1로 수정 (CI OOM 해결)
+da9847a9103a7486245bb0f5f5df5af233f6cee0 6b4a973b996c6c7bf4f74c927cb31884e88d2d3a Sujeong Jo <josujung00@gmail.com> 1774733952 +0900	commit: fix(api): jest config를 JS로 변환 + --runInBand CLI 플래그 추가
+6b4a973b996c6c7bf4f74c927cb31884e88d2d3a ef05aeb1c660c4384929d7b1977dd578adddcb88 Sujeong Jo <josujung00@gmail.com> 1774804286 +0900	commit: fix(api): E2E 테스트에 SubscriptionCriteriaRepository mock 추가
+ef05aeb1c660c4384929d7b1977dd578adddcb88 09e70b45754d74e0386b8e6113b21f70d9996693 Sujeong Jo <josujung00@gmail.com> 1774804486 +0900	commit: docs: 배포 모니터링 리포트 업데이트 (17차, CI 정상화 반영)
+09e70b45754d74e0386b8e6113b21f70d9996693 27390b216e97a1ef83dbf6fe613e06722e8f524c Sujeong Jo <josujung00@gmail.com> 1774806399 +0900	checkout: moving from develop to claude/awesome-agnesi
+27390b216e97a1ef83dbf6fe613e06722e8f524c 272ea22a7e226eec36ad7cf5d8b63e4cf9f61f30 Sujeong Jo <josujung00@gmail.com> 1774806403 +0900	merge origin/develop: Merge made by the 'ort' strategy.
+272ea22a7e226eec36ad7cf5d8b63e4cf9f61f30 09e70b45754d74e0386b8e6113b21f70d9996693 Sujeong Jo <josujung00@gmail.com> 1774806421 +0900	checkout: moving from claude/awesome-agnesi to develop
+09e70b45754d74e0386b8e6113b21f70d9996693 4539e54e0b8bcc24a192f3865fc1e43a452f878f Sujeong Jo <josujung00@gmail.com> 1775148501 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+4539e54e0b8bcc24a192f3865fc1e43a452f878f e417d7d99eb39c616a13f2a95662e7cd373b4029 Sujeong Jo <josujung00@gmail.com> 1775417083 +0900	commit: chore: hello.txt 파일 생성 및 내용 추가
+e417d7d99eb39c616a13f2a95662e7cd373b4029 adbba88f56da5c5d023887f8eb0d74c4832df6d4 Sujeong Jo <josujung00@gmail.com> 1775417366 +0900	commit: fix: JWT secret의 하드코딩된 대체 값 제거
+adbba88f56da5c5d023887f8eb0d74c4832df6d4 ab51dc2dee05891782abd12b9b89c3dd5eb566cb Sujeong Jo <josujung00@gmail.com> 1775417462 +0900	commit: chore: JWT_SECRET 환경 변수 기본값 설정
+ab51dc2dee05891782abd12b9b89c3dd5eb566cb e417d7d99eb39c616a13f2a95662e7cd373b4029 Sujeong Jo <josujung00@gmail.com> 1775435733 +0900	reset: moving to e417d7d99eb39c616a13f2a95662e7cd373b4029
+e417d7d99eb39c616a13f2a95662e7cd373b4029 4539e54e0b8bcc24a192f3865fc1e43a452f878f Sujeong Jo <josujung00@gmail.com> 1775435743 +0900	reset: moving to 4539e54e0b8bcc24a192f3865fc1e43a452f878f
+4539e54e0b8bcc24a192f3865fc1e43a452f878f 59ffadd3a46d1948ff234e43b4215f6e27bd9fac Sujeong Jo <josujung00@gmail.com> 1775693834 +0900	commit: docs: CLAUDE.md AI 워크플로우 추가 및 AGENTS.md 서브에이전트 가이드 보강
+59ffadd3a46d1948ff234e43b4215f6e27bd9fac 25256996af3f9cecdaf4b2c2b487fd5ae148dc8f Sujeong Jo <josujung00@gmail.com> 1775796595 +0900	commit: chore: worktree 설정 파일 추가 (wt.toml, .worktreeinclude)
+25256996af3f9cecdaf4b2c2b487fd5ae148dc8f 25256996af3f9cecdaf4b2c2b487fd5ae148dc8f Sujeong Jo <josujung00@gmail.com> 1776242635 +0900	checkout: moving from develop to develop
+25256996af3f9cecdaf4b2c2b487fd5ae148dc8f 25256996af3f9cecdaf4b2c2b487fd5ae148dc8f Sujeong Jo <josujung00@gmail.com> 1776242638 +0900	checkout: moving from develop to 68-테스트-코드-보강
+25256996af3f9cecdaf4b2c2b487fd5ae148dc8f 25256996af3f9cecdaf4b2c2b487fd5ae148dc8f Sujeong Jo <josujung00@gmail.com> 1776242664 +0900	checkout: moving from 68-테스트-코드-보강 to develop
+25256996af3f9cecdaf4b2c2b487fd5ae148dc8f 25256996af3f9cecdaf4b2c2b487fd5ae148dc8f Sujeong Jo <josujung00@gmail.com> 1777581798 +0900	checkout: moving from develop to 72-notification-controller-auth-fix
+25256996af3f9cecdaf4b2c2b487fd5ae148dc8f c81ed9c0ac237b12b82fcb1f6de312b1da78ed97 Sujeong Jo <josujung00@gmail.com> 1777581811 +0900	commit: WIP: issue #72
+c81ed9c0ac237b12b82fcb1f6de312b1da78ed97 25256996af3f9cecdaf4b2c2b487fd5ae148dc8f Sujeong Jo <josujung00@gmail.com> 1777581841 +0900	checkout: moving from 72-notification-controller-auth-fix to develop
+25256996af3f9cecdaf4b2c2b487fd5ae148dc8f 2d2f2f9bf3b7adefe3520c178bbc9cce84752756 Sujeong Jo <josujung00@gmail.com> 1777583388 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+2d2f2f9bf3b7adefe3520c178bbc9cce84752756 2d2f2f9bf3b7adefe3520c178bbc9cce84752756 Sujeong Jo <josujung00@gmail.com> 1778006843 +0900	checkout: moving from develop to 62-google-oauth-login
+2d2f2f9bf3b7adefe3520c178bbc9cce84752756 83f55514c4755fed06cff5f56e8d2dee5652bcbe Sujeong Jo <josujung00@gmail.com> 1778006852 +0900	commit: feat(api): Google OAuth 로그인 (초기 커밋)
+83f55514c4755fed06cff5f56e8d2dee5652bcbe 83f55514c4755fed06cff5f56e8d2dee5652bcbe Sujeong Jo <josujung00@gmail.com> 1778006915 +0900	reset: moving to HEAD
+83f55514c4755fed06cff5f56e8d2dee5652bcbe 2d2f2f9bf3b7adefe3520c178bbc9cce84752756 Sujeong Jo <josujung00@gmail.com> 1778006917 +0900	checkout: moving from 62-google-oauth-login to 61-announcement-detail
+2d2f2f9bf3b7adefe3520c178bbc9cce84752756 74735b64b4836e70b277bb9d72de1e61ce310ec6 Sujeong Jo <josujung00@gmail.com> 1778006931 +0900	commit: feat(web): 공고 상세 페이지 작업 시작
+74735b64b4836e70b277bb9d72de1e61ce310ec6 2d2f2f9bf3b7adefe3520c178bbc9cce84752756 Sujeong Jo <josujung00@gmail.com> 1778006957 +0900	checkout: moving from 61-announcement-detail to develop
+2d2f2f9bf3b7adefe3520c178bbc9cce84752756 a5e7fbd61cca2a234f4b78ac49ca7f6dcbc92855 Sujeong Jo <josujung00@gmail.com> 1778009241 +0900	commit: docs: 커밋 컨벤션에 이슈 번호(#<N>) 표기 의무화
+a5e7fbd61cca2a234f4b78ac49ca7f6dcbc92855 0fd88132d1c511b14c6ce14c7f639a560d152a20 Sujeong Jo <josujung00@gmail.com> 1778011212 +0900	checkout: moving from develop to main
+0fd88132d1c511b14c6ce14c7f639a560d152a20 0fd88132d1c511b14c6ce14c7f639a560d152a20 Sujeong Jo <josujung00@gmail.com> 1778011216 +0900	merge develop: updating HEAD
+0fd88132d1c511b14c6ce14c7f639a560d152a20 a5e7fbd61cca2a234f4b78ac49ca7f6dcbc92855 Sujeong Jo <josujung00@gmail.com> 1778011221 +0900	checkout: moving from main to develop
+a5e7fbd61cca2a234f4b78ac49ca7f6dcbc92855 30cac99f9f111c6448be124f774552b2f3d0cac0 Sujeong Jo <josujung00@gmail.com> 1778012767 +0900	pull: Fast-forward
+30cac99f9f111c6448be124f774552b2f3d0cac0 5a8a65c3bf9631888a110459467ff67faa0e5f8a Sujeong Jo <josujung00@gmail.com> 1778012864 +0900	commit: chore: 2026-05-06 사이클 devloop 런타임 로그 스냅샷
+5a8a65c3bf9631888a110459467ff67faa0e5f8a 5d398ae2bc34df967be758502c56e1ebb8204ef1 Sujeong Jo <josujung00@gmail.com> 1778013039 +0900	commit (amend): chore: 2026-05-06 사이클 devloop 런타임 로그 스냅샷
+5d398ae2bc34df967be758502c56e1ebb8204ef1 8bb9aa07fd7a2976df59433236c61ac03bb3e7f7 Sujeong Jo <josujung00@gmail.com> 1778013073 +0900	commit (amend): chore: 2026-05-06 사이클 devloop 런타임 로그 스냅샷
+8bb9aa07fd7a2976df59433236c61ac03bb3e7f7 940d9c87e28c904ec72fa1957e26374a77e79da2 Sujeong Jo <josujung00@gmail.com> 1778013107 +0900	checkout: moving from develop to 61-announcement-detail
+940d9c87e28c904ec72fa1957e26374a77e79da2 8bb9aa07fd7a2976df59433236c61ac03bb3e7f7 Sujeong Jo <josujung00@gmail.com> 1778013139 +0900	checkout: moving from 61-announcement-detail to develop
+8bb9aa07fd7a2976df59433236c61ac03bb3e7f7 0fd88132d1c511b14c6ce14c7f639a560d152a20 Sujeong Jo <josujung00@gmail.com> 1778013326 +0900	checkout: moving from develop to main
+0fd88132d1c511b14c6ce14c7f639a560d152a20 eda95fd6be7e025ac509a152c5ba78ab02a1479b Sujeong Jo <josujung00@gmail.com> 1778013329 +0900	merge develop: Merge made by the 'ort' strategy.
+eda95fd6be7e025ac509a152c5ba78ab02a1479b 8bb9aa07fd7a2976df59433236c61ac03bb3e7f7 Sujeong Jo <josujung00@gmail.com> 1778013341 +0900	checkout: moving from main to develop
+8bb9aa07fd7a2976df59433236c61ac03bb3e7f7 09b65f0a9da5f6386275cb22afce547e77807004 Sujeong Jo <josujung00@gmail.com> 1778013889 +0900	commit: feat(db): #72 TypeORM 마이그레이션 도입 + 초기 베이스라인
+09b65f0a9da5f6386275cb22afce547e77807004 eda95fd6be7e025ac509a152c5ba78ab02a1479b Sujeong Jo <josujung00@gmail.com> 1778013906 +0900	checkout: moving from develop to main
+eda95fd6be7e025ac509a152c5ba78ab02a1479b ca8c3d536d683ca9329470242dad9d78dbf97efe Sujeong Jo <josujung00@gmail.com> 1778013909 +0900	merge develop: Merge made by the 'ort' strategy.
+ca8c3d536d683ca9329470242dad9d78dbf97efe 09b65f0a9da5f6386275cb22afce547e77807004 Sujeong Jo <josujung00@gmail.com> 1778013914 +0900	checkout: moving from main to develop
+09b65f0a9da5f6386275cb22afce547e77807004 fc4c00ae8dca20f8960c8ec3c4867ccfc5ed9134 Sujeong Jo <josujung00@gmail.com> 1778014038 +0900	commit: fix(api): Render 헬스체크 경로 + 명시적 0.0.0.0 바인딩
+fc4c00ae8dca20f8960c8ec3c4867ccfc5ed9134 ca8c3d536d683ca9329470242dad9d78dbf97efe Sujeong Jo <josujung00@gmail.com> 1778014057 +0900	checkout: moving from develop to main
+ca8c3d536d683ca9329470242dad9d78dbf97efe e42afda31ec08f5969f9796315232ec92f1b9cd9 Sujeong Jo <josujung00@gmail.com> 1778014060 +0900	merge develop: Merge made by the 'ort' strategy.
+e42afda31ec08f5969f9796315232ec92f1b9cd9 fc4c00ae8dca20f8960c8ec3c4867ccfc5ed9134 Sujeong Jo <josujung00@gmail.com> 1778014065 +0900	checkout: moving from main to develop
+fc4c00ae8dca20f8960c8ec3c4867ccfc5ed9134 b7b32ba56ea524f6311cbd041da7540ac1bac0fb Sujeong Jo <josujung00@gmail.com> 1778016360 +0900	commit: fix(api): Render 기본 헬스체크 경로 호환 — `/`, `/health` 도 응답
+b7b32ba56ea524f6311cbd041da7540ac1bac0fb e42afda31ec08f5969f9796315232ec92f1b9cd9 Sujeong Jo <josujung00@gmail.com> 1778016669 +0900	checkout: moving from develop to main
+e42afda31ec08f5969f9796315232ec92f1b9cd9 e7d8d10871e609c697670047edab659fd6ad97e7 Sujeong Jo <josujung00@gmail.com> 1778016672 +0900	merge develop: Merge made by the 'ort' strategy.
+e7d8d10871e609c697670047edab659fd6ad97e7 eea138b6cc463c741529c9418e8527ad8b8f6c13 Sujeong Jo <josujung00@gmail.com> 1778017778 +0900	commit: fix(web): TransformInterceptor 래핑 unwrap — undefined.length/map 에러 수정
+eea138b6cc463c741529c9418e8527ad8b8f6c13 fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 Sujeong Jo <josujung00@gmail.com> 1778017849 +0900	commit: fix(api): data.go.kr 키 이중 인코딩 + 에러 본문 로깅
+fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 b7b32ba56ea524f6311cbd041da7540ac1bac0fb Sujeong Jo <josujung00@gmail.com> 1778018343 +0900	checkout: moving from main to develop
+b7b32ba56ea524f6311cbd041da7540ac1bac0fb fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 Sujeong Jo <josujung00@gmail.com> 1778018353 +0900	rebase (start): checkout refs/heads/main
+fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 Sujeong Jo <josujung00@gmail.com> 1778018353 +0900	rebase (finish): returning to refs/heads/develop
+fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1778018758 +0900	commit: fix(api): data.go.kr XML 에러 응답 파싱 + 코드 로깅
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 Sujeong Jo <josujung00@gmail.com> 1778018810 +0900	checkout: moving from develop to main
+fda685f9f4a9e16a4fddc91594dd4c4bc54792d8 485bf64ce2322559da68c02e7ac3e37f161824e1 Sujeong Jo <josujung00@gmail.com> 1778018812 +0900	merge develop: Merge made by the 'ort' strategy.
+485bf64ce2322559da68c02e7ac3e37f161824e1 b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1778602102 +0900	checkout: moving from main to 59-announcement-db-caching
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d 0b241dbd52dd1b0d55ff69a80f4b248a13eb3b83 Sujeong Jo <josujung00@gmail.com> 1778602116 +0900	commit: feat(api): #59 공고 데이터 DB 저장 + 캐싱
+0b241dbd52dd1b0d55ff69a80f4b248a13eb3b83 0b241dbd52dd1b0d55ff69a80f4b248a13eb3b83 Sujeong Jo <josujung00@gmail.com> 1778602135 +0900	checkout: moving from 59-announcement-db-caching to 59-announcement-db-caching
+0b241dbd52dd1b0d55ff69a80f4b248a13eb3b83 b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1778602141 +0900	checkout: moving from 59-announcement-db-caching to develop
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1779202311 +0900	reset: moving to HEAD
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1779204577 +0900	checkout: moving from develop to 75-in-app-notification-service
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d 29015997a997abddedb02f2c4d0f90d59bdabc88 Sujeong Jo <josujung00@gmail.com> 1779204598 +0900	commit: feat(api): #75 앱 내 알림 발송 서비스 초기 구조
+29015997a997abddedb02f2c4d0f90d59bdabc88 b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1779204622 +0900	checkout: moving from 75-in-app-notification-service to develop
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1779300294 +0900	checkout: moving from develop to 74-change-detection-scheduler
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1779300325 +0900	checkout: moving from 74-change-detection-scheduler to develop
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d b44b2fa07a1e629a4ed8b608de332cc696d0c10d Sujeong Jo <josujung00@gmail.com> 1779301597 +0900	reset: moving to HEAD
+b44b2fa07a1e629a4ed8b608de332cc696d0c10d ee1bb1700e633adac15ca7fe39d29f529314d72b Sujeong Jo <josujung00@gmail.com> 1779301635 +0900	commit: fix(api): data.go.kr XML 에러가 표준 cmmMsgHeader 가 아닐 때 원본 body 로깅
+ee1bb1700e633adac15ca7fe39d29f529314d72b 485bf64ce2322559da68c02e7ac3e37f161824e1 Sujeong Jo <josujung00@gmail.com> 1779301644 +0900	checkout: moving from develop to main
+485bf64ce2322559da68c02e7ac3e37f161824e1 495113cd253345ba0370d461009d8a513cc197ae Sujeong Jo <josujung00@gmail.com> 1779301644 +0900	merge develop: Merge made by the 'ort' strategy.
+495113cd253345ba0370d461009d8a513cc197ae ee1bb1700e633adac15ca7fe39d29f529314d72b Sujeong Jo <josujung00@gmail.com> 1779301649 +0900	checkout: moving from main to develop
+ee1bb1700e633adac15ca7fe39d29f529314d72b 54ab3eb371747ba68569f2e9eff9b3ab19379ed9 Sujeong Jo <josujung00@gmail.com> 1779302544 +0900	commit: fix(api): data.go.kr XML 정상 응답 파싱 — 모든 거래/공고가 누락되던 버그 수정
+54ab3eb371747ba68569f2e9eff9b3ab19379ed9 495113cd253345ba0370d461009d8a513cc197ae Sujeong Jo <josujung00@gmail.com> 1779302552 +0900	checkout: moving from develop to main
+495113cd253345ba0370d461009d8a513cc197ae c4656854e30c5391511958d74f22c4bbed76fcab Sujeong Jo <josujung00@gmail.com> 1779302552 +0900	merge develop: Merge made by the 'ort' strategy.
+c4656854e30c5391511958d74f22c4bbed76fcab 54ab3eb371747ba68569f2e9eff9b3ab19379ed9 Sujeong Jo <josujung00@gmail.com> 1779302554 +0900	checkout: moving from main to develop
+54ab3eb371747ba68569f2e9eff9b3ab19379ed9 54ab3eb371747ba68569f2e9eff9b3ab19379ed9 Sujeong Jo <josujung00@gmail.com> 1779302695 +0900	checkout: moving from develop to 70-notification-service
+54ab3eb371747ba68569f2e9eff9b3ab19379ed9 1bef454d8f4f84c75e89a2e669048c7169c4ace7 Sujeong Jo <josujung00@gmail.com> 1779302709 +0900	commit: feat(web): #70 맞춤 알림 기능 (실거래가 변동 + 청약 공고)
+1bef454d8f4f84c75e89a2e669048c7169c4ace7 54ab3eb371747ba68569f2e9eff9b3ab19379ed9 Sujeong Jo <josujung00@gmail.com> 1779302725 +0900	checkout: moving from 70-notification-service to develop
+54ab3eb371747ba68569f2e9eff9b3ab19379ed9 54ab3eb371747ba68569f2e9eff9b3ab19379ed9 Sujeong Jo <josujung00@gmail.com> 1779303627 +0900	checkout: moving from develop to 69-contract-analysis-ocr-checklist
+54ab3eb371747ba68569f2e9eff9b3ab19379ed9 8935ec088846f978ce48e8e2208d38c20e61b937 Sujeong Jo <josujung00@gmail.com> 1779303637 +0900	commit: WIP: #69 계약서 분석 기능 준비
+8935ec088846f978ce48e8e2208d38c20e61b937 54ab3eb371747ba68569f2e9eff9b3ab19379ed9 Sujeong Jo <josujung00@gmail.com> 1779303654 +0900	checkout: moving from 69-contract-analysis-ocr-checklist to develop
+54ab3eb371747ba68569f2e9eff9b3ab19379ed9 e98edbc14e894665a1be2e43fd9e6465b42ca091 Sujeong Jo <josujung00@gmail.com> 1779307552 +0900	commit: chore: /reply 머지 완료된 plan 파일 내용 정리
+e98edbc14e894665a1be2e43fd9e6465b42ca091 e98edbc14e894665a1be2e43fd9e6465b42ca091 Sujeong Jo <josujung00@gmail.com> 1779325416 +0900	checkout: moving from develop to 66-area-filter
+e98edbc14e894665a1be2e43fd9e6465b42ca091 7df7aefde791229a5e30e274837f47e03fafa716 Sujeong Jo <josujung00@gmail.com> 1779325431 +0900	commit: feat(web): #66 실거래가 평형별 필터링
+7df7aefde791229a5e30e274837f47e03fafa716 e98edbc14e894665a1be2e43fd9e6465b42ca091 Sujeong Jo <josujung00@gmail.com> 1779325450 +0900	checkout: moving from 66-area-filter to develop
+e98edbc14e894665a1be2e43fd9e6465b42ca091 7ef66ce20ea0a05996479e5edba3d711b77f028d Sujeong Jo <josujung00@gmail.com> 1779327853 +0900	commit: chore(ci): Playwright e2e 워크스페이스 + manual 트리거 추가
+7ef66ce20ea0a05996479e5edba3d711b77f028d 0c8fc2dea5d999ca0dfdea30f67e15346f70270d Sujeong Jo <josujung00@gmail.com> 1779338493 +0900	commit: ci(e2e): PR 시 Vercel preview URL 대상으로 e2e 실행
+0c8fc2dea5d999ca0dfdea30f67e15346f70270d 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1779340678 +0900	commit: chore: e2e 워크스페이스 추가 후 lock 갱신
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780418645 +0900	checkout: moving from develop to 85-favicon-ico-404
+1d325a8e4a61505a40848ab9bcf79454231a7303 5235b202322381825119283c44d6d2a224737384 Sujeong Jo <josujung00@gmail.com> 1780418655 +0900	commit: fix(web): #85 favicon.ico 404 리소스 로드 실패
+5235b202322381825119283c44d6d2a224737384 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780418673 +0900	checkout: moving from 85-favicon-ico-404 to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780594274 +0900	checkout: moving from develop to 65-regional-transaction-comparison
+1d325a8e4a61505a40848ab9bcf79454231a7303 67c02676ac2a8458a94183b47ac35811bb96e56f Sujeong Jo <josujung00@gmail.com> 1780594282 +0900	commit: feat: #65 지역 간 실거래가 비교 기능
+67c02676ac2a8458a94183b47ac35811bb96e56f 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780594298 +0900	checkout: moving from 65-regional-transaction-comparison to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780594388 +0900	checkout: moving from develop to 64-monthly-price-chart
+1d325a8e4a61505a40848ab9bcf79454231a7303 946617f88d4d6a4aa9fba7520ad5d31945eb8dcc Sujeong Jo <josujung00@gmail.com> 1780594401 +0900	commit: chore: #64 초기 준비
+946617f88d4d6a4aa9fba7520ad5d31945eb8dcc 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780594416 +0900	checkout: moving from 64-monthly-price-chart to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780595194 +0900	checkout: moving from develop to 63-user-profile-page
+1d325a8e4a61505a40848ab9bcf79454231a7303 e673cf69efce752605e3511feed3d02e2bd4ed78 Sujeong Jo <josujung00@gmail.com> 1780595203 +0900	commit: feat(web): #63 유저 프로필 페이지
+e673cf69efce752605e3511feed3d02e2bd4ed78 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780595220 +0900	checkout: moving from 63-user-profile-page to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780595263 +0900	checkout: moving from develop to 60-user-subscription-auto-matching
+1d325a8e4a61505a40848ab9bcf79454231a7303 c10e91c3cc9a9d3327c9c8c6c97e33326066a099 Sujeong Jo <josujung00@gmail.com> 1780595272 +0900	commit: chore: prep issue #60
+c10e91c3cc9a9d3327c9c8c6c97e33326066a099 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780595289 +0900	checkout: moving from 60-user-subscription-auto-matching to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711389 +0900	checkout: moving from develop to 91-react-hydration-errors
+1d325a8e4a61505a40848ab9bcf79454231a7303 42bb15d74a8219322cdc901c653039272a8af3c3 Sujeong Jo <josujung00@gmail.com> 1780711400 +0900	commit: chore: #91 React 하이드레이션 오류 수정 시작
+42bb15d74a8219322cdc901c653039272a8af3c3 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711419 +0900	checkout: moving from 91-react-hydration-errors to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711464 +0900	checkout: moving from develop to 92-bar-chart-fractional-yaxis
+1d325a8e4a61505a40848ab9bcf79454231a7303 e714627ead7bae6270cee89dc2eb77f75af842f2 Sujeong Jo <josujung00@gmail.com> 1780711477 +0900	commit: chore: #92 거래 건수 바 차트 Y축에 소수 눈금 표시 시작
+e714627ead7bae6270cee89dc2eb77f75af842f2 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711489 +0900	checkout: moving from 92-bar-chart-fractional-yaxis to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711709 +0900	checkout: moving from develop to 93-address-range-issue
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711718 +0900	checkout: moving from 93-address-range-issue to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711769 +0900	checkout: moving from develop to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711798 +0900	checkout: moving from develop to 94-env-schema-validation
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711811 +0900	checkout: moving from 94-env-schema-validation to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711830 +0900	checkout: moving from develop to 94-env-schema-validation
+1d325a8e4a61505a40848ab9bcf79454231a7303 b5e65fe570b03c23bc520abf25bd10099c2c8018 Sujeong Jo <josujung00@gmail.com> 1780711836 +0900	commit: chore: issue #94 시작
+b5e65fe570b03c23bc520abf25bd10099c2c8018 1d325a8e4a61505a40848ab9bcf79454231a7303 Sujeong Jo <josujung00@gmail.com> 1780711849 +0900	checkout: moving from 94-env-schema-validation to develop
+1d325a8e4a61505a40848ab9bcf79454231a7303 e035ce1135047b8b9adedf2b0a044a6829de6b3d Sujeong Jo <josujung00@gmail.com> 1780714105 +0900	commit: chore(devloop): 이슈 시드 스크립트 vendoring (scripts/devloop/)
+e035ce1135047b8b9adedf2b0a044a6829de6b3d c4656854e30c5391511958d74f22c4bbed76fcab Sujeong Jo <josujung00@gmail.com> 1780816901 +0900	checkout: moving from develop to main
+c4656854e30c5391511958d74f22c4bbed76fcab 1f1345d043f191d279e4aef9bf51b0bd9ad116a0 Sujeong Jo <josujung00@gmail.com> 1780816904 +0900	merge develop: Merge made by the 'ort' strategy.
+1f1345d043f191d279e4aef9bf51b0bd9ad116a0 e035ce1135047b8b9adedf2b0a044a6829de6b3d Sujeong Jo <josujung00@gmail.com> 1780816909 +0900	checkout: moving from main to develop
+e035ce1135047b8b9adedf2b0a044a6829de6b3d 148f4c96fcf4472ee6b3fae564540827e5c550a7 Sujeong Jo <josujung00@gmail.com> 1780852299 +0900	checkout: moving from develop to 59-announcement-db-caching
+148f4c96fcf4472ee6b3fae564540827e5c550a7 6c99c827ff3b28e235b452758176c44453cf6b92 Sujeong Jo <josujung00@gmail.com> 1780852311 +0900	checkout: moving from 59-announcement-db-caching to 85-favicon-ico-404
+6c99c827ff3b28e235b452758176c44453cf6b92 e035ce1135047b8b9adedf2b0a044a6829de6b3d Sujeong Jo <josujung00@gmail.com> 1780852316 +0900	checkout: moving from 85-favicon-ico-404 to develop
+e035ce1135047b8b9adedf2b0a044a6829de6b3d b92444245faf66cf1e759bcb209695eb34416640 Sujeong Jo <josujung00@gmail.com> 1781113407 +0900	commit: chore(devloop): route seed issues through ai provider
+b92444245faf66cf1e759bcb209695eb34416640 1f1345d043f191d279e4aef9bf51b0bd9ad116a0 Sujeong Jo <josujung00@gmail.com> 1781114652 +0900	reset: moving to 1f1345d043f191d279e4aef9bf51b0bd9ad116a0
+1f1345d043f191d279e4aef9bf51b0bd9ad116a0 cccb4df77502ad149fe357bb37768eb6a594b3ea Sujeong Jo <josujung00@gmail.com> 1781114768 +0900	commit: zipath: b924442 chore(devloop): route seed issues through ai provider
+cccb4df77502ad149fe357bb37768eb6a594b3ea f1ace8d335e327d380443861ae115f7cad79cd6c Sujeong Jo <josujung00@gmail.com> 1781114780 +0900	commit (amend): chore(devloop): route seed issues through ai provider
+f1ace8d335e327d380443861ae115f7cad79cd6c 25638a602bfc0fc98984472d415ca5336af00fed Sujeong Jo <josujung00@gmail.com> 1781333133 +0900	commit: chore: 낡은 act-web 스타일 standalone 스크립트 제거
+25638a602bfc0fc98984472d415ca5336af00fed da8f8e175234df4bf61dd93a0676527341608643 Sujeong Jo <josujung00@gmail.com> 1781336161 +0900	commit: fix(devloop): codex --ask-for-approval 플래그를 exec 앞으로 (벤더본 중앙 동기화)
+da8f8e175234df4bf61dd93a0676527341608643 68ce588e008339cc915d48c91c2eb0bcb4702a5b Sujeong Jo <josujung00@gmail.com> 1781336639 +0900	rebase (start): checkout refs/remotes/origin/develop
+68ce588e008339cc915d48c91c2eb0bcb4702a5b 58441138c4b6486657c193f86a992cb75b0f52d4 Sujeong Jo <josujung00@gmail.com> 1781336639 +0900	rebase (pick): chore: 낡은 act-web 스타일 standalone 스크립트 제거
+58441138c4b6486657c193f86a992cb75b0f52d4 786d09352f446a312b94d272cc8ed138fabf142c Sujeong Jo <josujung00@gmail.com> 1781336639 +0900	rebase (pick): fix(devloop): codex --ask-for-approval 플래그를 exec 앞으로 (벤더본 중앙 동기화)
+786d09352f446a312b94d272cc8ed138fabf142c 786d09352f446a312b94d272cc8ed138fabf142c Sujeong Jo <josujung00@gmail.com> 1781336639 +0900	rebase (finish): returning to refs/heads/develop
+786d09352f446a312b94d272cc8ed138fabf142c 786d09352f446a312b94d272cc8ed138fabf142c Sujeong Jo <josujung00@gmail.com> 1781336643 +0900	reset: moving to HEAD
+786d09352f446a312b94d272cc8ed138fabf142c 786d09352f446a312b94d272cc8ed138fabf142c Sujeong Jo <josujung00@gmail.com> 1781355389 +0900	checkout: moving from develop to develop
+786d09352f446a312b94d272cc8ed138fabf142c 786d09352f446a312b94d272cc8ed138fabf142c Sujeong Jo <josujung00@gmail.com> 1781355393 +0900	reset: moving to HEAD
+786d09352f446a312b94d272cc8ed138fabf142c 344e021134a1a7273614792a74e752e7872341dc Sujeong Jo <josujung00@gmail.com> 1781355395 +0900	reset: moving to origin/develop
+344e021134a1a7273614792a74e752e7872341dc 344e021134a1a7273614792a74e752e7872341dc Sujeong Jo <josujung00@gmail.com> 1781355398 +0900	checkout: moving from develop to 96-data-go-kr-xml-parsing-common-util
+344e021134a1a7273614792a74e752e7872341dc 9091d52279e3155dc235aefc78073ebca0df6897 Sujeong Jo <josujung00@gmail.com> 1781355411 +0900	commit: feat(api): #96 data.go.kr XML 파싱 공통 유틸 추출로 중복 제거
+9091d52279e3155dc235aefc78073ebca0df6897 344e021134a1a7273614792a74e752e7872341dc Sujeong Jo <josujung00@gmail.com> 1781355440 +0900	checkout: moving from 96-data-go-kr-xml-parsing-common-util to develop
+344e021134a1a7273614792a74e752e7872341dc 5bb16d88b8a8a5cdf4740bb1445eadedc788462d Sujeong Jo <josujung00@gmail.com> 1781356865 +0900	commit: chore: 완료된 #64·#60 플랜 파일 정리
+5bb16d88b8a8a5cdf4740bb1445eadedc788462d 0e8cae75265ec3c29ad7f14439c38f4b9aedfbc8 Sujeong Jo <josujung00@gmail.com> 1781356884 +0900	rebase (start): checkout origin/develop
+0e8cae75265ec3c29ad7f14439c38f4b9aedfbc8 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781356884 +0900	rebase (pick): chore: 완료된 #64·#60 플랜 파일 정리
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781356884 +0900	rebase (finish): returning to refs/heads/develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781359174 +0900	checkout: moving from develop to 95-service-unit-tests
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 07ffa6f3dfcbfbb525bfb2c5b9808aee6e8653ae Sujeong Jo <josujung00@gmail.com> 1781359183 +0900	commit: chore: #95 브랜치 초기화
+07ffa6f3dfcbfbb525bfb2c5b9808aee6e8653ae caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781359202 +0900	checkout: moving from 95-service-unit-tests to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781359250 +0900	checkout: moving from develop to 58-announcement-api-backend
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 38d5dfa7391bfbfab44d5d6b554389fca2ba4de2 Sujeong Jo <josujung00@gmail.com> 1781359260 +0900	commit: chore: #58 브랜치 초기화
+38d5dfa7391bfbfab44d5d6b554389fca2ba4de2 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781359282 +0900	checkout: moving from 58-announcement-api-backend to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781360035 +0900	checkout: moving from develop to 103-react-hydration-errors
+caaeb9d4251b5a8d933f68d795d141c57cb7335e c12ce526d424119a2572210fc975a735651d3050 Sujeong Jo <josujung00@gmail.com> 1781360048 +0900	commit: chore: #103 준비
+c12ce526d424119a2572210fc975a735651d3050 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781360064 +0900	checkout: moving from 103-react-hydration-errors to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781360114 +0900	checkout: moving from develop to 104-bar-chart-decimals
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 7e95ae013518894e329e18eea773e6b1e4275d60 Sujeong Jo <josujung00@gmail.com> 1781360128 +0900	commit: chore: #104 준비
+7e95ae013518894e329e18eea773e6b1e4275d60 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781360137 +0900	checkout: moving from 104-bar-chart-decimals to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781360156 +0900	checkout: moving from develop to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781363972 +0900	checkout: moving from develop to 105-지역-검색-결과-없을-때-안내
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 13ccff8a90b737da5ce2add8fb47d0e6dd4a6e56 Sujeong Jo <josujung00@gmail.com> 1781363980 +0900	commit: chore: #105 준비
+13ccff8a90b737da5ce2add8fb47d0e6dd4a6e56 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781363994 +0900	checkout: moving from 105-지역-검색-결과-없을-때-안내 to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364361 +0900	checkout: moving from develop to 106-지원-지역-범위-미안내
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 6bb570bff8809d9e161f317de91e7e7b16618bb4 Sujeong Jo <josujung00@gmail.com> 1781364372 +0900	commit: chore: #106 브랜치 초기화
+6bb570bff8809d9e161f317de91e7e7b16618bb4 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364391 +0900	checkout: moving from 106-지원-지역-범위-미안내 to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364635 +0900	checkout: moving from develop to 111-announcements-loading
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 367db3aa6a09a293fbc4425ff6c9c1e029d934a5 Sujeong Jo <josujung00@gmail.com> 1781364645 +0900	commit: chore: #111 초기화
+367db3aa6a09a293fbc4425ff6c9c1e029d934a5 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364662 +0900	checkout: moving from 111-announcements-loading to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364682 +0900	checkout: moving from develop to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364707 +0900	checkout: moving from develop to 110-subscription-api-timeout
+caaeb9d4251b5a8d933f68d795d141c57cb7335e 5ee68bfdf7ed97e2732c0560c14f072e7ca23cc9 Sujeong Jo <josujung00@gmail.com> 1781364721 +0900	commit: chore: #110 초기화
+5ee68bfdf7ed97e2732c0560c14f072e7ca23cc9 caaeb9d4251b5a8d933f68d795d141c57cb7335e Sujeong Jo <josujung00@gmail.com> 1781364740 +0900	checkout: moving from 110-subscription-api-timeout to develop
+caaeb9d4251b5a8d933f68d795d141c57cb7335e ad4769812a93e1f6b0428240f6fad9e96254d87b Sujeong Jo <josujung00@gmail.com> 1781376867 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+ad4769812a93e1f6b0428240f6fad9e96254d87b ad4769812a93e1f6b0428240f6fad9e96254d87b Sujeong Jo <josujung00@gmail.com> 1781377187 +0900	checkout: moving from develop to 109-react-hydration-error
+ad4769812a93e1f6b0428240f6fad9e96254d87b fa5398ae211e02425623ff6595d10c3ed9f593db Sujeong Jo <josujung00@gmail.com> 1781377204 +0900	commit: chore: #109 초기화
+fa5398ae211e02425623ff6595d10c3ed9f593db ad4769812a93e1f6b0428240f6fad9e96254d87b Sujeong Jo <josujung00@gmail.com> 1781377220 +0900	checkout: moving from 109-react-hydration-error to develop
+ad4769812a93e1f6b0428240f6fad9e96254d87b 1d5272d9166effa725ab1db6bc4a9737b334071d Sujeong Jo <josujung00@gmail.com> 1781486843 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+1d5272d9166effa725ab1db6bc4a9737b334071d 1d5272d9166effa725ab1db6bc4a9737b334071d Sujeong Jo <josujung00@gmail.com> 1781531938 +0900	checkout: moving from develop to 108-subscription-loan-checklist
+1d5272d9166effa725ab1db6bc4a9737b334071d f186b8a0eb77028e2bf2820b9799d6c117b04f00 Sujeong Jo <josujung00@gmail.com> 1781531938 +0900	commit: chore: #108 초기화
+f186b8a0eb77028e2bf2820b9799d6c117b04f00 1d5272d9166effa725ab1db6bc4a9737b334071d Sujeong Jo <josujung00@gmail.com> 1781531956 +0900	checkout: moving from 108-subscription-loan-checklist to develop
+1d5272d9166effa725ab1db6bc4a9737b334071d 1d5272d9166effa725ab1db6bc4a9737b334071d Sujeong Jo <josujung00@gmail.com> 1781536773 +0900	checkout: moving from develop to 52-refactor-calculate-points
+1d5272d9166effa725ab1db6bc4a9737b334071d f94fceee079eb0deb799e0ac991b1b1050e146ca Sujeong Jo <josujung00@gmail.com> 1781536786 +0900	commit: chore: #52 초기화
+f94fceee079eb0deb799e0ac991b1b1050e146ca 1d5272d9166effa725ab1db6bc4a9737b334071d Sujeong Jo <josujung00@gmail.com> 1781536806 +0900	checkout: moving from 52-refactor-calculate-points to develop
+1d5272d9166effa725ab1db6bc4a9737b334071d 84e3755cad1e10f956e508825c54b5b50e219592 Sujeong Jo <josujung00@gmail.com> 1781539001 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+84e3755cad1e10f956e508825c54b5b50e219592 84e3755cad1e10f956e508825c54b5b50e219592 Sujeong Jo <josujung00@gmail.com> 1781630637 +0900	checkout: moving from develop to develop
+84e3755cad1e10f956e508825c54b5b50e219592 84e3755cad1e10f956e508825c54b5b50e219592 Sujeong Jo <josujung00@gmail.com> 1781631012 +0900	checkout: moving from develop to 122-subscription-timeout
+84e3755cad1e10f956e508825c54b5b50e219592 18ccd58f7826dc13efb635582d8e02f42ed0ac1c Sujeong Jo <josujung00@gmail.com> 1781631012 +0900	commit: chore: #122 이슈 준비
+18ccd58f7826dc13efb635582d8e02f42ed0ac1c 84e3755cad1e10f956e508825c54b5b50e219592 Sujeong Jo <josujung00@gmail.com> 1781631039 +0900	checkout: moving from 122-subscription-timeout to develop
+84e3755cad1e10f956e508825c54b5b50e219592 7d060a15075d28dca0e86cf6702c32f20f5a2573 Sujeong Jo <josujung00@gmail.com> 1782051018 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+7d060a15075d28dca0e86cf6702c32f20f5a2573 bb354986cf04ae9dfc4b10dc95d95677db331f96 Sujeong Jo <josujung00@gmail.com> 1782052519 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+bb354986cf04ae9dfc4b10dc95d95677db331f96 bb354986cf04ae9dfc4b10dc95d95677db331f96 Sujeong Jo <josujung00@gmail.com> 1782235054 +0900	checkout: moving from develop to develop
+bb354986cf04ae9dfc4b10dc95d95677db331f96 bb354986cf04ae9dfc4b10dc95d95677db331f96 Sujeong Jo <josujung00@gmail.com> 1782235055 +0900	checkout: moving from develop to 50-global-api-error-handling
+bb354986cf04ae9dfc4b10dc95d95677db331f96 c535cb87a95125263731893b64b2c8821f8d256e Sujeong Jo <josujung00@gmail.com> 1782235065 +0900	commit: wip: #50 초기화
+c535cb87a95125263731893b64b2c8821f8d256e bb354986cf04ae9dfc4b10dc95d95677db331f96 Sujeong Jo <josujung00@gmail.com> 1782235087 +0900	checkout: moving from 50-global-api-error-handling to develop
+bb354986cf04ae9dfc4b10dc95d95677db331f96 1f1345d043f191d279e4aef9bf51b0bd9ad116a0 Sujeong Jo <josujung00@gmail.com> 1782313374 +0900	checkout: moving from develop to main
+1f1345d043f191d279e4aef9bf51b0bd9ad116a0 76ada96a6596e546dfb8124a9ec878180bf5c04b Sujeong Jo <josujung00@gmail.com> 1782313378 +0900	merge develop: Merge made by the 'ort' strategy.
+76ada96a6596e546dfb8124a9ec878180bf5c04b bb354986cf04ae9dfc4b10dc95d95677db331f96 Sujeong Jo <josujung00@gmail.com> 1782313383 +0900	checkout: moving from main to develop
+bb354986cf04ae9dfc4b10dc95d95677db331f96 5e518d77a29b0d042b6c335d226f2205ed3b06a2 Sujeong Jo <josujung00@gmail.com> 1782313422 +0900	commit: docs: add codex memory wrapper
+5e518d77a29b0d042b6c335d226f2205ed3b06a2 5e518d77a29b0d042b6c335d226f2205ed3b06a2 Sujeong Jo <josujung00@gmail.com> 1782490018 +0900	checkout: moving from develop to develop
+5e518d77a29b0d042b6c335d226f2205ed3b06a2 5e518d77a29b0d042b6c335d226f2205ed3b06a2 Sujeong Jo <josujung00@gmail.com> 1782490437 +0900	checkout: moving from develop to develop
+5e518d77a29b0d042b6c335d226f2205ed3b06a2 053e29a5363e4e423b4cf2c6a02a7c492e0daef4 Sujeong Jo <josujung00@gmail.com> 1782492523 +0900	pull --rebase=false origin --prune --progress: Fast-forward
+053e29a5363e4e423b4cf2c6a02a7c492e0daef4 053e29a5363e4e423b4cf2c6a02a7c492e0daef4 Sujeong Jo <josujung00@gmail.com> 1782492654 +0900	reset: moving to HEAD
+053e29a5363e4e423b4cf2c6a02a7c492e0daef4 76ada96a6596e546dfb8124a9ec878180bf5c04b Sujeong Jo <josujung00@gmail.com> 1782496301 +0900	checkout: moving from develop to main
+76ada96a6596e546dfb8124a9ec878180bf5c04b 99f65f7a19b051bdc5fb323a9e41cf3aee1f19cd Sujeong Jo <josujung00@gmail.com> 1782496314 +0900	merge develop: Merge made by the 'ort' strategy.
+99f65f7a19b051bdc5fb323a9e41cf3aee1f19cd 053e29a5363e4e423b4cf2c6a02a7c492e0daef4 Sujeong Jo <josujung00@gmail.com> 1782496327 +0900	checkout: moving from main to develop
+053e29a5363e4e423b4cf2c6a02a7c492e0daef4 e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782661009 +0900	commit: Fix recovered subscription and region cleanup
+e461022a14df98fd1685dcde2732d74c81ac44c3 e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782661528 +0900	checkout: moving from develop to develop
+e461022a14df98fd1685dcde2732d74c81ac44c3 349c6b70e627fe49773cce009959defd5e389278 Sujeong Jo <josujung00@gmail.com> 1782669066 +0900	checkout: moving from develop to 58-announcement-api-backend
+349c6b70e627fe49773cce009959defd5e389278 e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (start): checkout e461022a14df98fd1685dcde2732d74c81ac44c3
+e461022a14df98fd1685dcde2732d74c81ac44c3 c88091e8d6e6cb89307ea5dfd1b54d7bc2bffc27 Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (pick): docs: #58 plan 작성
+c88091e8d6e6cb89307ea5dfd1b54d7bc2bffc27 f8fc281eafa1febd83bff85b8494c50414cce4af Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (pick): docs: #58 Phase 1 완료 체크 업데이트
+f8fc281eafa1febd83bff85b8494c50414cce4af 6f7026f5780ef2f4d8c1dd4bba0128da32872765 Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (pick): feat(web): #58 공고 페이지 법적 고지 공통화
+6f7026f5780ef2f4d8c1dd4bba0128da32872765 bec48aaab88a0d3f45b63b4b44596a4752e9373b Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (pick): fix(api): #58 공고 API 오류를 502로 전파
+bec48aaab88a0d3f45b63b4b44596a4752e9373b b41765f954f4811746b32988381bbc28dca13dcb Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (pick): refactor(api): #58 인증 및 알림 서비스 타입 정리
+b41765f954f4811746b32988381bbc28dca13dcb b41765f954f4811746b32988381bbc28dca13dcb Sujeong Jo <josujung00@gmail.com> 1782669127 +0900	rebase (finish): returning to refs/heads/58-announcement-api-backend
+b41765f954f4811746b32988381bbc28dca13dcb f63c6b317957f67c0ef319af52592821073ac263 Sujeong Jo <josujung00@gmail.com> 1782669219 +0900	checkout: moving from 58-announcement-api-backend to 60-user-subscription-auto-matching
+f63c6b317957f67c0ef319af52592821073ac263 b922277f7e169b26c10f46c12c3bbcfb17d2d11c Sujeong Jo <josujung00@gmail.com> 1782669242 +0900	reset: moving to b922277
+b922277f7e169b26c10f46c12c3bbcfb17d2d11c 6d8bd9e4f7a9577ef9f1461e6f878979ae723baf Sujeong Jo <josujung00@gmail.com> 1782669303 +0900	commit: docs: #60 plan 완료
+6d8bd9e4f7a9577ef9f1461e6f878979ae723baf e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782735016 +0900	checkout: moving from 60-user-subscription-auto-matching to develop
+e461022a14df98fd1685dcde2732d74c81ac44c3 e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782743735 +0900	checkout: moving from develop to develop
+e461022a14df98fd1685dcde2732d74c81ac44c3 e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782744239 +0900	checkout: moving from develop to develop
+e461022a14df98fd1685dcde2732d74c81ac44c3 e461022a14df98fd1685dcde2732d74c81ac44c3 Sujeong Jo <josujung00@gmail.com> 1782744470 +0900	checkout: moving from develop to develop
+e461022a14df98fd1685dcde2732d74c81ac44c3 fb0f462d9d043c0b5bb46afda9e151c25c4ca658 Sujeong Jo <josujung00@gmail.com> 1782954875 +0900	pull --ff-only: Fast-forward
+fb0f462d9d043c0b5bb46afda9e151c25c4ca658 fb0f462d9d043c0b5bb46afda9e151c25c4ca658 Sujeong Jo <josujung00@gmail.com> 1783009396 +0900	checkout: moving from develop to develop
+fb0f462d9d043c0b5bb46afda9e151c25c4ca658 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783009397 +0900	pull --ff-only origin develop: Fast-forward
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783011780 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783012007 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783047723 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783048078 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783072953 +0900	checkout: moving from develop to feat/web-monetize
+24addabce39551ff3d025156c468114c55f3c806 ca4190029cca9bff406341e8f9c1fba4f34c9a56 Sujeong Jo <josujung00@gmail.com> 1783072960 +0900	commit: feat(web): 수익화 모듈(애드센스+쿠팡 파트너스) 장착
+ca4190029cca9bff406341e8f9c1fba4f34c9a56 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783072984 +0900	checkout: moving from feat/web-monetize to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783073288 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783073712 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 24addabce39551ff3d025156c468114c55f3c806 Sujeong Jo <josujung00@gmail.com> 1783073874 +0900	checkout: moving from develop to develop
+24addabce39551ff3d025156c468114c55f3c806 d46b8a53722539dff7b88ca2cdc39630ace88863 Sujeong Jo <josujung00@gmail.com> 1783073874 +0900	commit: feat: #132 글로벌 네비게이션에 실거래가·공공분양·용어사전 링크 누락
+d46b8a53722539dff7b88ca2cdc39630ace88863 c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 Sujeong Jo <josujung00@gmail.com> 1783099470 +0900	merge feat/web-monetize: Merge made by the 'ort' strategy.
+c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 Sujeong Jo <josujung00@gmail.com> 1783238987 +0900	checkout: moving from develop to develop
+c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 Sujeong Jo <josujung00@gmail.com> 1783241718 +0900	checkout: moving from develop to develop
+c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 Sujeong Jo <josujung00@gmail.com> 1783243895 +0900	checkout: moving from develop to develop
+c605046d4cfe4cefc60f3b4a4c0cc90dfd9866c9 e6cbcae0af60e39bbf4c451140758e2f142b9448 Sujeong Jo <josujung00@gmail.com> 1783243896 +0900	merge origin/develop: Fast-forward
+e6cbcae0af60e39bbf4c451140758e2f142b9448 33073d4a0f41e94b4f9bbc9958af64882310703d Sujeong Jo <josujung00@gmail.com> 1783244211 +0900	checkout: moving from develop to 50-global-api-error-handling
+33073d4a0f41e94b4f9bbc9958af64882310703d 33073d4a0f41e94b4f9bbc9958af64882310703d Sujeong Jo <josujung00@gmail.com> 1783244224 +0900	reset: moving to HEAD
+33073d4a0f41e94b4f9bbc9958af64882310703d e6cbcae0af60e39bbf4c451140758e2f142b9448 Sujeong Jo <josujung00@gmail.com> 1783244228 +0900	rebase (start): checkout develop
+e6cbcae0af60e39bbf4c451140758e2f142b9448 ca3b6e75e3904b05944e358488ac7499d5013460 Sujeong Jo <josujung00@gmail.com> 1783244228 +0900	rebase (pick): wip: #50 초기화
+ca3b6e75e3904b05944e358488ac7499d5013460 81ae2bff832393f09d2e9373e95b4263fadc7b21 Sujeong Jo <josujung00@gmail.com> 1783244228 +0900	rebase (pick): docs: #50 plan 작성
+81ae2bff832393f09d2e9373e95b4263fadc7b21 0c07fde2bbb1f4c0fbc7fdabf58b7af3e92b1d35 Sujeong Jo <josujung00@gmail.com> 1783244228 +0900	rebase (pick): test: #50 [P1] 백엔드 표준 envelope 필터/인터셉터 spec 추가
+0c07fde2bbb1f4c0fbc7fdabf58b7af3e92b1d35 c8415ac042deaa2036d9651aadb4137a8c485dbc Sujeong Jo <josujung00@gmail.com> 1783244443 +0900	rebase (continue): feat: #50 [P2] fetchApi 표준 envelope 에러 파싱 + ApiError.code + 프록시 헬퍼
+c8415ac042deaa2036d9651aadb4137a8c485dbc 67d447ce3389e343200b1a51a52c90f7d21cc3ad Sujeong Jo <josujung00@gmail.com> 1783244568 +0900	rebase (continue): fix(web): #50 [P2] 표준 에러 응답 헬퍼 공통화
+67d447ce3389e343200b1a51a52c90f7d21cc3ad 67d447ce3389e343200b1a51a52c90f7d21cc3ad Sujeong Jo <josujung00@gmail.com> 1783244568 +0900	rebase (finish): returning to refs/heads/50-global-api-error-handling
+67d447ce3389e343200b1a51a52c90f7d21cc3ad e6cbcae0af60e39bbf4c451140758e2f142b9448 Sujeong Jo <josujung00@gmail.com> 1783244635 +0900	checkout: moving from 50-global-api-error-handling to develop
+e6cbcae0af60e39bbf4c451140758e2f142b9448 99f65f7a19b051bdc5fb323a9e41cf3aee1f19cd Sujeong Jo <josujung00@gmail.com> 1783244721 +0900	checkout: moving from develop to main
+99f65f7a19b051bdc5fb323a9e41cf3aee1f19cd bca6d557ab2b6c14d9d8d1e60d51ed099fdadc4e Sujeong Jo <josujung00@gmail.com> 1783244724 +0900	merge develop: Merge made by the 'ort' strategy.
+bca6d557ab2b6c14d9d8d1e60d51ed099fdadc4e e6cbcae0af60e39bbf4c451140758e2f142b9448 Sujeong Jo <josujung00@gmail.com> 1783244729 +0900	checkout: moving from main to develop
+e6cbcae0af60e39bbf4c451140758e2f142b9448 00e90f775ab1416c63671239f836269b5bb75873 Sujeong Jo <josujung00@gmail.com> 1784222071 +0900	commit: fix(web): #127 청약·대출 페이지 중복 고지 제거

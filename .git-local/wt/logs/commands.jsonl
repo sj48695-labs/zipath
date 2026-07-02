@@ -1,0 +1,370 @@
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-04-30T20:43:52Z","wt":"wt switch 72-notification-controller-auth-fix --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":291,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-04-30T20:44:02Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":79678,"exit":0,"label":"pre-start project:deps","ts":"2026-04-30T20:45:22Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-04-30T20:45:22Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":180,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:13:09Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":55353,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:14:04Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:14:04Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":784,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:16:42Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":19314,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:17:01Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:17:01Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":171,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:17:56Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":12462,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:18:08Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:18:08Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":304,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:18:51Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":18274,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:19:09Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:19:09Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":231,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:20:58Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":11668,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:21:09Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:21:09Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":289,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:23:55Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":18216,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:24:13Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:24:13Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"wt step copy-ignored","dur_ms":303,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:41:30Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"npm ci","dur_ms":18283,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:41:48Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:41:48Z","wt":"wt switch --yes 72-notification-controller-auth-fix"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:47:55Z","wt":"wt switch 62-google-oauth-login --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:48:01Z","wt":"wt switch --yes 62-google-oauth-login"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:49:12Z","wt":"wt switch 61-announcement-detail --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":362,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T18:49:18Z","wt":"wt switch --yes 61-announcement-detail"}
+{"cmd":"npm ci","dur_ms":15687,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T18:49:34Z","wt":"wt switch --yes 61-announcement-detail"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T18:49:34Z","wt":"wt switch --yes 61-announcement-detail"}
+{"cmd":"wt step copy-ignored","dur_ms":265,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-05T19:23:32Z","wt":"wt switch --yes 62-google-oauth-login"}
+{"cmd":"npm ci","dur_ms":15285,"exit":0,"label":"pre-start project:deps","ts":"2026-05-05T19:23:47Z","wt":"wt switch --yes 62-google-oauth-login"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-05T19:23:47Z","wt":"wt switch --yes 62-google-oauth-login"}
+{"cmd":"wt step copy-ignored","dur_ms":260,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-12T16:09:02Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"npm ci","dur_ms":55062,"exit":0,"label":"pre-start project:deps","ts":"2026-05-12T16:09:57Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-12T16:09:57Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"wt step copy-ignored","dur_ms":271,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-14T08:38:58Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"npm ci","dur_ms":56977,"exit":0,"label":"pre-start project:deps","ts":"2026-05-14T08:39:55Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-14T08:39:55Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"wt step copy-ignored","dur_ms":568,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-19T14:34:07Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"npm ci","dur_ms":143931,"exit":0,"label":"pre-start project:deps","ts":"2026-05-19T14:36:31Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-19T14:36:31Z","wt":"wt switch --yes 59-announcement-db-caching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-19T15:30:18Z","wt":"wt switch 75-in-app-notification-service --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":322,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-19T15:30:23Z","wt":"wt switch --yes 75-in-app-notification-service"}
+{"cmd":"npm ci","dur_ms":18762,"exit":0,"label":"pre-start project:deps","ts":"2026-05-19T15:30:42Z","wt":"wt switch --yes 75-in-app-notification-service"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-19T15:30:42Z","wt":"wt switch --yes 75-in-app-notification-service"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-20T18:05:13Z","wt":"wt switch 74-change-detection-scheduler --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":242,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-20T18:05:26Z","wt":"wt switch --yes 74-change-detection-scheduler"}
+{"cmd":"npm ci","dur_ms":57586,"exit":0,"label":"pre-start project:deps","ts":"2026-05-20T18:06:24Z","wt":"wt switch --yes 74-change-detection-scheduler"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-20T18:06:24Z","wt":"wt switch --yes 74-change-detection-scheduler"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-20T18:45:21Z","wt":"wt switch 70-notification-service --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":347,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-20T18:45:26Z","wt":"wt switch --yes 70-notification-service"}
+{"cmd":"npm ci","dur_ms":14705,"exit":0,"label":"pre-start project:deps","ts":"2026-05-20T18:45:41Z","wt":"wt switch --yes 70-notification-service"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-20T18:45:41Z","wt":"wt switch --yes 70-notification-service"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-20T19:00:50Z","wt":"wt switch 69-contract-analysis-ocr-checklist --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-21T01:04:04Z","wt":"wt switch 66-area-filter --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":254,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-05-21T01:04:11Z","wt":"wt switch --yes 66-area-filter"}
+{"cmd":"npm ci","dur_ms":24696,"exit":0,"label":"pre-start project:deps","ts":"2026-05-21T01:04:35Z","wt":"wt switch --yes 66-area-filter"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-05-21T01:04:35Z","wt":"wt switch --yes 66-area-filter"}
+{"cmd":"wt step copy-ignored","dur_ms":248,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-01T15:55:43Z","wt":"wt switch --yes 69-contract-analysis-ocr-checklist"}
+{"cmd":"npm ci","dur_ms":60525,"exit":0,"label":"pre-start project:deps","ts":"2026-06-01T15:56:44Z","wt":"wt switch --yes 69-contract-analysis-ocr-checklist"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-01T15:56:44Z","wt":"wt switch --yes 69-contract-analysis-ocr-checklist"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-02T16:44:28Z","wt":"wt switch 85-favicon-ico-404 --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":283,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-02T16:44:34Z","wt":"wt switch --yes 85-favicon-ico-404"}
+{"cmd":"npm ci","dur_ms":73042,"exit":0,"label":"pre-start project:deps","ts":"2026-06-02T16:45:47Z","wt":"wt switch --yes 85-favicon-ico-404"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-02T16:45:47Z","wt":"wt switch --yes 85-favicon-ico-404"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:31:33Z","wt":"wt switch 65-regional-transaction-comparison --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":241,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-04T17:31:39Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"npm ci","dur_ms":58191,"exit":0,"label":"pre-start project:deps","ts":"2026-06-04T17:32:37Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:32:37Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:33:32Z","wt":"wt switch 64-monthly-price-chart --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":255,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-04T17:33:37Z","wt":"wt switch --yes 64-monthly-price-chart"}
+{"cmd":"npm ci","dur_ms":10399,"exit":0,"label":"pre-start project:deps","ts":"2026-06-04T17:33:47Z","wt":"wt switch --yes 64-monthly-price-chart"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:33:47Z","wt":"wt switch --yes 64-monthly-price-chart"}
+{"cmd":"wt step copy-ignored","dur_ms":269,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-04T17:47:01Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"npm ci","dur_ms":12187,"exit":0,"label":"pre-start project:deps","ts":"2026-06-04T17:47:13Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:47:14Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:48:03Z","wt":"wt switch 60-user-subscription-auto-matching --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":259,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-04T17:48:10Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"npm ci","dur_ms":10249,"exit":0,"label":"pre-start project:deps","ts":"2026-06-04T17:48:20Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-04T17:48:20Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:03:34Z","wt":"wt switch 91-react-hydration-errors --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":278,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T02:03:40Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"npm ci","dur_ms":21172,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T02:04:01Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:04:01Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:04:45Z","wt":"wt switch 92-bar-chart-fractional-yaxis --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":302,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T02:04:50Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"npm ci","dur_ms":10808,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T02:05:01Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:05:01Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"wt step copy-ignored","dur_ms":287,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T02:08:50Z","wt":"wt switch --create 93-address-range-issue --yes"}
+{"cmd":"npm ci","dur_ms":10275,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T02:09:00Z","wt":"wt switch --create 93-address-range-issue --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:09:00Z","wt":"wt switch --create 93-address-range-issue --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:09:30Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:10:31Z","wt":"wt switch 94-env-schema-validation --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":287,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T02:10:50Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"npm ci","dur_ms":10032,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T02:11:00Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T02:11:00Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"wt step copy-ignored","dur_ms":516,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T15:21:25Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"npm ci","dur_ms":12664,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T15:21:38Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T15:21:38Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"wt step copy-ignored","dur_ms":257,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T15:29:00Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"npm ci","dur_ms":11148,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T15:29:11Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T15:29:12Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"wt step copy-ignored","dur_ms":261,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-06T15:35:07Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"npm ci","dur_ms":11037,"exit":0,"label":"pre-start project:deps","ts":"2026-06-06T15:35:18Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-06T15:35:18Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"wt step copy-ignored","dur_ms":281,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:15:01Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"npm ci","dur_ms":65347,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:16:07Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:16:07Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"wt step copy-ignored","dur_ms":260,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:16:08Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"npm ci","dur_ms":10064,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:16:19Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:16:19Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"wt step copy-ignored","dur_ms":224,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:19:44Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"npm ci","dur_ms":15734,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:20:00Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:20:00Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"wt step copy-ignored","dur_ms":237,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:20:02Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"npm ci","dur_ms":14813,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:20:17Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:20:17Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"wt step copy-ignored","dur_ms":240,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:20:32Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"npm ci","dur_ms":12102,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:20:44Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:20:44Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"wt step copy-ignored","dur_ms":288,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:20:46Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"npm ci","dur_ms":14233,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:21:00Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:21:00Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"wt step copy-ignored","dur_ms":270,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:22:05Z","wt":"wt switch --yes 64-monthly-price-chart"}
+{"cmd":"npm ci","dur_ms":11860,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:22:17Z","wt":"wt switch --yes 64-monthly-price-chart"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:22:17Z","wt":"wt switch --yes 64-monthly-price-chart"}
+{"cmd":"wt step copy-ignored","dur_ms":297,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-10T18:22:19Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"npm ci","dur_ms":18009,"exit":0,"label":"pre-start project:deps","ts":"2026-06-10T18:22:37Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-10T18:22:37Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"wt step copy-ignored","dur_ms":260,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-11T16:25:11Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"npm ci","dur_ms":16345,"exit":0,"label":"pre-start project:deps","ts":"2026-06-11T16:25:27Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-11T16:25:27Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"wt step copy-ignored","dur_ms":350,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:08:29Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"npm ci","dur_ms":19123,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:08:48Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:08:48Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"wt step copy-ignored","dur_ms":238,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:13:55Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"npm ci","dur_ms":12795,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:14:08Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:14:08Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"wt step copy-ignored","dur_ms":271,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:17:31Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"npm ci","dur_ms":10962,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:17:42Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:17:42Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"wt step copy-ignored","dur_ms":259,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:26:09Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"npm ci","dur_ms":10475,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:26:20Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:26:20Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"wt step copy-ignored","dur_ms":319,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:37:03Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"npm ci","dur_ms":14482,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:37:17Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:37:17Z","wt":"wt switch --yes 94-env-schema-validation"}
+{"cmd":"wt step copy-ignored","dur_ms":241,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:50:23Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"npm ci","dur_ms":11093,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:50:34Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:50:34Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"wt step copy-ignored","dur_ms":373,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T06:55:18Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"npm ci","dur_ms":11354,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T06:55:30Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T06:55:30Z","wt":"wt switch --yes 93-address-range-issue"}
+{"cmd":"wt step copy-ignored","dur_ms":270,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T07:33:13Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"npm ci","dur_ms":14159,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T07:33:27Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T07:33:27Z","wt":"wt switch --yes 92-bar-chart-fractional-yaxis"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T07:41:56Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"wt step copy-ignored","dur_ms":322,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T07:50:57Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"npm ci","dur_ms":19946,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T07:51:17Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T07:51:17Z","wt":"wt switch --yes 63-user-profile-page"}
+{"cmd":"wt step copy-ignored","dur_ms":301,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T08:28:52Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"npm ci","dur_ms":17288,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T08:29:09Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T08:29:09Z","wt":"wt switch --yes 91-react-hydration-errors"}
+{"cmd":"wt step copy-ignored","dur_ms":301,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T08:33:32Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"npm ci","dur_ms":11690,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T08:33:44Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T08:33:44Z","wt":"wt switch --yes 65-regional-transaction-comparison"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T12:57:11Z","wt":"wt switch 96-data-go-kr-xml-parsing-common-util --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T13:59:57Z","wt":"wt switch 95-service-unit-tests --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":309,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T14:00:04Z","wt":"wt switch --yes 95-service-unit-tests"}
+{"cmd":"npm ci","dur_ms":17846,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T14:00:22Z","wt":"wt switch --yes 95-service-unit-tests"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:00:22Z","wt":"wt switch --yes 95-service-unit-tests"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:01:18Z","wt":"wt switch 58-announcement-api-backend --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":254,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T14:01:24Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":12717,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T14:01:36Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:01:36Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:14:20Z","wt":"wt switch 103-react-hydration-errors --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":243,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T14:14:26Z","wt":"wt switch --yes 103-react-hydration-errors"}
+{"cmd":"npm ci","dur_ms":11699,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T14:14:37Z","wt":"wt switch --yes 103-react-hydration-errors"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:14:37Z","wt":"wt switch --yes 103-react-hydration-errors"}
+{"cmd":"wt step copy-ignored","dur_ms":225,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T14:15:38Z","wt":"wt switch 104-bar-chart-decimals --yes"}
+{"cmd":"npm ci","dur_ms":12074,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T14:15:50Z","wt":"wt switch 104-bar-chart-decimals --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:15:50Z","wt":"wt switch 104-bar-chart-decimals --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T14:15:57Z","wt":"wt switch --yes 104-bar-chart-decimals"}
+{"cmd":"wt step copy-ignored","dur_ms":300,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T15:13:28Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":12456,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T15:13:41Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:13:41Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:19:50Z","wt":"wt switch 105-지역-검색-결과-없을-때-안내 --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":255,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T15:19:55Z","wt":"wt switch --yes 105-지역-검색-결과-없을-때-안내"}
+{"cmd":"npm ci","dur_ms":11957,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T15:20:07Z","wt":"wt switch --yes 105-지역-검색-결과-없을-때-안내"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:20:07Z","wt":"wt switch --yes 105-지역-검색-결과-없을-때-안내"}
+{"cmd":"wt step copy-ignored","dur_ms":209,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T15:25:22Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":10143,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T15:25:33Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:25:33Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:26:25Z","wt":"wt switch 106-지원-지역-범위-미안내 --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":269,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T15:26:32Z","wt":"wt switch --yes 106-지원-지역-범위-미안내"}
+{"cmd":"npm ci","dur_ms":12330,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T15:26:44Z","wt":"wt switch --yes 106-지원-지역-범위-미안내"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:26:44Z","wt":"wt switch --yes 106-지원-지역-범위-미안내"}
+{"cmd":"wt step copy-ignored","dur_ms":257,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T15:31:06Z","wt":"wt switch 111-announcements-loading --yes"}
+{"cmd":"npm ci","dur_ms":10182,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T15:31:16Z","wt":"wt switch 111-announcements-loading --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:31:17Z","wt":"wt switch 111-announcements-loading --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:31:23Z","wt":"wt switch --yes 111-announcements-loading"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:32:15Z","wt":"wt switch 110-subscription-api-timeout --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":186,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T15:32:21Z","wt":"wt switch --yes 110-subscription-api-timeout"}
+{"cmd":"npm ci","dur_ms":9997,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T15:32:31Z","wt":"wt switch --yes 110-subscription-api-timeout"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T15:32:31Z","wt":"wt switch --yes 110-subscription-api-timeout"}
+{"cmd":"wt step copy-ignored","dur_ms":327,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T16:49:36Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":13567,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T16:49:49Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T16:49:49Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":291,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T16:49:51Z","wt":"wt switch --yes 110-subscription-api-timeout"}
+{"cmd":"npm ci","dur_ms":18348,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T16:50:09Z","wt":"wt switch --yes 110-subscription-api-timeout"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T16:50:09Z","wt":"wt switch --yes 110-subscription-api-timeout"}
+{"cmd":"wt step copy-ignored","dur_ms":1115,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T16:56:05Z","wt":"wt switch --yes 111-announcements-loading"}
+{"cmd":"npm ci","dur_ms":12125,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T16:56:17Z","wt":"wt switch --yes 111-announcements-loading"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T16:56:17Z","wt":"wt switch --yes 111-announcements-loading"}
+{"cmd":"wt step copy-ignored","dur_ms":295,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T16:56:18Z","wt":"wt switch --yes 106-지원-지역-범위-미안내"}
+{"cmd":"npm ci","dur_ms":13602,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T16:56:32Z","wt":"wt switch --yes 106-지원-지역-범위-미안내"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T16:56:32Z","wt":"wt switch --yes 106-지원-지역-범위-미안내"}
+{"cmd":"wt step copy-ignored","dur_ms":264,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T18:46:58Z","wt":"wt switch --yes 105-지역-검색-결과-없을-때-안내"}
+{"cmd":"npm ci","dur_ms":49427,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T18:47:47Z","wt":"wt switch --yes 105-지역-검색-결과-없을-때-안내"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T18:47:47Z","wt":"wt switch --yes 105-지역-검색-결과-없을-때-안내"}
+{"cmd":"wt step copy-ignored","dur_ms":292,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T18:59:07Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":9893,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T18:59:17Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T18:59:17Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T19:00:15Z","wt":"wt switch 109-react-hydration-error --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":234,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-13T19:00:21Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":9772,"exit":0,"label":"pre-start project:deps","ts":"2026-06-13T19:00:31Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-13T19:00:31Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-15T13:59:11Z","wt":"wt switch 108-subscription-loan-checklist --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":393,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-15T13:59:17Z","wt":"wt switch --yes 108-subscription-loan-checklist"}
+{"cmd":"npm ci","dur_ms":24672,"exit":0,"label":"pre-start project:deps","ts":"2026-06-15T13:59:42Z","wt":"wt switch --yes 108-subscription-loan-checklist"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-15T13:59:42Z","wt":"wt switch --yes 108-subscription-loan-checklist"}
+{"cmd":"wt step copy-ignored","dur_ms":288,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-15T14:17:20Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":11909,"exit":0,"label":"pre-start project:deps","ts":"2026-06-15T14:17:32Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-15T14:17:32Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"wt step copy-ignored","dur_ms":317,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-15T14:17:35Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":13866,"exit":0,"label":"pre-start project:deps","ts":"2026-06-15T14:17:49Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-15T14:17:49Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":398,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-15T15:20:07Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"npm ci","dur_ms":15070,"exit":143,"label":"pre-start project:deps","ts":"2026-06-15T15:20:22Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"wt step copy-ignored","dur_ms":458,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-16T17:16:58Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":82448,"exit":0,"label":"pre-start project:deps","ts":"2026-06-16T17:18:21Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:18:21Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"wt step copy-ignored","dur_ms":263,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-16T17:18:22Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":11872,"exit":0,"label":"pre-start project:deps","ts":"2026-06-16T17:18:34Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:18:34Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":439,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-16T17:21:26Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"npm ci","dur_ms":46718,"exit":0,"label":"pre-start project:deps","ts":"2026-06-16T17:22:12Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:22:12Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"wt step copy-ignored","dur_ms":356,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-16T17:23:02Z","wt":"wt switch --create 121-subscription-loan-checklist-header-nav --yes"}
+{"cmd":"npm ci","dur_ms":12856,"exit":0,"label":"pre-start project:deps","ts":"2026-06-16T17:23:15Z","wt":"wt switch --create 121-subscription-loan-checklist-header-nav --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:23:15Z","wt":"wt switch --create 121-subscription-loan-checklist-header-nav --yes"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:23:58Z","wt":"wt switch --yes 121-subscription-loan-checklist-header-nav"}
+{"cmd":"wt step copy-ignored","dur_ms":447,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-16T17:28:00Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":17506,"exit":0,"label":"pre-start project:deps","ts":"2026-06-16T17:28:17Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:28:18Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:30:29Z","wt":"wt switch 122-subscription-timeout --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":449,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-16T17:30:41Z","wt":"wt switch --yes 122-subscription-timeout"}
+{"cmd":"npm ci","dur_ms":14578,"exit":0,"label":"pre-start project:deps","ts":"2026-06-16T17:30:55Z","wt":"wt switch --yes 122-subscription-timeout"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-16T17:30:55Z","wt":"wt switch --yes 122-subscription-timeout"}
+{"cmd":"wt step copy-ignored","dur_ms":247,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-21T13:44:29Z","wt":"wt switch --yes 121-subscription-loan-checklist-header-nav"}
+{"cmd":"npm ci","dur_ms":81126,"exit":0,"label":"pre-start project:deps","ts":"2026-06-21T13:45:51Z","wt":"wt switch --yes 121-subscription-loan-checklist-header-nav"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-21T13:45:51Z","wt":"wt switch --yes 121-subscription-loan-checklist-header-nav"}
+{"cmd":"wt step copy-ignored","dur_ms":440,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-21T14:10:32Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"npm ci","dur_ms":34202,"exit":0,"label":"pre-start project:deps","ts":"2026-06-21T14:11:07Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-21T14:11:07Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"wt step copy-ignored","dur_ms":1251,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-21T19:59:41Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":40926,"exit":0,"label":"pre-start project:deps","ts":"2026-06-21T20:00:22Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-21T20:00:22Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"wt step copy-ignored","dur_ms":276,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-21T20:04:26Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"npm ci","dur_ms":25104,"exit":0,"label":"pre-start project:deps","ts":"2026-06-21T20:04:51Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-21T20:04:51Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"wt step copy-ignored","dur_ms":509,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-23T17:08:04Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":105165,"exit":0,"label":"pre-start project:deps","ts":"2026-06-23T17:09:50Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-23T17:09:50Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"wt step copy-ignored","dur_ms":248,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-23T17:14:04Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":18410,"exit":0,"label":"pre-start project:deps","ts":"2026-06-23T17:14:22Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-23T17:14:22Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":246,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-23T17:16:50Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"npm ci","dur_ms":15396,"exit":0,"label":"pre-start project:deps","ts":"2026-06-23T17:17:06Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-23T17:17:06Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-23T17:18:00Z","wt":"wt switch 50-global-api-error-handling --yes"}
+{"cmd":"wt step copy-ignored","dur_ms":229,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-23T17:18:08Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"npm ci","dur_ms":13382,"exit":0,"label":"pre-start project:deps","ts":"2026-06-23T17:18:21Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-23T17:18:21Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"wt step copy-ignored","dur_ms":300,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-24T15:36:31Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":20654,"exit":0,"label":"pre-start project:deps","ts":"2026-06-24T15:36:52Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-24T15:36:52Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":448,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-24T15:36:54Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"npm ci","dur_ms":11664,"exit":0,"label":"pre-start project:deps","ts":"2026-06-24T15:37:05Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-24T15:37:05Z","wt":"wt switch --yes 52-refactor-calculate-points"}
+{"cmd":"wt step copy-ignored","dur_ms":268,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-26T14:41:06Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":16618,"exit":0,"label":"pre-start project:deps","ts":"2026-06-26T14:41:22Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-26T14:41:22Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"wt step copy-ignored","dur_ms":260,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-26T15:34:37Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"npm ci","dur_ms":9622,"exit":0,"label":"pre-start project:deps","ts":"2026-06-26T15:34:47Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-26T15:34:47Z","wt":"wt switch --yes 109-react-hydration-error"}
+{"cmd":"wt step copy-ignored","dur_ms":276,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-26T15:39:04Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":10119,"exit":0,"label":"pre-start project:deps","ts":"2026-06-26T15:39:14Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-26T15:39:14Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":262,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-26T16:04:31Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":11605,"exit":0,"label":"pre-start project:deps","ts":"2026-06-26T16:04:42Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-26T16:04:42Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":297,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-26T16:33:32Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":11954,"exit":0,"label":"pre-start project:deps","ts":"2026-06-26T16:33:44Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-26T16:33:44Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":363,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-26T16:40:51Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"npm ci","dur_ms":9984,"exit":0,"label":"pre-start project:deps","ts":"2026-06-26T16:41:01Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-26T16:41:01Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"wt step copy-ignored","dur_ms":273,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-28T15:45:29Z","wt":"wt switch --yes --create 60-user-subscription-auto-matching"}
+{"cmd":"npm ci","dur_ms":15696,"exit":0,"label":"pre-start project:deps","ts":"2026-06-28T15:45:45Z","wt":"wt switch --yes --create 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-28T15:45:45Z","wt":"wt switch --yes --create 60-user-subscription-auto-matching"}
+{"cmd":"wt step copy-ignored","dur_ms":268,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-28T15:51:36Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":9626,"exit":0,"label":"pre-start project:deps","ts":"2026-06-28T15:51:46Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-28T15:51:46Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":252,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-29T14:35:36Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"npm ci","dur_ms":50423,"exit":0,"label":"pre-start project:deps","ts":"2026-06-29T14:36:26Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-29T14:36:26Z","wt":"wt switch --yes 60-user-subscription-auto-matching"}
+{"cmd":"wt step copy-ignored","dur_ms":277,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-29T14:36:28Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":9090,"exit":0,"label":"pre-start project:deps","ts":"2026-06-29T14:36:37Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-29T14:36:37Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":329,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-29T14:44:00Z","wt":"wt switch --yes --create 63-user-profile-page"}
+{"cmd":"npm ci","dur_ms":47313,"exit":0,"label":"pre-start project:deps","ts":"2026-06-29T14:44:48Z","wt":"wt switch --yes --create 63-user-profile-page"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-29T14:44:48Z","wt":"wt switch --yes --create 63-user-profile-page"}
+{"cmd":"wt step copy-ignored","dur_ms":323,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-06-29T14:47:51Z","wt":"wt switch --yes --create 95-service-unit-tests"}
+{"cmd":"npm ci","dur_ms":9763,"exit":0,"label":"pre-start project:deps","ts":"2026-06-29T14:48:01Z","wt":"wt switch --yes --create 95-service-unit-tests"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-06-29T14:48:01Z","wt":"wt switch --yes --create 95-service-unit-tests"}
+{"cmd":"wt step copy-ignored","dur_ms":267,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-02T16:57:42Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":68501,"exit":0,"label":"pre-start project:deps","ts":"2026-07-02T16:58:50Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-02T16:58:51Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":475,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-02T17:03:01Z","wt":"wt switch --yes --create 128-prep"}
+{"cmd":"npm ci","dur_ms":12466,"exit":0,"label":"pre-start project:deps","ts":"2026-07-02T17:03:14Z","wt":"wt switch --yes --create 128-prep"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-02T17:03:14Z","wt":"wt switch --yes --create 128-prep"}
+{"cmd":"wt step copy-ignored","dur_ms":271,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-02T17:06:48Z","wt":"wt switch --yes --create 127-prep"}
+{"cmd":"npm ci","dur_ms":12790,"exit":0,"label":"pre-start project:deps","ts":"2026-07-02T17:07:01Z","wt":"wt switch --yes --create 127-prep"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-02T17:07:01Z","wt":"wt switch --yes --create 127-prep"}
+{"cmd":"wt step copy-ignored","dur_ms":2042,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-03T03:02:07Z","wt":"wt switch --yes --create 129-prep"}
+{"cmd":"npm ci","dur_ms":21833,"exit":0,"label":"pre-start project:deps","ts":"2026-07-03T03:02:29Z","wt":"wt switch --yes --create 129-prep"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-03T03:02:29Z","wt":"wt switch --yes --create 129-prep"}
+{"cmd":"wt step copy-ignored","dur_ms":388,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-03T03:07:59Z","wt":"wt switch --yes --create 123-announcements-loading-state"}
+{"cmd":"npm ci","dur_ms":10614,"exit":0,"label":"pre-start project:deps","ts":"2026-07-03T03:08:10Z","wt":"wt switch --yes --create 123-announcements-loading-state"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-03T03:08:10Z","wt":"wt switch --yes --create 123-announcements-loading-state"}
+{"cmd":"wt step copy-ignored","dur_ms":335,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-03T05:56:16Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":11211,"exit":0,"label":"pre-start project:deps","ts":"2026-07-03T05:56:28Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-03T05:56:28Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":308,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-03T08:15:55Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":9698,"exit":0,"label":"pre-start project:deps","ts":"2026-07-03T08:16:05Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-03T08:16:05Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":290,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T08:14:02Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"npm ci","dur_ms":54019,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T08:14:56Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T08:14:56Z","wt":"wt switch --yes 58-announcement-api-backend"}
+{"cmd":"wt step copy-ignored","dur_ms":288,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T08:51:23Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"npm ci","dur_ms":13027,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T08:51:37Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T08:51:37Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"wt step copy-ignored","dur_ms":364,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T08:55:19Z","wt":"wt switch --yes --create 122-subscription-timeout에"}
+{"cmd":"npm ci","dur_ms":17208,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T08:55:36Z","wt":"wt switch --yes --create 122-subscription-timeout에"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T08:55:37Z","wt":"wt switch --yes --create 122-subscription-timeout에"}
+{"cmd":"wt step copy-ignored","dur_ms":1105,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T09:46:08Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"npm ci","dur_ms":14723,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T09:46:23Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T09:46:23Z","wt":"wt switch --yes 50-global-api-error-handling"}
+{"cmd":"wt step copy-ignored","dur_ms":286,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T09:46:25Z","wt":"wt switch --yes 128-prep"}
+{"cmd":"npm ci","dur_ms":11954,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T09:46:37Z","wt":"wt switch --yes 128-prep"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T09:46:37Z","wt":"wt switch --yes 128-prep"}
+{"cmd":"wt step copy-ignored","dur_ms":272,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T09:46:38Z","wt":"wt switch --yes 127-prep"}
+{"cmd":"npm ci","dur_ms":12239,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T09:46:50Z","wt":"wt switch --yes 127-prep"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T09:46:50Z","wt":"wt switch --yes 127-prep"}
+{"cmd":"wt step copy-ignored","dur_ms":293,"exit":0,"label":"pre-start project:copy-ignored","ts":"2026-07-05T09:46:52Z","wt":"wt switch --yes 129-prep"}
+{"cmd":"npm ci","dur_ms":11744,"exit":0,"label":"pre-start project:deps","ts":"2026-07-05T09:47:04Z","wt":"wt switch --yes 129-prep"}
+{"cmd":"/opt/homebrew/bin/wt hook run-pipeline","dur_ms":null,"exit":null,"label":"post-switch project runner","ts":"2026-07-05T09:47:04Z","wt":"wt switch --yes 129-prep"}

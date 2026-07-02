@@ -1,0 +1,47 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+	ignorecase = true
+	precomposeunicode = true
+	hooksPath = /Users/sujeong/personal/github/sj48695-labs/zipath/.git/hooks
+[remote "origin"]
+	url = https://github.com/sj48695-labs/zipath.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[user]
+	name = Sujeong Jo
+	email = josujung00@gmail.com
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+	vscode-merge-base = origin/main
+[branch "develop"]
+	remote = origin
+	merge = refs/heads/develop
+	vscode-merge-base = origin/main
+[extensions]
+	worktreeConfig = true
+[worktrunk]
+	default-branch = develop
+	history = develop
+[branch "123-announcements-loading-state"]
+	vscode-merge-base = origin/develop
+[branch "127-prep"]
+	vscode-merge-base = origin/develop
+	remote = origin
+	merge = refs/heads/127-prep
+[branch "128-prep"]
+	vscode-merge-base = origin/develop
+	remote = origin
+	merge = refs/heads/128-prep
+[branch "129-prep"]
+	vscode-merge-base = origin/develop
+	remote = origin
+	merge = refs/heads/129-prep
+[branch "50-global-api-error-handling"]
+	remote = origin
+	merge = refs/heads/50-global-api-error-handling
+	vscode-merge-base = origin/50-global-api-error-handling
+[branch "122-subscription-timeout에"]
+	vscode-merge-base = origin/develop
