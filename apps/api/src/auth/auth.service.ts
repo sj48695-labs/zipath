@@ -3,10 +3,10 @@ import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "@zipath/db";
-import type { UserProfile } from "@zipath/types";
+import type { SsoProvider, UserProfile } from "@zipath/types";
 
 interface OAuthProfile {
-  provider: string;
+  provider: SsoProvider;
   providerId: string;
   email: string | null;
   nickname: string | null;
@@ -105,7 +105,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       nickname: user.nickname,
-      provider: user.provider as UserProfile["provider"],
+      provider: toSsoProvider(user.provider),
       interestRegions: user.interestRegions ?? [],
       createdAt: user.createdAt.toISOString(),
       lastActiveAt: user.lastActiveAt.toISOString(),
@@ -122,8 +122,19 @@ export class AuthService {
         id: user.id,
         email: user.email,
         nickname: user.nickname,
-        provider: user.provider,
+        provider: toSsoProvider(user.provider),
       },
     };
+  }
+}
+
+function toSsoProvider(provider: string | null): SsoProvider | null {
+  switch (provider) {
+    case "google":
+    case "kakao":
+    case "naver":
+      return provider;
+    default:
+      return null;
   }
 }
