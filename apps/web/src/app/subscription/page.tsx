@@ -9,6 +9,7 @@ const COLD_START_HINT_SECONDS = 10;
 
 /** 청약 자격 확인 요청 안전 타임아웃(ms). 초과 시 408 로 변환된다. */
 const REQUEST_TIMEOUT_MS = 45_000;
+const LEGAL_DISCLAIMER = "참고용이며 법적 효력 없음";
 
 interface SimulationPayload {
   age: number;
@@ -56,6 +57,7 @@ export default function SubscriptionPage() {
   const [error, setError] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const lastPayloadRef = useRef<SimulationPayload | null>(null);
+  const inFlightRef = useRef(false);
 
   // loading 동안 1초 간격으로 경과 시간을 추적, 종료 시 정리.
   useEffect(() => {
@@ -71,8 +73,24 @@ export default function SubscriptionPage() {
   }, [loading]);
 
   const showColdStartHint = loading && elapsedSeconds >= COLD_START_HINT_SECONDS;
+  const loadingButtonLabel = !loading
+    ? "자격 확인하기"
+    : showColdStartHint
+      ? "서버 준비 중..."
+      : "확인 중...";
+  const loadingStatusMessage = showColdStartHint
+    ? "서버 웜업 중... 최대 30초 소요될 수 있습니다. 입력창과 확인 버튼이 잠긴 상태예요."
+    : "청약 자격 시뮬레이션을 확인 중입니다. 서버 응답을 기다리는 동안 입력창과 확인 버튼이 잠깁니다.";
+  const recoveryHintMessage = error
+    ? "입력값은 그대로 유지됩니다. 내용을 수정한 뒤 다시 제출하거나, 같은 조건으로 다시 시도하세요."
+    : null;
 
   const runSimulation = async (payload: SimulationPayload) => {
+    if (inFlightRef.current) {
+      return;
+    }
+
+    inFlightRef.current = true;
     setLoading(true);
     setError(null);
     setResult(null);
@@ -99,12 +117,16 @@ export default function SubscriptionPage() {
         setError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
       }
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (inFlightRef.current) {
+      return;
+    }
     const payload: SimulationPayload = {
       age: Number(form.age),
       income: Number(form.income),
@@ -119,7 +141,7 @@ export default function SubscriptionPage() {
   };
 
   const handleRetry = () => {
-    if (lastPayloadRef.current) {
+    if (!inFlightRef.current && lastPayloadRef.current) {
       void runSimulation(lastPayloadRef.current);
     }
   };
@@ -134,98 +156,123 @@ export default function SubscriptionPage() {
           기본 정보를 입력하면 청약 가능 여부와 예상 가점을 확인할 수 있어요.
         </p>
 
-        <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border p-6">
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <div>
-              <label className="mb-2 block text-sm font-medium">나이</label>
-              <input
-                type="number"
-                placeholder="만 나이"
-                value={form.age}
-                onChange={(e) => setForm({ ...form, age: e.target.value })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">연소득 (만원)</label>
-              <input
-                type="number"
-                placeholder="연소득"
-                value={form.income}
-                onChange={(e) => setForm({ ...form, income: e.target.value })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">무주택 기간 (개월)</label>
-              <input
-                type="number"
-                placeholder="개월 수"
-                value={form.homelessMonths}
-                onChange={(e) => setForm({ ...form, homelessMonths: e.target.value })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-                required
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">부양가족 수</label>
-              <input
-                type="number"
-                placeholder="본인 제외"
-                value={form.dependents}
-                onChange={(e) => setForm({ ...form, dependents: e.target.value })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              />
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium">청약통장 가입기간 (개월)</label>
-              <input
-                type="number"
-                placeholder="미입력 시 나이로 추정"
-                value={form.savingsMonths}
-                onChange={(e) => setForm({ ...form, savingsMonths: e.target.value })}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              />
-            </div>
-          </div>
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-6 rounded-lg border p-6"
+          aria-busy={loading}
+        >
+          <fieldset disabled={loading} className="space-y-6">
+            <legend className="sr-only">청약 자격 입력 폼</legend>
 
-          <div className="flex flex-wrap gap-6">
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.isMarried}
-                onChange={(e) => setForm({ ...form, isMarried: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300"
-              />
-              혼인 상태
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <input
-                type="checkbox"
-                checked={form.isFirstHome}
-                onChange={(e) => setForm({ ...form, isFirstHome: e.target.checked })}
-                className="h-4 w-4 rounded border-gray-300"
-              />
-              생애최초 주택 구입
-            </label>
-          </div>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-medium">나이</label>
+                <input
+                  type="number"
+                  placeholder="만 나이"
+                  value={form.age}
+                  onChange={(e) => setForm({ ...form, age: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">연소득 (만원)</label>
+                <input
+                  type="number"
+                  placeholder="연소득"
+                  value={form.income}
+                  onChange={(e) => setForm({ ...form, income: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">무주택 기간 (개월)</label>
+                <input
+                  type="number"
+                  placeholder="개월 수"
+                  value={form.homelessMonths}
+                  onChange={(e) => setForm({ ...form, homelessMonths: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  required
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">부양가족 수</label>
+                <input
+                  type="number"
+                  placeholder="본인 제외"
+                  value={form.dependents}
+                  onChange={(e) => setForm({ ...form, dependents: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium">청약통장 가입기간 (개월)</label>
+                <input
+                  type="number"
+                  placeholder="미입력 시 나이로 추정"
+                  value={form.savingsMonths}
+                  onChange={(e) => setForm({ ...form, savingsMonths: e.target.value })}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
-          >
-            {!loading
-              ? "자격 확인하기"
-              : showColdStartHint
-                ? "서버 준비 중..."
-                : "확인 중..."}
-          </button>
+            <div className="flex flex-wrap gap-6">
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={form.isMarried}
+                  onChange={(e) => setForm({ ...form, isMarried: e.target.checked })}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                혼인 상태
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={form.isFirstHome}
+                  onChange={(e) => setForm({ ...form, isFirstHome: e.target.checked })}
+                  className="h-4 w-4 rounded border-gray-300"
+                />
+                생애최초 주택 구입
+              </label>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full rounded-lg bg-primary px-6 py-3 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-50"
+            >
+              {loading && (
+                <span
+                  aria-hidden="true"
+                  className="mr-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent align-[-0.125em]"
+                />
+              )}
+              {loadingButtonLabel}
+            </button>
+          </fieldset>
+
+          {loading && (
+            <p
+              className="text-sm text-muted-foreground"
+              role="status"
+              aria-live="polite"
+              aria-atomic="true"
+            >
+              {loadingStatusMessage}
+            </p>
+          )}
+
+          <p className="text-xs text-muted-foreground">
+            * {LEGAL_DISCLAIMER}. 본 시뮬레이션 결과는 실제 청약 심사와 다를 수 있습니다.
+          </p>
         </form>
 
-        <div aria-live="polite">
+        <div>
           {showColdStartHint && (
             <div className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6">
               <p className="text-sm text-amber-700">
@@ -243,6 +290,11 @@ export default function SubscriptionPage() {
               role="alert"
             >
               <p className="text-sm text-red-600">{error}</p>
+              {recoveryHintMessage && (
+                <p className="mt-2 text-sm text-red-700">
+                  {recoveryHintMessage}
+                </p>
+              )}
               <button
                 type="button"
                 onClick={handleRetry}
@@ -331,7 +383,7 @@ export default function SubscriptionPage() {
         )}
 
         <p className="mt-8 text-xs text-muted-foreground">
-          * 본 시뮬레이션 결과는 참고용이며 법적 효력이 없습니다.
+          * 청약 자격 판단은 청약홈과 모집공고 원문을 최종 기준으로 확인하세요.
         </p>
       </main>
     </div>
