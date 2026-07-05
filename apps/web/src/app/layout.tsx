@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Providers } from "./providers";
+import { AdSenseScript, ConsentBanner } from "./_components/monetize";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -16,6 +17,8 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <body className="min-h-screen antialiased" suppressHydrationWarning>
         <Providers>{children}</Providers>
+        <ConsentBanner />
+        <AdSenseScript />
       </body>
     </html>
   );

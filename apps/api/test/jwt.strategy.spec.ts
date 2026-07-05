@@ -4,7 +4,11 @@ import { JwtStrategy } from "../src/auth/jwt.strategy";
 import { AuthService } from "../src/auth/auth.service";
 import { User } from "@zipath/db";
 
-function makeUser(overrides: Partial<User> = {}): User {
+type TestUser = User & {
+  interestRegions: string[];
+};
+
+function makeUser(overrides: Partial<TestUser> = {}): TestUser {
   return {
     id: 1,
     email: "test@example.com",

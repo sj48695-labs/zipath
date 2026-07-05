@@ -1,5 +1,6 @@
 import Link from "next/link";
 import SiteHeader from "@/components/layout/SiteHeader";
+import { AdBanner } from "./_components/monetize";
 
 const features = [
   {
@@ -93,6 +94,13 @@ export default function HomePage() {
               </Link>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Ad */}
+      <section className="px-4 py-8">
+        <div className="mx-auto max-w-5xl">
+          <AdBanner slot="0000000000" format="horizontal" className="min-h-[90px]" />
         </div>
       </section>
 

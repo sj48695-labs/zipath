@@ -74,11 +74,3 @@ export const REGIONS: Region[] = [
 export const SUPPORTED_SIDO = ["서울", "경기", "인천", "부산"] as const;
 
 export const SUPPORTED_REGION_LABEL = "수도권·부산";
-
-// 오타로 0건이 나오는 경우도 동일 안내가 합리적이므로 시도명 정밀 매칭은 생략한다.
-export function isUnsupportedRegionQuery(
-  query: string,
-  filteredCount: number,
-): boolean {
-  return query.trim().length > 0 && filteredCount === 0;
-}

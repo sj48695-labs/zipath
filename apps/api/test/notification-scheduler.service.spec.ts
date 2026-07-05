@@ -6,6 +6,10 @@ import {
   RealPriceCache,
 } from "@zipath/db";
 
+type TestNotification = Notification & {
+  referenceId: string | null;
+};
+
 interface MockRepo<T = unknown> {
   find: jest.Mock<Promise<T[]>, [unknown?]>;
   findOne: jest.Mock<Promise<T | null>, [unknown]>;
@@ -83,13 +87,13 @@ describe("NotificationSchedulerService", () => {
   let prefRepo: MockRepo<NotificationPreference>;
   let cacheRepo: MockRepo<RealPriceCache>;
   let announcementRepo: MockRepo<Announcement>;
-  let notificationRepo: MockRepo<Notification>;
+  let notificationRepo: MockRepo<TestNotification>;
 
   beforeEach(() => {
     prefRepo = createRepo<NotificationPreference>();
     cacheRepo = createRepo<RealPriceCache>();
     announcementRepo = createRepo<Announcement>();
-    notificationRepo = createRepo<Notification>();
+    notificationRepo = createRepo<TestNotification>();
 
     service = new NotificationSchedulerService(
       prefRepo as never,
@@ -113,7 +117,7 @@ describe("NotificationSchedulerService", () => {
       await service.detectPriceChange();
 
       expect(notificationRepo.save).toHaveBeenCalledTimes(1);
-      const saved = notificationRepo.save.mock.calls[0][0] as Notification;
+      const saved = notificationRepo.save.mock.calls[0][0] as TestNotification;
       expect(saved.type).toBe("price_change");
       expect(saved.userId).toBe(10);
       expect(saved.referenceId).toBe("서울 강남구:202605");
@@ -178,7 +182,7 @@ describe("NotificationSchedulerService", () => {
       await service.detectNewAnnouncement();
 
       expect(notificationRepo.save).toHaveBeenCalledTimes(1);
-      const saved = notificationRepo.save.mock.calls[0][0] as Notification;
+      const saved = notificationRepo.save.mock.calls[0][0] as TestNotification;
       expect(saved.type).toBe("announcement");
       expect(saved.userId).toBe(10);
       expect(saved.referenceId).toBe("announcement:42");

@@ -144,7 +144,7 @@ export class SubscriptionService {
   }
 
   private calculatePoints(input: SimulationInput): PointBreakdown[] {
-    const { homelessMonths, dependents = 0, age, savingsMonths } = input;
+    const { age, homelessMonths, dependents = 0, savingsMonths } = input;
     const points: PointBreakdown[] = [];
 
     // 1. 무주택 기간 (최대 32점)
@@ -165,7 +165,6 @@ export class SubscriptionService {
     });
 
     // 3. 청약통장 가입기간 (최대 17점)
-    // 실제 가입 개월 수가 있으면 사용, 없으면 나이로 추정
     const hasSavingsInput = savingsMonths !== undefined;
     const savingsYears = hasSavingsInput
       ? Math.floor(savingsMonths / 12)

@@ -2,8 +2,12 @@ import { UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "../src/auth/auth.service";
 import { User } from "@zipath/db";
 
+type TestUser = User & {
+  interestRegions: string[];
+};
+
 /** Helper: 최소한의 User 엔티티 생성 */
-function makeUser(overrides: Partial<User> = {}): User {
+function makeUser(overrides: Partial<TestUser> = {}): TestUser {
   return {
     id: 1,
     email: "test@example.com",
@@ -53,7 +57,7 @@ describe("AuthService", () => {
   // ----- validateOAuthLogin -----
   describe("validateOAuthLogin", () => {
     const profile = {
-      provider: "google",
+      provider: "google" as const,
       providerId: "google-123",
       email: "test@example.com",
       nickname: "테스터",
@@ -228,11 +232,15 @@ describe("AuthService", () => {
 
       const result = await service.getProfile(1);
 
-      expect(result.id).toBe(1);
-      expect(result.email).toBe("test@example.com");
-      expect(result.nickname).toBe("테스터");
-      expect(result.provider).toBe("google");
-      expect(result.interestRegions).toEqual(["서울 강남구"]);
+      expect(result).toEqual({
+        id: 1,
+        email: "test@example.com",
+        nickname: "테스터",
+        provider: "google",
+        interestRegions: ["서울 강남구"],
+        createdAt: "2026-01-01T00:00:00.000Z",
+        lastActiveAt: "2026-01-01T00:00:00.000Z",
+      });
     });
 
     it("should throw UnauthorizedException when user not found", async () => {
@@ -249,7 +257,7 @@ describe("AuthService", () => {
     it("should save and return updated interest regions", async () => {
       const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
 
       const result = await service.updateInterestRegions(1, [
         "서울 강남구",
@@ -264,7 +272,7 @@ describe("AuthService", () => {
     it("should trim, drop empties and dedupe regions", async () => {
       const user = makeUser();
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
 
       const result = await service.updateInterestRegions(1, [
         "  서울 강남구  ",
@@ -283,7 +291,7 @@ describe("AuthService", () => {
     it("should allow clearing all regions with empty array", async () => {
       const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
 
       const result = await service.updateInterestRegions(1, []);
 

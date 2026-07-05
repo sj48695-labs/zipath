@@ -8,16 +8,8 @@ import {
   useCallback,
   type ReactNode,
 } from "react";
-
-interface UserProfile {
-  id: number;
-  email: string | null;
-  nickname: string | null;
-  provider: string | null;
-  interestRegions: string[];
-  createdAt: string;
-  lastActiveAt: string;
-}
+import type { UserProfile } from "@zipath/types";
+import { refreshAuthProfile } from "./authProfile";
 
 interface AuthContextValue {
   user: UserProfile | null;
@@ -49,35 +41,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchProfile = useCallback(async () => {
-    const accessToken = getStoredToken("accessToken");
-    if (!accessToken) {
-      setUser(null);
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      const res = await fetch("/api/auth/profile", {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      });
-
-      if (!res.ok) {
+    await refreshAuthProfile({
+      getAccessToken: () => getStoredToken("accessToken"),
+      clearTokens: () => {
         // 토큰이 만료되었거나 유효하지 않다.
         removeStoredToken("accessToken");
         removeStoredToken("refreshToken");
-        setUser(null);
-        return;
-      }
-
-      const data: unknown = await res.json();
-      setUser(data as UserProfile);
-    } catch {
-      setUser(null);
-    } finally {
-      setIsLoading(false);
-    }
+      },
+      setUser,
+      setIsLoading,
+    });
   }, []);
 
   const login = useCallback(

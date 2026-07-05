@@ -11,6 +11,7 @@ import {
 } from "@/lib/dateFormat";
 
 import MatchForm from "./_components/MatchForm";
+import LegalDisclaimer from "../_components/LegalDisclaimer";
 import MatchResultPanel from "./_components/MatchResultPanel";
 import type {
   AnnouncementDetail,
@@ -147,6 +148,9 @@ export default function AnnouncementDetailPage() {
         >
           &larr; 공고 목록으로
         </Link>
+        <div className="mb-6">
+          <LegalDisclaimer />
+        </div>
 
         {loading && (
           <div role="status" className="flex justify-center py-20">
@@ -240,10 +244,6 @@ export default function AnnouncementDetailPage() {
                 )}
               </div>
 
-              <p className="mt-4 text-xs text-muted-foreground">
-                * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 내용은
-                청약홈 원문을 확인해주세요.
-              </p>
             </div>
 
             {announcement.rawData &&

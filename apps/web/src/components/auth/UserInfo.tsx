@@ -1,6 +1,7 @@
+import type { UserProfile } from "@zipath/types";
 import { formatKoreanDate, formatKoreanDateTime } from "@/lib/dateFormat";
 
-type ProviderLabel = "google" | "kakao" | "naver";
+type ProviderLabel = NonNullable<UserProfile["provider"]>;
 
 const PROVIDER_LABELS: Record<ProviderLabel, string> = {
   google: "Google",
@@ -8,19 +9,13 @@ const PROVIDER_LABELS: Record<ProviderLabel, string> = {
   naver: "네이버",
 };
 
-function getProviderLabel(provider: string | null): string {
+function getProviderLabel(provider: UserProfile["provider"]): string {
   if (!provider) return "알 수 없음";
-  return PROVIDER_LABELS[provider as ProviderLabel] ?? provider;
+  return PROVIDER_LABELS[provider] ?? provider;
 }
 
 interface UserInfoProps {
-  user: {
-    email: string | null;
-    nickname: string | null;
-    provider: string | null;
-    createdAt: string;
-    lastActiveAt: string;
-  };
+  user: Pick<UserProfile, "email" | "nickname" | "provider" | "createdAt" | "lastActiveAt">;
 }
 
 export function UserInfo({ user }: UserInfoProps) {

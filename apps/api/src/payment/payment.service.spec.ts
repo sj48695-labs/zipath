@@ -165,7 +165,9 @@ describe("PaymentService", () => {
       paymentRepo.findOne!.mockResolvedValue(payment);
       paymentRepo.save!.mockResolvedValue(payment);
       configValues.TOSS_SECRET_KEY = "sk_live";
-      global.fetch = jest.fn().mockResolvedValue({ ok: false });
+      jest
+        .spyOn(global, "fetch")
+        .mockResolvedValue({ ok: false } as unknown as Response);
 
       await expect(
         service.confirmPayment({
@@ -183,7 +185,9 @@ describe("PaymentService", () => {
       paymentRepo.findOne!.mockResolvedValue(payment);
       paymentRepo.save!.mockResolvedValue(payment);
       configValues.TOSS_SECRET_KEY = "sk_live";
-      global.fetch = jest.fn().mockResolvedValue({ ok: true });
+      jest
+        .spyOn(global, "fetch")
+        .mockResolvedValue({ ok: true } as unknown as Response);
 
       const result = await service.confirmPayment({
         paymentKey: "pk_ok",
