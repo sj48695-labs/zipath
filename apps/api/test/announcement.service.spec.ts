@@ -1,3 +1,4 @@
+import { BadGatewayException } from "@nestjs/common";
 import { AnnouncementService } from "../src/announcement/announcement.service";
 import { Announcement, SubscriptionCriteria } from "@zipath/db";
 import type { MatchRequestDto } from "../src/announcement/dto/match-request.dto";
@@ -200,6 +201,22 @@ describe("AnnouncementService", () => {
       const result = await service.findOne(999);
 
       expect(result).toBeNull();
+    });
+  });
+
+  // ----- syncFromApi -----
+  describe("syncFromApi", () => {
+    it("should throw BadGatewayException when upstream API responds with an error", async () => {
+      configService.get.mockReturnValue("test-api-key");
+      global.fetch = jest.fn().mockResolvedValue({
+        ok: false,
+        status: 502,
+        text: jest.fn().mockResolvedValue("Bad Gateway"),
+      });
+
+      await expect(service.syncFromApi()).rejects.toBeInstanceOf(
+        BadGatewayException,
+      );
     });
   });
 

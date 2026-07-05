@@ -9,6 +9,10 @@ import {
   RealPriceCache,
 } from "@zipath/db";
 
+type NotificationWithReferenceId = Notification & {
+  referenceId: string | null;
+};
+
 /**
  * 실거래가/공고 변동 감지 스케줄러.
  *
@@ -40,7 +44,7 @@ export class NotificationSchedulerService {
     @InjectRepository(Announcement)
     private readonly announcementRepo: Repository<Announcement>,
     @InjectRepository(Notification)
-    private readonly notificationRepo: Repository<Notification>,
+    private readonly notificationRepo: Repository<NotificationWithReferenceId>,
   ) {}
 
   // --------------------------- 가격 변동 ---------------------------

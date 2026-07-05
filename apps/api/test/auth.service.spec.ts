@@ -2,8 +2,12 @@ import { UnauthorizedException } from "@nestjs/common";
 import { AuthService } from "../src/auth/auth.service";
 import { User } from "@zipath/db";
 
+type TestUser = User & {
+  interestRegions: string[];
+};
+
 /** Helper: 최소한의 User 엔티티 생성 */
-function makeUser(overrides: Partial<User> = {}): User {
+function makeUser(overrides: Partial<TestUser> = {}): TestUser {
   return {
     id: 1,
     email: "test@example.com",
@@ -253,7 +257,7 @@ describe("AuthService", () => {
     it("should save and return updated interest regions", async () => {
       const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
 
       const result = await service.updateInterestRegions(1, [
         "서울 강남구",
@@ -268,7 +272,7 @@ describe("AuthService", () => {
     it("should trim, drop empties and dedupe regions", async () => {
       const user = makeUser();
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
 
       const result = await service.updateInterestRegions(1, [
         "  서울 강남구  ",
@@ -287,7 +291,7 @@ describe("AuthService", () => {
     it("should allow clearing all regions with empty array", async () => {
       const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: User) => Promise.resolve(u));
+      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
 
       const result = await service.updateInterestRegions(1, []);
 
