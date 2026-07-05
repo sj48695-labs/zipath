@@ -96,7 +96,16 @@ describe("fetchApi", () => {
 
     await expect(
       fetchApi("/slow", { timeoutMs: 20 }),
-    ).rejects.toMatchObject({ status: 408 });
+    ).rejects.toMatchObject({ status: 408, kind: "timeout" });
+  });
+
+  it("fetch 자체 실패는 network ApiError 로 정규화한다", async () => {
+    global.fetch = jest.fn().mockRejectedValue(new TypeError("failed to fetch"));
+
+    await expect(fetchApi("/offline")).rejects.toMatchObject({
+      status: 0,
+      kind: "network",
+    });
   });
 
   it("외부 signal abort 를 전파하여 요청을 중단한다", async () => {
@@ -120,7 +129,10 @@ describe("fetchApi", () => {
     });
     controller.abort();
 
-    await expect(promise).rejects.toBeInstanceOf(ApiError);
+    await expect(promise).rejects.toMatchObject({
+      status: 0,
+      kind: "network",
+    });
   });
 
   it("응답이 ok 가 아니면 ApiError 로 변환한다", async () => {
@@ -133,6 +145,7 @@ describe("fetchApi", () => {
     await expect(fetchApi("/bad")).rejects.toMatchObject({
       status: 400,
       message: "잘못된 요청",
+      kind: "http",
     });
   });
 

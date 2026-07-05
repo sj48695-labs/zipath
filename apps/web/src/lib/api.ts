@@ -1,10 +1,13 @@
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
 
+export type ApiErrorKind = "timeout" | "network" | "http";
+
 export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    public kind: ApiErrorKind = "http",
     public readonly code?: string,
   ) {
     super(message);
@@ -150,14 +153,28 @@ export async function fetchApi<T>(
       signal,
     });
   } catch (err) {
-    // 타임아웃/외부 abort 로 인한 중단을 일관된 ApiError 로 변환.
+    // 타임아웃/외부 abort 는 timeout 또는 network 로 정규화한다.
     if (err instanceof Error && err.name === "AbortError") {
-      const reason = timeoutController.signal.aborted
-        ? "요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요."
-        : "요청이 취소되었습니다.";
-      throw new ApiError(reason, 408);
+      if (timeoutController.signal.aborted) {
+        throw new ApiError(
+          "요청 시간이 초과되었습니다. 잠시 후 다시 시도해주세요.",
+          408,
+          "timeout",
+        );
+      }
+
+      throw new ApiError(
+        "네트워크 연결이 불안정합니다. 잠시 후 다시 시도해주세요.",
+        0,
+        "network",
+      );
     }
-    throw err;
+
+    throw new ApiError(
+      "네트워크 연결이 불안정합니다. 잠시 후 다시 시도해주세요.",
+      0,
+      "network",
+    );
   } finally {
     clearTimeout(timer);
   }
@@ -165,7 +182,7 @@ export async function fetchApi<T>(
   if (!res.ok) {
     const body = await res.json().catch(() => null);
     const { message, code } = parseErrorBody(body, res.status);
-    throw new ApiError(message, res.status, code);
+    throw new ApiError(message, res.status, "http", code);
   }
 
   // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.

@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import SiteHeader from "@/components/layout/SiteHeader";
-import { fetchApi, ApiError } from "@/lib/api";
+import { fetchApi } from "@/lib/api";
+import {
+  getSubscriptionErrorViewModel,
+  type SubscriptionErrorViewModel,
+} from "./subscription-error";
 
 /** 콜드 스타트 안내를 노출하기 시작하는 경과 시간(초). */
 const COLD_START_HINT_SECONDS = 10;
@@ -53,7 +57,7 @@ export default function SubscriptionPage() {
   });
   const [result, setResult] = useState<SimulationResponse | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<SubscriptionErrorViewModel | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
   const lastPayloadRef = useRef<SimulationPayload | null>(null);
 
@@ -88,16 +92,7 @@ export default function SubscriptionPage() {
       );
       setResult(data);
     } catch (err) {
-      if (err instanceof ApiError) {
-        // 408(타임아웃)은 콜드 스타트 맥락으로 다듬어 재시도를 유도.
-        setError(
-          err.status === 408
-            ? "서버가 잠시 준비 중이에요. 잠시 후 다시 시도해주세요."
-            : err.message,
-        );
-      } else {
-        setError("서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.");
-      }
+      setError(getSubscriptionErrorViewModel(err));
     } finally {
       setLoading(false);
     }
@@ -242,7 +237,9 @@ export default function SubscriptionPage() {
               className="mt-8 rounded-lg border border-red-200 bg-red-50 p-6"
               role="alert"
             >
-              <p className="text-sm text-red-600">{error}</p>
+              <p className="text-sm font-semibold text-red-700">{error.title}</p>
+              <p className="mt-2 text-sm text-red-600">{error.message}</p>
+              <p className="mt-2 text-xs text-red-500">{error.note}</p>
               <button
                 type="button"
                 onClick={handleRetry}
