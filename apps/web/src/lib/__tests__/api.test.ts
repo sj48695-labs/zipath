@@ -1,7 +1,10 @@
 import {
   ApiError,
+  backendErrorResponse,
+  createErrorBody,
   fetchApi,
   getBackendErrorMessage,
+  proxyErrorBody,
   unwrapBackendData,
 } from "../api";
 
@@ -123,7 +126,9 @@ describe("fetchApi", () => {
   it("응답이 ok 가 아니면 ApiError 로 변환한다", async () => {
     global.fetch = jest
       .fn()
-      .mockResolvedValue(jsonResponse({ error: { message: "잘못된 요청" } }, false, 400));
+      .mockResolvedValue(
+        jsonResponse({ message: "잘못된 요청" }, false, 400),
+      );
 
     await expect(fetchApi("/bad")).rejects.toMatchObject({
       status: 400,
@@ -189,5 +194,39 @@ describe("unwrapBackendData", () => {
 
   it("래핑되지 않은 값은 그대로 반환한다", () => {
     expect(unwrapBackendData({ a: 1 })).toEqual({ a: 1 });
+  });
+});
+
+describe("error helpers", () => {
+  it("createErrorBody 는 표준 에러 envelope 를 만든다", () => {
+    expect(createErrorBody("VALIDATION_ERROR", "잘못된 요청")).toEqual({
+      success: false,
+      error: { code: "VALIDATION_ERROR", message: "잘못된 요청" },
+    });
+  });
+
+  it("proxyErrorBody 는 PROXY_ERROR envelope 를 만든다", () => {
+    expect(proxyErrorBody("백엔드 호출 실패")).toEqual({
+      success: false,
+      error: { code: "PROXY_ERROR", message: "백엔드 호출 실패" },
+    });
+  });
+
+  it("backendErrorResponse 는 표준 error envelope 를 유지한다", async () => {
+    const res = {
+      status: 502,
+      json: async () => ({
+        success: false,
+        error: { code: "HTTP_502", message: "업스트림 오류" },
+      }),
+    } as Response;
+
+    await expect(backendErrorResponse(res)).resolves.toEqual({
+      status: 502,
+      body: {
+        success: false,
+        error: { code: "HTTP_502", message: "업스트림 오류" },
+      },
+    });
   });
 });

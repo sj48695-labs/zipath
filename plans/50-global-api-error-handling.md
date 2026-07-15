@@ -94,7 +94,7 @@
   - 신규: error 정보 없는 비표준 body(`{}`) → `message:"API 오류 (500)"` fallback 검증.
 - 테스트: `npm test -w @zipath/web` (또는 vitest/jest 설정에 맞게) 통과.
 
-### Phase 3: 프록시 라우트 에러 응답 표준 envelope 통일 — 그룹 A (커밋 단위)
+### Phase 3 (완료): 프록시 라우트 에러 응답 표준 envelope 통일 — 그룹 A (커밋 단위)
 
 - 의존성: Phase 2 (`backendErrorResponse` / `proxyErrorBody` 헬퍼 — 이 phase 는 import 해서 소비만, api.ts 수정 없음)
 - 변경 라우트 (각 `!res.ok` 분기의 `{ error: string }` → 표준 envelope, catch 분기도 표준화):
@@ -108,7 +108,7 @@
   - `catch { return NextResponse.json(proxyErrorBody("..."), { status:500 }); }`
 - 테스트: 라우트는 단위 테스트 부재 → `npx turbo build` 로 타입/빌드 통과 확인. 수동 검증은 테스트 계획 참고.
 
-### Phase 4: 프록시 라우트 에러 응답 표준 envelope 통일 — 그룹 B (커밋 단위)
+### Phase 4 (완료): 프록시 라우트 에러 응답 표준 envelope 통일 — 그룹 B (커밋 단위)
 
 - 의존성: Phase 3 (`backendErrorResponse` 헬퍼)
 - 변경 라우트 (Phase 3 과 동일 패턴 적용):

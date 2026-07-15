@@ -221,8 +221,5 @@ export async function backendErrorResponse(
  * 프록시 라우트의 catch(네트워크 실패)용 표준 envelope.
  */
 export function proxyErrorBody(message: string): ApiResponse {
-  return {
-    success: false,
-    error: { code: "PROXY_ERROR", message },
-  };
+  return createErrorBody("PROXY_ERROR", message);
 }
