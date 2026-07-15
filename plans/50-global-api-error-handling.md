@@ -69,7 +69,7 @@
   - 인터셉터 spec: `TransformInterceptor` 를 `new` 하고 `next.handle()` → `of({ value: 1 })` (rxjs `of`). `intercept(ctx, next)` 결과를 구독해 `{ success:true, data:{ value:1 } }` 검증.
 - 테스트: `npm test -w @zipath/api` 통과.
 
-### Phase 2: 웹 fetchApi 에러 파싱 표준 envelope 정렬 + ApiError.code (커밋 단위)
+### Phase 2 (완료): 웹 fetchApi 에러 파싱 표준 envelope 정렬 + ApiError.code (커밋 단위)
 
 - 변경 파일:
   - `apps/web/src/lib/api.ts`

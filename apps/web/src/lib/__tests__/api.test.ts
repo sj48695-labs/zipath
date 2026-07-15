@@ -130,6 +130,36 @@ describe("fetchApi", () => {
       message: "잘못된 요청",
     });
   });
+
+  it("표준 envelope 에러는 message 와 code 를 전달한다", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      jsonResponse(
+        {
+          success: false,
+          error: { code: "VALIDATION_ERROR", message: "잘못된 요청" },
+        },
+        false,
+        400,
+      ),
+    );
+
+    await expect(fetchApi("/bad")).rejects.toMatchObject({
+      status: 400,
+      message: "잘못된 요청",
+      code: "VALIDATION_ERROR",
+    });
+  });
+
+  it("에러 정보 없는 비표준 body 는 fallback 메시지를 쓴다", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValue(jsonResponse({}, false, 500));
+
+    await expect(fetchApi("/bad")).rejects.toMatchObject({
+      status: 500,
+      message: "API 오류 (500)",
+    });
+  });
 });
 
 describe("getBackendErrorMessage", () => {
