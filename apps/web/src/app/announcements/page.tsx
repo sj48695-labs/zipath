@@ -9,6 +9,7 @@ import {
   getTodayKey,
   isDateOnOrAfterToday,
 } from "@/lib/dateFormat";
+import { getBackendErrorMessage } from "@/lib/api";
 import LegalDisclaimer from "./_components/LegalDisclaimer";
 
 const CHEONGYAKHOME_URL = "https://www.applyhome.co.kr/";
@@ -31,7 +32,7 @@ interface ApiResponse {
   page: number;
   limit: number;
   lastSyncedAt?: string | null;
-  error?: string;
+  error?: { code?: string; message?: string } | string;
 }
 
 export default function AnnouncementsPage() {
@@ -86,7 +87,7 @@ export default function AnnouncementsPage() {
         const data = (await res.json().catch(() => null)) as ApiResponse | null;
 
         if (!res.ok) {
-          setError(data?.error ?? `오류가 발생했습니다. (${res.status})`);
+          setError(getBackendErrorMessage(data, res.status));
           setAnnouncements([]);
           setTotalCount(0);
           setLastSyncedAt(null);
@@ -94,7 +95,11 @@ export default function AnnouncementsPage() {
         }
 
         if (data?.error) {
-          setError(data.error);
+          setError(
+            typeof data.error === "string"
+              ? data.error
+              : data.error.message ?? `오류가 발생했습니다. (${res.status})`,
+          );
           setAnnouncements([]);
           setTotalCount(0);
           setLastSyncedAt(null);

@@ -49,8 +49,13 @@ export function parseErrorBody(
       "message" in envelopeError
     ) {
       const detail = envelopeError as { code?: unknown; message?: unknown };
+      if (typeof detail.message !== "string") {
+        return {
+          message: `API 오류 (${status})`,
+        };
+      }
       return {
-        message: String(detail.message),
+        message: detail.message,
         code: typeof detail.code === "string" ? detail.code : undefined,
       };
     }
