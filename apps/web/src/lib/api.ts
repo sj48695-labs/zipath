@@ -5,10 +5,71 @@ export class ApiError extends Error {
   constructor(
     message: string,
     public status: number,
+    public readonly code?: string,
   ) {
     super(message);
     this.name = "ApiError";
   }
+}
+
+/**
+ * 백엔드 표준 에러 envelope 의 web 쪽 로컬 미러.
+ * (백엔드 패키지를 import 할 수 없어 형태만 복제.)
+ */
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  data?: T;
+  error?: { code: string; message: string };
+}
+
+export function createErrorBody(code: string, message: string): ApiResponse {
+  return {
+    success: false,
+    error: { code, message },
+  };
+}
+
+/**
+ * 에러 응답 body 에서 메시지와 code 를 추출한다.
+ * 1) 표준 envelope `error.message`/`error.code` 우선
+ * 2) legacy fallback: `message`(string) → `error`(string, 프록시 라우트의 {error:string})
+ * 3) 최종 fallback: `API 오류 (status)`
+ */
+export function parseErrorBody(
+  body: unknown,
+  status: number,
+): { message: string; code?: string } {
+  if (body !== null && typeof body === "object") {
+    const record = body as Record<string, unknown>;
+    const envelopeError = record.error;
+
+    if (
+      envelopeError !== null &&
+      typeof envelopeError === "object" &&
+      "message" in envelopeError
+    ) {
+      const detail = envelopeError as { code?: unknown; message?: unknown };
+      if (typeof detail.message !== "string") {
+        return {
+          message: `API 오류 (${status})`,
+        };
+      }
+      return {
+        message: detail.message,
+        code: typeof detail.code === "string" ? detail.code : undefined,
+      };
+    }
+
+    if (typeof record.message === "string") {
+      return { message: record.message };
+    }
+
+    if (typeof envelopeError === "string") {
+      return { message: envelopeError };
+    }
+  }
+
+  return { message: `API 오류 (${status})` };
 }
 
 interface FetchApiOptions extends Omit<RequestInit, "headers"> {
@@ -103,7 +164,8 @@ export async function fetchApi<T>(
 
   if (!res.ok) {
     const body = await res.json().catch(() => null);
-    throw new ApiError(getBackendErrorMessage(body, res.status), res.status);
+    const { message, code } = parseErrorBody(body, res.status);
+    throw new ApiError(message, res.status, code);
   }
 
   // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.
@@ -131,24 +193,38 @@ export function unwrapBackendData<T>(body: unknown): T {
   return body as T;
 }
 
+/**
+ * 기존 branch 50 의 호출부를 위한 legacy 호환 헬퍼.
+ * 내부적으로는 표준 envelope 파서와 같은 규칙을 사용한다.
+ */
 export function getBackendErrorMessage(
   body: unknown,
   status: number,
 ): string {
-  if (body !== null && typeof body === "object") {
-    const record = body as Record<string, unknown>;
-    const error = record.error;
-    if (error !== null && typeof error === "object") {
-      const errorRecord = error as Record<string, unknown>;
-      if (typeof errorRecord.message === "string") {
-        return errorRecord.message;
-      }
-    }
+  return parseErrorBody(body, status).message;
+}
 
-    if (typeof record.message === "string") {
-      return record.message;
-    }
-  }
+/**
+ * 백엔드 에러 응답을 표준 envelope 로 정규화한다 (프록시 라우트의 !res.ok 분기용).
+ * body 파싱 실패 시 `HTTP_<status>` / `백엔드 오류 (status)` fallback.
+ */
+export async function backendErrorResponse(
+  res: Response,
+): Promise<{ status: number; body: ApiResponse }> {
+  const raw = await res.json().catch(() => null);
+  const { message, code } = parseErrorBody(raw, res.status);
+  return {
+    status: res.status,
+    body: createErrorBody(
+      code ?? `HTTP_${res.status}`,
+      message || `백엔드 오류 (${res.status})`,
+    ),
+  };
+}
 
-  return `API 오류 (${status})`;
+/**
+ * 프록시 라우트의 catch(네트워크 실패)용 표준 envelope.
+ */
+export function proxyErrorBody(message: string): ApiResponse {
+  return createErrorBody("PROXY_ERROR", message);
 }

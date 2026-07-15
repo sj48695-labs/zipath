@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { getBackendErrorMessage, unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  createErrorBody,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -9,7 +14,7 @@ export async function PATCH(request: Request) {
 
   if (!authHeader) {
     return NextResponse.json(
-      { error: "Authorization header is required" },
+      createErrorBody("HTTP_401", "Authorization header is required"),
       { status: 401 },
     );
   }
@@ -19,7 +24,7 @@ export async function PATCH(request: Request) {
     body = await request.json();
   } catch {
     return NextResponse.json(
-      { error: "Invalid JSON body" },
+      createErrorBody("VALIDATION_ERROR", "Invalid JSON body"),
       { status: 400 },
     );
   }
@@ -35,19 +40,14 @@ export async function PATCH(request: Request) {
     });
 
     if (!res.ok) {
-      const errBody: unknown = await res.json().catch(() => null);
-      return NextResponse.json(
-        {
-          error: getBackendErrorMessage(errBody, res.status),
-        },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to update interest regions" },
+      proxyErrorBody("관심 지역을 수정할 수 없습니다."),
       { status: 500 },
     );
   }

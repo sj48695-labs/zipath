@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  createErrorBody,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -10,7 +15,10 @@ export async function GET(request: Request) {
 
   if (!type) {
     return NextResponse.json(
-      { error: "type 파라미터가 필요합니다 (월세, 전세, 매매)" },
+      createErrorBody(
+        "VALIDATION_ERROR",
+        "type 파라미터가 필요합니다 (월세, 전세, 매매)",
+      ),
       { status: 400 },
     );
   }
@@ -21,17 +29,14 @@ export async function GET(request: Request) {
     );
 
     if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      return NextResponse.json(
-        { error: (body as Record<string, string>)?.message ?? `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "계약서 분석 데이터를 불러올 수 없습니다." },
+      proxyErrorBody("계약서 분석 데이터를 불러올 수 없습니다."),
       { status: 500 },
     );
   }

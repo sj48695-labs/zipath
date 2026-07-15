@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  createErrorBody,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -12,7 +17,7 @@ export async function GET(request: Request) {
 
   if (!userId) {
     return NextResponse.json(
-      { error: "userId is required" },
+      createErrorBody("VALIDATION_ERROR", "userId is required"),
       { status: 400 },
     );
   }
@@ -24,25 +29,31 @@ export async function GET(request: Request) {
     );
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch notifications" },
+      proxyErrorBody("알림 목록을 불러올 수 없습니다."),
       { status: 500 },
     );
   }
 }
 
 export async function POST(request: Request) {
+  let body: unknown;
   try {
-    const body = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      createErrorBody("VALIDATION_ERROR", "요청 본문이 올바른 JSON 형식이 아닙니다."),
+      { status: 400 },
+    );
+  }
 
+  try {
     const res = await fetch(`${API_BASE}/notifications/preferences`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,16 +61,14 @@ export async function POST(request: Request) {
     });
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body: errorBody } = await backendErrorResponse(res);
+      return NextResponse.json(errorBody, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to save notification preferences" },
+      proxyErrorBody("알림 설정을 저장할 수 없습니다."),
       { status: 500 },
     );
   }
@@ -71,7 +80,7 @@ export async function PUT(request: Request) {
 
   if (!prefId) {
     return NextResponse.json(
-      { error: "prefId is required" },
+      createErrorBody("VALIDATION_ERROR", "prefId is required"),
       { status: 400 },
     );
   }
@@ -86,16 +95,14 @@ export async function PUT(request: Request) {
     });
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body: errorBody } = await backendErrorResponse(res);
+      return NextResponse.json(errorBody, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to update notification preferences" },
+      proxyErrorBody("알림 설정을 수정할 수 없습니다."),
       { status: 500 },
     );
   }

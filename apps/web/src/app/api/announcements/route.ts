@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -17,16 +21,14 @@ export async function GET(request: Request) {
     const res = await fetch(`${API_BASE}/announcements?${params.toString()}`);
 
     if (!res.ok) {
-      return NextResponse.json(
-        { error: `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch announcements" },
+      proxyErrorBody("공고 목록을 불러올 수 없습니다."),
       { status: 500 },
     );
   }

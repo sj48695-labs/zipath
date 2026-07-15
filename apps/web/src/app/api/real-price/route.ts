@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  createErrorBody,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -13,7 +18,10 @@ export async function GET(request: Request) {
 
   if (!regionCode || !dealYmd) {
     return NextResponse.json(
-      { error: "LAWD_CD and DEAL_YMD are required" },
+      createErrorBody(
+        "VALIDATION_ERROR",
+        "LAWD_CD and DEAL_YMD are required",
+      ),
       { status: 400 },
     );
   }
@@ -31,17 +39,14 @@ export async function GET(request: Request) {
     );
 
     if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      return NextResponse.json(
-        { error: (body as Record<string, string>)?.message ?? `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch real price data" },
+      proxyErrorBody("실거래가 데이터를 불러올 수 없습니다."),
       { status: 500 },
     );
   }
