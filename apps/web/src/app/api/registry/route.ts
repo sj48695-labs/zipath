@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  createErrorBody,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -14,10 +19,8 @@ export async function GET(request: Request) {
       const res = await fetch(`${API_BASE}/registry/terms`);
 
       if (!res.ok) {
-        return NextResponse.json(
-          { error: `Backend error: ${res.status}` },
-          { status: res.status },
-        );
+        const { status, body } = await backendErrorResponse(res);
+        return NextResponse.json(body, { status });
       }
 
       return NextResponse.json(unwrapBackendData(await res.json()));
@@ -26,7 +29,7 @@ export async function GET(request: Request) {
     // Default: analyze
     if (!address) {
       return NextResponse.json(
-        { error: "address is required" },
+        createErrorBody("VALIDATION_ERROR", "address is required"),
         { status: 400 },
       );
     }
@@ -37,17 +40,14 @@ export async function GET(request: Request) {
     );
 
     if (!res.ok) {
-      const body = await res.json().catch(() => null);
-      return NextResponse.json(
-        { error: (body as Record<string, string>)?.message ?? `Backend error: ${res.status}` },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch registry data" },
+      proxyErrorBody("등기부 분석 데이터를 불러올 수 없습니다."),
       { status: 500 },
     );
   }

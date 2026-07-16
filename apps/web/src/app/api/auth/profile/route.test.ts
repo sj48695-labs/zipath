@@ -68,7 +68,11 @@ describe("/api/auth/profile route", () => {
 
     expect(response.status).toBe(401);
     await expect(response.json()).resolves.toEqual({
-      error: "Authorization header is required",
+      success: false,
+      error: {
+        code: "HTTP_401",
+        message: "Authorization header is required",
+      },
     });
   });
 
@@ -97,7 +101,11 @@ describe("/api/auth/profile route", () => {
 
     expect(response.status).toBe(401);
     await expect(response.json()).resolves.toEqual({
-      error: "토큰이 만료되었습니다.",
+      success: false,
+      error: {
+        code: "HTTP_401",
+        message: "토큰이 만료되었습니다.",
+      },
     });
   });
 });

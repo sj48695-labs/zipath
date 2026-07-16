@@ -1,5 +1,10 @@
 import { NextResponse } from "next/server";
-import { getBackendErrorMessage, unwrapBackendData } from "@/lib/api";
+import {
+  backendErrorResponse,
+  createErrorBody,
+  proxyErrorBody,
+  unwrapBackendData,
+} from "@/lib/api";
 
 const API_BASE =
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
@@ -9,7 +14,7 @@ export async function GET(request: Request) {
 
   if (!authHeader) {
     return NextResponse.json(
-      { error: "Authorization header is required" },
+      createErrorBody("HTTP_401", "Authorization header is required"),
       { status: 401 },
     );
   }
@@ -22,19 +27,14 @@ export async function GET(request: Request) {
     });
 
     if (!res.ok) {
-      const body: unknown = await res.json().catch(() => null);
-      return NextResponse.json(
-        {
-          error: getBackendErrorMessage(body, res.status),
-        },
-        { status: res.status },
-      );
+      const { status, body } = await backendErrorResponse(res);
+      return NextResponse.json(body, { status });
     }
 
     return NextResponse.json(unwrapBackendData(await res.json()));
   } catch {
     return NextResponse.json(
-      { error: "Failed to fetch profile" },
+      proxyErrorBody("프로필 정보를 불러올 수 없습니다."),
       { status: 500 },
     );
   }

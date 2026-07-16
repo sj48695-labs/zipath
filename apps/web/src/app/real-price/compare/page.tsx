@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useState, useCallback, useEffect } from "react";
 import SiteHeader from "@/components/layout/SiteHeader";
 import SupportedRegionNotice from "../_components/SupportedRegionNotice";
+import { formatWonAmount } from "../_lib/formatWonAmount";
 import {
   REGIONS,
   type Region,
@@ -76,13 +77,7 @@ function buildMonthOptions() {
 }
 
 function formatPrice(value: number): string {
-  if (value >= 10000) {
-    const eok = Math.floor(value / 10000);
-    const remainder = value % 10000;
-    if (remainder === 0) return `${eok}억`;
-    return `${eok}억 ${remainder.toLocaleString()}`;
-  }
-  return `${value.toLocaleString()}만원`;
+  return formatWonAmount(value);
 }
 
 function fmtPrice(value: number): string {
@@ -258,6 +253,10 @@ export default function RegionComparePage() {
         <h1 className="mb-2 text-3xl font-bold">지역 간 비교</h1>
         <p className="mb-8 text-muted-foreground">
           2~4개 지역의 아파트 실거래가를 비교합니다.
+        </p>
+        <p className="mb-8 text-xs text-muted-foreground">
+          * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은
+          국토교통부 실거래가 공개시스템을 확인해주세요.
         </p>
 
         {/* Region selection */}
