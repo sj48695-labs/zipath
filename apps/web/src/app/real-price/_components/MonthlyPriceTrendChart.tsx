@@ -13,6 +13,7 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import { formatWonAmount } from "../_lib/formatWonAmount";
 
 interface MonthlyPriceSummary {
   yearMonth: string;
@@ -38,13 +39,7 @@ function formatYearMonth(ym: string): string {
 
 function formatPrice(value: number | null | undefined): string {
   if (value === null || value === undefined) return "거래 없음";
-  if (value >= 10000) {
-    const eok = Math.floor(value / 10000);
-    const remainder = value % 10000;
-    if (remainder === 0) return `${eok}억`;
-    return `${eok}억 ${remainder.toLocaleString()}`;
-  }
-  return `${value.toLocaleString()}만원`;
+  return formatWonAmount(value);
 }
 
 export default function MonthlyPriceTrendChart({

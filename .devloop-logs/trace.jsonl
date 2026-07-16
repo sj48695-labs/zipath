@@ -11,3 +11,388 @@
 {"timestamp":"2026-05-06 04:51:30","skill":"review-fix:commit-mr","issue":"62","model":"sonnet","status":"success","tokens":{"input":16,"output":5076,"cache":323138},"duration":95,"logFile":"agents/review-fix:commit-mr-62.log"}
 {"timestamp":"2026-05-06 04:55:23","skill":"review","issue":"62","model":"sonnet","status":"success","tokens":{"input":20,"output":10819,"cache":824840},"duration":229,"logFile":"agents/review-62.log"}
 {"timestamp":"2026-05-06 04:58:03","skill":"review-fix:commit-mr","issue":"62","model":"sonnet","status":"success","tokens":{"input":20,"output":6212,"cache":451571},"duration":159,"logFile":"agents/review-fix:commit-mr-62.log"}
+{"timestamp":"2026-06-29 21:09:06","issue":"63","event":"approval","action":"stranded-reactivate","detail":"mr=139"}
+{"timestamp":"2026-06-29 21:09:06","issue":"95","event":"approval","action":"stranded-reactivate","detail":"mr=138"}
+{"timestamp":"2026-06-29 21:09:07","issue":"63","event":"approval","action":"label-picked","detail":"mr=139"}
+{"timestamp":"2026-06-29 23:32:33","issue":"60","event":"approval","action":"stranded-reactivate","detail":"mr=140"}
+{"timestamp":"2026-06-29 23:32:33","issue":"63","event":"approval","action":"stranded-reactivate","detail":"mr=139"}
+{"timestamp":"2026-06-29 23:32:33","issue":"95","event":"approval","action":"stranded-reactivate","detail":"mr=138"}
+{"timestamp":"2026-06-29 23:32:34","issue":"60","event":"approval","action":"label-picked","detail":"mr=140"}
+{"timestamp":"2026-06-29 23:35:34","skill":"prep","issue":"60","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":171,"logFile":"agents/prep-60.log"}
+{"timestamp":"2026-06-29 23:36:38","issue":"60","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-06-29 23:36:38","issue":"58","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-06-29 23:36:39","issue":"58","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=0)"}
+{"timestamp":"2026-06-29 23:36:41","issue":"58","event":"merge-guard","action":"label-remove","detail":"PR #107 (devloop:done)"}
+{"timestamp":"2026-06-29 23:36:45","issue":"58","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-06-29 23:36:46","issue":"58","event":"ci","action":"success","detail":"0s"}
+{"timestamp":"2026-06-29 23:39:52","skill":"code","issue":"60","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":192,"logFile":"agents/code-60.log"}
+{"timestamp":"2026-06-29 23:41:02","skill":"commit-mr","issue":"60","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":70,"logFile":"agents/commit-mr-60.log"}
+{"timestamp":"2026-06-29 23:41:04","issue":"60","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-06-29 23:41:04","issue":"60","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-06-29 23:41:06","issue":"63","event":"approval","action":"label-picked","detail":"mr=139"}
+{"timestamp":"2026-06-29 23:43:59","skill":"prep","issue":"63","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":148,"logFile":"agents/prep-63.log"}
+{"timestamp":"2026-06-29 23:47:50","skill":"prep","issue":"95","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":181,"logFile":"agents/prep-95.log"}
+{"timestamp":"2026-06-29 23:48:02","issue":"63","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-06-29 23:48:02","issue":"95","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-06-29 23:48:53","issue":"63","event":"interrupted","reason":"graceful_shutdown"}
+{"timestamp":"2026-06-29 23:50:22","skill":"plan","issue":"63","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":139,"logFile":"agents/plan-63.log"}
+{"timestamp":"2026-06-29 23:50:22","issue":"63","event":"plan","action":"auto-commit","detail":"plans/63-user-profile-page.md "}
+{"timestamp":"2026-06-29 23:51:34","skill":"code","issue":"95","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":210,"logFile":"agents/code-95.log"}
+{"timestamp":"2026-06-29 23:55:12","skill":"commit-mr","issue":"95","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":218,"logFile":"agents/commit-mr-95.log"}
+{"timestamp":"2026-06-29 23:55:14","issue":"95","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-06-29 23:55:14","issue":"95","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-06-30 00:02:11","skill":"code","issue":"63","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":709,"logFile":"agents/code-63.log"}
+{"timestamp":"2026-07-03 01:57:28","issue":"58","event":"approval","action":"label-picked","detail":"mr=107"}
+{"timestamp":"2026-07-03 02:02:59","skill":"prep","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":247,"logFile":"agents/prep-128.log"}
+{"timestamp":"2026-07-03 02:06:46","skill":"prep","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":211,"logFile":"agents/prep-127.log"}
+{"timestamp":"2026-07-03 02:07:04","issue":"58","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 02:07:04","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 02:07:04","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 02:07:06","issue":"58","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 02:09:32","skill":"code","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":146,"logFile":"agents/code-58.log"}
+{"timestamp":"2026-07-03 02:09:45","skill":"plan","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":159,"logFile":"agents/plan-127.log"}
+{"timestamp":"2026-07-03 02:09:45","issue":"127","event":"plan","action":"auto-commit","detail":"plans/127-global-navigation-subscription-loan.md "}
+{"timestamp":"2026-07-03 02:10:54","skill":"commit-mr","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":82,"logFile":"agents/commit-mr-58.log"}
+{"timestamp":"2026-07-03 02:10:54","issue":"58","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 02:11:06","skill":"plan","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":240,"logFile":"agents/plan-128.log"}
+{"timestamp":"2026-07-03 02:11:06","issue":"128","event":"plan","action":"auto-commit","detail":"plans/128-react-hydration-errors.md "}
+{"timestamp":"2026-07-03 02:14:18","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":272,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-03 02:21:55","skill":"code","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":648,"logFile":"agents/code-128.log"}
+{"timestamp":"2026-07-03 02:23:34","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":556,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-03 02:23:35","issue":"127","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-03 02:23:35","issue":"127","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-03 02:27:12","skill":"commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":316,"logFile":"agents/commit-mr-128.log"}
+{"timestamp":"2026-07-03 02:27:13","issue":"128","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-03 02:27:13","issue":"128","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-03 12:02:02","skill":"prep","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":156,"logFile":"agents/prep-129.log"}
+{"timestamp":"2026-07-03 12:07:57","skill":"prep","issue":"123","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":325,"logFile":"agents/prep-123.log"}
+{"timestamp":"2026-07-03 12:08:11","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 12:08:11","issue":"123","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 12:10:03","skill":"plan","issue":"123","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":111,"logFile":"agents/plan-123.log"}
+{"timestamp":"2026-07-03 12:10:03","issue":"123","event":"plan","action":"auto-commit","detail":"plans/123-announcements-loading-state.md "}
+{"timestamp":"2026-07-03 12:11:18","skill":"plan","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":186,"logFile":"agents/plan-129.log"}
+{"timestamp":"2026-07-03 12:11:18","issue":"129","event":"plan","action":"auto-commit","detail":"plans/129-subscription-coldstart-loading.md "}
+{"timestamp":"2026-07-03 12:15:44","skill":"code","issue":"123","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":340,"logFile":"agents/code-123.log"}
+{"timestamp":"2026-07-03 12:16:00","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":281,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-03 12:20:17","skill":"commit-mr","issue":"123","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":273,"logFile":"agents/commit-mr-123.log"}
+{"timestamp":"2026-07-03 12:20:19","issue":"123","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-03 12:20:19","issue":"123","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-03 12:22:10","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":370,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-03 12:22:12","issue":"129","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-03 12:22:12","issue":"129","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-03 14:56:01","issue":"58","event":"approval","action":"label-picked","detail":"mr=107"}
+{"timestamp":"2026-07-03 14:56:29","issue":"58","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 14:56:30","issue":"58","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 14:58:13","skill":"code","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":103,"logFile":"agents/code-58.log"}
+{"timestamp":"2026-07-03 14:59:13","skill":"commit-mr","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":60,"logFile":"agents/commit-mr-58.log"}
+{"timestamp":"2026-07-03 14:59:13","issue":"58","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 14:59:17","issue":"128","event":"pipeline","action":"midbatch-refill","detail":"빈 슬롯 자동 리필 (소스: request)"}
+{"timestamp":"2026-07-03 14:59:17","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=1)"}
+{"timestamp":"2026-07-03 15:02:09","skill":"commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":171,"logFile":"agents/commit-mr-128.log"}
+{"timestamp":"2026-07-03 15:02:09","issue":"128","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 15:02:13","issue":"127","event":"pipeline","action":"midbatch-refill","detail":"빈 슬롯 자동 리필 (소스: request)"}
+{"timestamp":"2026-07-03 15:02:14","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 15:04:59","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":165,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-03 15:07:20","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":141,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-03 15:07:20","issue":"127","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 15:07:55","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 15:07:55","issue":"123","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 15:07:56","issue":"123","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=1)"}
+{"timestamp":"2026-07-03 15:07:56","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 15:10:04","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":127,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-03 15:10:09","skill":"commit-mr","issue":"123","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":131,"logFile":"agents/commit-mr-123.log"}
+{"timestamp":"2026-07-03 15:10:10","issue":"123","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 15:13:27","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":203,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-03 15:13:28","issue":"129","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 17:15:38","issue":"58","event":"approval","action":"label-picked","detail":"mr=107"}
+{"timestamp":"2026-07-03 17:16:06","issue":"58","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 17:16:07","issue":"58","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 17:20:17","skill":"code","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":249,"logFile":"agents/code-58.log"}
+{"timestamp":"2026-07-03 17:24:44","skill":"commit-mr","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":267,"logFile":"agents/commit-mr-58.log"}
+{"timestamp":"2026-07-03 17:24:44","issue":"58","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 17:25:20","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 17:25:20","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 17:25:20","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-03 17:25:21","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 17:25:22","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-03 17:28:02","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":160,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-03 17:29:03","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":221,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-03 17:30:25","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":143,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-03 17:30:26","issue":"127","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-03 17:31:48","skill":"code","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":386,"logFile":"agents/code-128.log"}
+{"timestamp":"2026-07-03 17:31:48","issue":"128","event":"pipeline","action":"graceful-stop","detail":"/commit-mr 진입 전 안전 종료"}
+{"timestamp":"2026-07-03 17:31:51","issue":"128","event":"interrupted","reason":"graceful_shutdown"}
+{"timestamp":"2026-07-03 17:41:00","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":717,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-03 17:41:01","issue":"129","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(autosquash conflict 등). 수동 정리 후 진행."}
+{"timestamp":"2026-07-05 17:13:46","issue":"58","event":"approval","action":"label-picked","detail":"mr=107"}
+{"timestamp":"2026-07-05 17:14:57","issue":"58","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 17:14:58","issue":"58","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-05 17:16:20","skill":"code","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":82,"logFile":"agents/code-58.log"}
+{"timestamp":"2026-07-05 17:18:34","skill":"commit-mr","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":134,"logFile":"agents/commit-mr-58.log"}
+{"timestamp":"2026-07-05 17:18:37","issue":"58","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=2 leftover=0"}
+{"timestamp":"2026-07-05 17:18:39","issue":"58","event":"merge-guard","action":"label-remove","detail":"PR #107 (devloop:done)"}
+{"timestamp":"2026-07-05 17:18:41","issue":"58","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 17:22:31","issue":"58","event":"ci","action":"success","detail":"210s"}
+{"timestamp":"2026-07-05 17:27:15","skill":"review","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":284,"logFile":"agents/review-58.log"}
+{"timestamp":"2026-07-05 17:30:48","skill":"review-fix:commit-mr","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":213,"logFile":"agents/review-fix:commit-mr-58.log"}
+{"timestamp":"2026-07-05 17:30:51","issue":"58","event":"merge-guard","action":"label-remove","detail":"PR #107 (devloop:done)"}
+{"timestamp":"2026-07-05 17:30:51","issue":"58","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 17:30:52","issue":"58","event":"ci","action":"success","detail":"0s"}
+{"timestamp":"2026-07-05 17:32:32","skill":"review","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":100,"logFile":"agents/review-58.log"}
+{"timestamp":"2026-07-05 17:34:02","skill":"review-fix:commit-mr","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":90,"logFile":"agents/review-fix:commit-mr-58.log"}
+{"timestamp":"2026-07-05 17:34:05","issue":"58","event":"merge-guard","action":"label-remove","detail":"PR #107 (devloop:done)"}
+{"timestamp":"2026-07-05 17:34:05","issue":"58","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 17:34:06","issue":"58","event":"ci","action":"success","detail":"0s"}
+{"timestamp":"2026-07-05 17:34:12","issue":"58","event":"merge-guard","action":"done","detail":"PR #107"}
+{"timestamp":"2026-07-05 08:37:28","skill":"reply","issue":"58","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":95,"logFile":"agents/reply-58.log"}
+{"timestamp":"2026-07-05 17:51:09","issue":"50","event":"approval","action":"label-picked","detail":"mr=126"}
+{"timestamp":"2026-07-05 17:51:38","issue":"50","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-05 17:55:18","skill":"prep","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":192,"logFile":"agents/prep-122.log"}
+{"timestamp":"2026-07-05 17:55:38","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 17:55:38","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 17:55:38","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 17:55:38","issue":"122","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 17:55:39","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-05 17:55:39","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=2)"}
+{"timestamp":"2026-07-05 17:55:39","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-05 17:57:39","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":120,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-05 17:57:53","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":133,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-05 17:59:42","skill":"commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":242,"logFile":"agents/commit-mr-128.log"}
+{"timestamp":"2026-07-05 17:59:44","issue":"128","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=2 leftover=0"}
+{"timestamp":"2026-07-05 17:59:47","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 17:59:57","skill":"plan","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":258,"logFile":"agents/plan-122.log"}
+{"timestamp":"2026-07-05 17:59:57","issue":"122","event":"plan","action":"auto-commit","detail":"plans/122-subscription-timeout.md "}
+{"timestamp":"2026-07-05 18:00:31","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":172,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-05 18:00:34","issue":"129","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=2 leftover=0"}
+{"timestamp":"2026-07-05 18:00:37","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:01:26","issue":"128","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 18:02:15","issue":"129","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 18:03:25","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":331,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-05 18:03:27","issue":"127","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=2 leftover=0"}
+{"timestamp":"2026-07-05 18:03:30","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:05:06","skill":"code","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":309,"logFile":"agents/code-122.log"}
+{"timestamp":"2026-07-05 18:05:08","issue":"127","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 18:06:14","skill":"review","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":239,"logFile":"agents/review-129.log"}
+{"timestamp":"2026-07-05 18:07:12","skill":"review","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":346,"logFile":"agents/review-128.log"}
+{"timestamp":"2026-07-05 18:07:36","skill":"review","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":148,"logFile":"agents/review-127.log"}
+{"timestamp":"2026-07-05 18:09:17","skill":"reply","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":99,"logFile":"agents/reply-127.log"}
+{"timestamp":"2026-07-05 18:09:19","issue":"127","event":"approval","action":"label-consumed","detail":"branch=127-prep (terminal)"}
+{"timestamp":"2026-07-05 18:09:48","skill":"review-fix:commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":213,"logFile":"agents/review-fix:commit-mr-129.log"}
+{"timestamp":"2026-07-05 18:09:49","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:09:49","issue":"129","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-05 18:10:00","skill":"commit-mr","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":294,"logFile":"agents/commit-mr-122.log"}
+{"timestamp":"2026-07-05 18:10:01","issue":"122","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-05 18:10:01","issue":"122","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-05 18:14:34","skill":"review-fix:commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":442,"logFile":"agents/review-fix:commit-mr-128.log"}
+{"timestamp":"2026-07-05 18:14:35","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:14:35","issue":"128","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-05 18:45:18","issue":"50","event":"approval","action":"label-picked","detail":"mr=126"}
+{"timestamp":"2026-07-05 18:47:05","issue":"50","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 18:47:05","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 18:47:05","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 18:47:05","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-05 18:47:06","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-05 18:47:06","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=1)"}
+{"timestamp":"2026-07-05 18:47:06","issue":"50","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=1)"}
+{"timestamp":"2026-07-05 18:47:06","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-05 18:47:09","issue":"50","event":"merge-guard","action":"label-remove","detail":"PR #126 (devloop:done)"}
+{"timestamp":"2026-07-05 18:48:09","skill":"commit-mr","issue":"50","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":60,"logFile":"agents/commit-mr-50.log"}
+{"timestamp":"2026-07-05 18:48:10","issue":"50","event":"commit-mr-block","action":"enqueued","detail":"commit-mr 정리 미완 — fixup!/wip 커밋 1개 잔존(중간 삽입/push실패 등 자동 통합 불가). 수동 정리 후 진행."}
+{"timestamp":"2026-07-05 18:49:27","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":140,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-05 18:50:42","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":215,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-05 18:51:11","skill":"commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":243,"logFile":"agents/commit-mr-128.log"}
+{"timestamp":"2026-07-05 18:51:13","issue":"128","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-05 18:51:16","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:52:42","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":195,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-05 18:52:46","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:52:54","issue":"128","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 18:54:24","issue":"127","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 18:55:37","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":295,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-05 18:55:40","issue":"129","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-05 18:55:43","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 18:56:55","skill":"review","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":241,"logFile":"agents/review-128.log"}
+{"timestamp":"2026-07-05 18:57:21","issue":"129","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 18:59:54","skill":"review-fix:commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":178,"logFile":"agents/review-fix:commit-mr-128.log"}
+{"timestamp":"2026-07-05 18:59:55","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 19:00:44","skill":"review","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":203,"logFile":"agents/review-129.log"}
+{"timestamp":"2026-07-05 19:01:33","issue":"128","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-05 19:01:51","skill":"review","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":447,"logFile":"agents/review-127.log"}
+{"timestamp":"2026-07-05 19:01:52","issue":"127","event":"review-scope","action":"out-of-scope-reverted","detail":"apps/web/src/app/loan/layout.tsx apps/web/src/app/subscription/layout.tsx "}
+{"timestamp":"2026-07-05 19:04:05","skill":"review","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":152,"logFile":"agents/review-128.log"}
+{"timestamp":"2026-07-05 19:04:54","skill":"review-fix:commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":249,"logFile":"agents/review-fix:commit-mr-129.log"}
+{"timestamp":"2026-07-05 19:04:55","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 19:04:56","issue":"129","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-05 19:06:35","skill":"review-fix:commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":283,"logFile":"agents/review-fix:commit-mr-127.log"}
+{"timestamp":"2026-07-05 19:06:36","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 19:06:36","issue":"127","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-05 19:08:12","skill":"review-fix:commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":246,"logFile":"agents/review-fix:commit-mr-128.log"}
+{"timestamp":"2026-07-05 19:08:13","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-05 19:08:14","issue":"128","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-15 07:54:12","skill":"prep","issue":"131","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":206,"logFile":"agents/prep-131.log"}
+{"timestamp":"2026-07-15 07:54:30","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 07:54:30","issue":"122","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 07:54:30","issue":"123","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-15 07:54:30","issue":"131","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 07:54:31","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-15 07:54:31","issue":"122","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=1)"}
+{"timestamp":"2026-07-15 07:55:53","skill":"commit-mr","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":80,"logFile":"agents/commit-mr-122.log"}
+{"timestamp":"2026-07-15 07:55:56","issue":"122","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-15 07:56:00","issue":"122","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 07:57:42","issue":"122","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-15 08:00:18","skill":"plan","issue":"131","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":347,"logFile":"agents/plan-131.log"}
+{"timestamp":"2026-07-15 08:00:22","issue":"131","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-15 08:00:23","issue":"131","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-15 08:02:54","skill":"review","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":312,"logFile":"agents/review-122.log"}
+{"timestamp":"2026-07-15 08:03:55","issue":"128","event":"pipeline","action":"midbatch-refill","detail":"빈 슬롯 자동 리필 (소스: request)"}
+{"timestamp":"2026-07-15 08:03:56","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=1)"}
+{"timestamp":"2026-07-15 08:04:40","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":608,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-15 08:04:40","issue":"129","event":"pipeline","action":"graceful-stop","detail":"/commit-mr 진입 전 안전 종료"}
+{"timestamp":"2026-07-15 08:04:41","issue":"129","event":"interrupted","reason":"graceful_shutdown"}
+{"timestamp":"2026-07-15 08:05:45","skill":"reply","issue":"122","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":166,"logFile":"agents/reply-122.log"}
+{"timestamp":"2026-07-15 08:05:47","issue":"122","event":"approval","action":"label-consumed","detail":"branch=122-subscription-timeout (terminal)"}
+{"timestamp":"2026-07-15 08:08:21","skill":"commit-mr","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":263,"logFile":"agents/commit-mr-128.log"}
+{"timestamp":"2026-07-15 08:08:24","issue":"128","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-15 08:08:27","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 08:08:27","issue":"128","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-15 22:11:41","issue":"50","event":"approval","action":"label-picked","detail":"mr=126"}
+{"timestamp":"2026-07-15 22:14:59","issue":"50","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 22:14:59","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 22:14:59","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 22:14:59","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-15 22:15:00","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-15 22:15:00","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=0)"}
+{"timestamp":"2026-07-15 22:15:00","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-15 22:15:04","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 22:16:41","issue":"128","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-15 22:17:08","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":127,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-15 22:17:29","skill":"code","issue":"50","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":148,"logFile":"agents/code-50.log"}
+{"timestamp":"2026-07-15 22:18:57","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":236,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-15 22:19:01","skill":"commit-mr","issue":"50","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":92,"logFile":"agents/commit-mr-50.log"}
+{"timestamp":"2026-07-15 22:19:04","issue":"50","event":"commit-mr","action":"wip-melded","detail":"melded=1 leftover=0"}
+{"timestamp":"2026-07-15 22:19:06","issue":"50","event":"merge-guard","action":"label-remove","detail":"PR #126 (devloop:done)"}
+{"timestamp":"2026-07-15 22:19:09","issue":"50","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 22:20:10","issue":"128","event":"pipeline","action":"review-not-converged","detail":"rounds=1/3 converged=false no-done"}
+{"timestamp":"2026-07-15 22:20:11","issue":"128","event":"approval","action":"label-consumed","detail":"branch=128-prep (terminal)"}
+{"timestamp":"2026-07-15 22:21:37","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":269,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-15 22:21:40","issue":"129","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=2 leftover=0"}
+{"timestamp":"2026-07-15 22:21:43","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 22:22:05","issue":"50","event":"ci","action":"success","detail":"150s"}
+{"timestamp":"2026-07-15 22:23:28","issue":"129","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-15 22:24:05","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":308,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-15 22:24:14","issue":"127","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-15 22:24:18","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 22:25:55","issue":"127","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-15 22:25:57","skill":"review","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":149,"logFile":"agents/review-129.log"}
+{"timestamp":"2026-07-15 22:27:12","skill":"reply","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":72,"logFile":"agents/reply-129.log"}
+{"timestamp":"2026-07-15 22:27:15","issue":"129","event":"approval","action":"label-consumed","detail":"branch=129-prep (terminal)"}
+{"timestamp":"2026-07-15 22:28:05","skill":"review","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":130,"logFile":"agents/review-127.log"}
+{"timestamp":"2026-07-15 22:29:55","skill":"review","issue":"50","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":470,"logFile":"agents/review-50.log"}
+{"timestamp":"2026-07-15 22:29:55","issue":"50","event":"review-scope","action":"out-of-scope-reverted","detail":"apps/web/src/app/announcements/[id]/page.tsx apps/web/src/app/api/auth/profile/route.test.ts apps/web/src/app/real-price/compare/page.tsx apps/web/src/app/real-price/page.tsx apps/web/src/contexts/AuthContext.tsx "}
+{"timestamp":"2026-07-15 22:33:22","skill":"review-fix:commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":316,"logFile":"agents/review-fix:commit-mr-127.log"}
+{"timestamp":"2026-07-15 22:33:23","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 22:33:24","issue":"127","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-15 22:35:17","skill":"review-fix:commit-mr","issue":"50","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":322,"logFile":"agents/review-fix:commit-mr-50.log"}
+{"timestamp":"2026-07-15 22:35:20","issue":"50","event":"merge-guard","action":"label-remove","detail":"PR #126 (devloop:done)"}
+{"timestamp":"2026-07-15 22:35:20","issue":"50","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-15 22:35:21","issue":"50","event":"ci","action":"success","detail":"0s"}
+{"timestamp":"2026-07-15 22:35:28","issue":"50","event":"merge-guard","action":"done","detail":"PR #126"}
+{"timestamp":"2026-07-15 14:34:46","skill":"reply","issue":"50","model":"gpt-5.4-mini","status":"warned","tokens":{"input":0,"output":0,"cache":0},"duration":123,"logFile":"agents/reply-50.log"}
+{"timestamp":"2026-07-16 00:12:59","issue":"122-subscription-timeout","event":"selfheal","action":"remote-rescue-branch-push","detail":"devloop/rescue/122-subscription-timeout"}
+{"timestamp":"2026-07-16 00:13:04","issue":"122-subscription-timeout","event":"selfheal","action":"remote-rescue-pr-create","detail":"https://github.com/sj48695-labs/zipath/pull/144"}
+{"timestamp":"2026-07-16 08:28:50","issue":"122","event":"approval","action":"label-picked","detail":"mr=144"}
+{"timestamp":"2026-07-16 08:30:38","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:30:38","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:30:38","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:30:40","issue":"122","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:30:41","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-16 08:30:41","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=0)"}
+{"timestamp":"2026-07-16 08:30:41","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-16 08:30:47","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-16 08:32:25","issue":"128","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-16 08:32:25","issue":"128","event":"pipeline","action":"review-not-converged","detail":"rounds=1/3 converged=false no-done"}
+{"timestamp":"2026-07-16 08:32:26","issue":"128","event":"approval","action":"label-consumed","detail":"branch=128-prep (terminal)"}
+{"timestamp":"2026-07-16 08:32:30","issue":"122","event":"approval","action":"stranded-reactivate","detail":"mr=144"}
+{"timestamp":"2026-07-16 08:32:30","issue":"122","event":"approval","action":"label-picked","detail":"mr=144"}
+{"timestamp":"2026-07-16 08:49:45","issue":"122","event":"approval","action":"label-picked","detail":"mr=144"}
+{"timestamp":"2026-07-16 08:50:48","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:50:48","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:50:48","issue":"123","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:50:50","issue":"122","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-16 08:50:51","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-16 08:50:51","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=0)"}
+{"timestamp":"2026-07-16 08:50:55","issue":"128","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-16 08:52:31","issue":"128","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-16 08:53:25","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":153,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-16 08:54:57","issue":"128","event":"pipeline","action":"review-not-converged","detail":"rounds=1/3 converged=false no-done"}
+{"timestamp":"2026-07-16 08:54:58","issue":"128","event":"approval","action":"label-consumed","detail":"branch=128-prep (terminal)"}
+{"timestamp":"2026-07-16 08:55:23","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":118,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-16 08:55:28","issue":"127","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-16 08:55:31","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-16 08:57:09","issue":"127","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-16 08:58:59","skill":"review","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":110,"logFile":"agents/review-127.log"}
+{"timestamp":"2026-07-16 08:59:00","issue":"127","event":"review-scope","action":"out-of-scope-reverted","detail":"\"test-results/apps-web-e2e-tests-header--50a13--\\353\\267\\260\\355\\217\\254\\355\\212\\270\\354\\227\\220\\354\\204\\234-\\355\\226\\204\\353\\262\\204\\352\\261\\260-\\353\\251\\224\\353\\211\\264\\353\\241\\234-nav-\\353\\247\\201\\355\\201\\254\\353\\245\\274-\\355\\206\\240\\352\\270\\200\\355\\225\\234\\353\\213\\244/error-context.md\" \"test-results/apps-web-e2e-tests-header--b775d--\\353\\267\\260\\355\\217\\254\\355\\212\\270\\354\\227\\220\\354\\204\\234-\\355\\226\\204\\353\\262\\204\\352\\261\\260-\\353\\251\\224\\353\\211\\264\\353\\241\\234-nav-\\353\\247\\201\\355\\201\\254\\353\\245\\274-\\355\\206\\240\\352\\270\\200\\355\\225\\234\\353\\213\\244/error-context.md\" \"test-results/apps-web-e2e-tests-header--de344-iption-\\355\\216\\230\\354\\235\\264\\354\\247\\200\\354\\227\\220-\\354\\260\\270\\352\\263\\240\\354\\232\\251-\\353\\262\\225\\354\\240\\201-\\352\\263\\240\\354\\247\\200\\352\\260\\200-\\355\\221\\234\\354\\213\\234\\353\\220\\234\\353\\213\\244/error-context.md\" \"test-results/apps-web-e2e-tests-header-nav--checklist-\\355\\227\\244\\353\\215\\224\\354\\227\\220-nav-\\353\\247\\201\\355\\201\\254\\352\\260\\200-\\355\\221\\234\\354\\213\\234\\353\\220\\234\\353\\213\\244/error-context.md\" \"test-results/apps-web-e2e-tests-header-nav--loan-\\355\\216\\230\\354\\235\\264\\354\\247\\200\\354\\227\\220-\\354\\260\\270\\352\\263\\240\\354\\232\\251-\\353\\262\\225\\354\\240\\201-\\352\\263\\240\\354\\247\\200\\352\\260\\200-\\355\\221\\234\\354\\213\\234\\353\\220\\234\\353\\213\\244/error-context.md\" \"test-results/apps-web-e2e-tests-header-nav--loan-\\355\\227\\244\\353\\215\\224\\354\\227\\220-nav-\\353\\247\\201\\355\\201\\254\\352\\260\\200-\\355\\221\\234\\354\\213\\234\\353\\220\\234\\353\\213\\244/error-context.md\" \"test-results/apps-web-e2e-tests-header-nav--subscription-\\355\\227\\244\\353\\215\\224\\354\\227\\220-nav-\\353\\247\\201\\355\\201\\254\\352\\260\\200-\\355\\221\\234\\354\\213\\234\\353\\220\\234\\353\\213\\244/error-context.md\" test-results/.last-run.json "}
+{"timestamp":"2026-07-16 09:00:03","skill":"reply","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":62,"logFile":"agents/reply-127.log"}
+{"timestamp":"2026-07-16 09:00:05","issue":"127","event":"approval","action":"label-consumed","detail":"branch=127-prep (terminal)"}
+{"timestamp":"2026-07-16 09:00:10","issue":"122","event":"approval","action":"stranded-reactivate","detail":"mr=144"}
+{"timestamp":"2026-07-16 09:00:11","issue":"122","event":"approval","action":"label-picked","detail":"mr=144"}
+{"timestamp":"2026-07-16 09:04:05","skill":"prep","issue":"130","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":167,"logFile":"agents/prep-130.log"}
+{"timestamp":"2026-07-16 09:04:17","issue":"129","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 09:04:17","issue":"130","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-16 09:04:19","issue":"122","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-16 09:04:20","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-16 09:06:06","skill":"code","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":105,"logFile":"agents/code-129.log"}
+{"timestamp":"2026-07-16 09:06:55","skill":"commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":49,"logFile":"agents/commit-mr-129.log"}
+{"timestamp":"2026-07-16 09:06:58","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-16 09:08:36","issue":"129","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-16 09:10:16","skill":"plan","issue":"130","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":356,"logFile":"agents/plan-130.log"}
+{"timestamp":"2026-07-16 09:10:16","issue":"130","event":"plan","action":"auto-commit","detail":"plans/74-notification-scheduler-service.md "}
+{"timestamp":"2026-07-16 09:10:17","issue":"130","event":"pipeline","action":"graceful-stop","detail":"/code 진입 전 안전 종료"}
+{"timestamp":"2026-07-16 09:10:19","issue":"130","event":"interrupted","reason":"graceful_shutdown"}
+{"timestamp":"2026-07-16 09:12:16","skill":"review","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":219,"logFile":"agents/review-129.log"}
+{"timestamp":"2026-07-16 09:14:21","skill":"review-fix:commit-mr","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":124,"logFile":"agents/review-fix:commit-mr-129.log"}
+{"timestamp":"2026-07-16 09:14:22","issue":"129","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-16 09:14:22","issue":"129","event":"ci","action":"interrupted","detail":"graceful_shutdown@0s"}
+{"timestamp":"2026-07-17 01:51:29","issue":"122","event":"approval","action":"label-picked","detail":"mr=144"}
+{"timestamp":"2026-07-17 01:51:54","issue":"59","event":"reconcile","action":"reopen-reactivate","detail":"state=reopened → unmark 재투입 (strike=1)"}
+{"timestamp":"2026-07-17 01:51:54","issue":"69","event":"reconcile","action":"reopen-reactivate","detail":"state=reopened → unmark 재투입 (strike=1)"}
+{"timestamp":"2026-07-17 01:51:55","issue":"110","event":"reconcile","action":"reopen-reactivate","detail":"state=reopened → unmark 재투입 (strike=1)"}
+{"timestamp":"2026-07-17 01:51:55","issue":"111","event":"reconcile","action":"reopen-reactivate","detail":"state=reopened → unmark 재투입 (strike=1)"}
+{"timestamp":"2026-07-17 01:51:55","issue":"51","event":"reconcile","action":"reopen-reactivate","detail":"state=reopened → unmark 재투입 (strike=1)"}
+{"timestamp":"2026-07-17 01:55:08","skill":"prep","issue":"131","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":150,"logFile":"agents/prep-131.log"}
+{"timestamp":"2026-07-17 01:55:24","issue":"128","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-17 01:55:24","issue":"127","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-17 01:55:24","issue":"131","event":"rebase","action":"success","detail":"origin/develop"}
+{"timestamp":"2026-07-17 01:55:26","issue":"122","event":"rebase","action":"conflict","detail":"origin/develop"}
+{"timestamp":"2026-07-17 01:55:27","issue":"128","event":"pipeline","action":"resume-skip-impl","detail":"branch에 구현 기존 존재 (wip=0)"}
+{"timestamp":"2026-07-17 01:55:27","issue":"127","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-17 01:55:28","issue":"131","event":"plan","action":"re-review","detail":"이슈/댓글 변경 — plan 재작성"}
+{"timestamp":"2026-07-17 01:55:28","issue":"127","event":"plan","action":"re-review","detail":"이슈/댓글 변경 — plan 재작성"}
+{"timestamp":"2026-07-17 01:55:28","issue":"128","event":"plan","action":"re-review","detail":"이슈/댓글 변경 — plan 재작성"}
+{"timestamp":"2026-07-17 01:55:45","issue":"129","event":"pipeline","action":"midbatch-refill","detail":"빈 슬롯 자동 리필 (소스: request)"}
+{"timestamp":"2026-07-17 01:55:45","issue":"129","event":"pipeline","action":"resume-keep-impl","detail":"plan 미완료 phase 존재 — /code 재개"}
+{"timestamp":"2026-07-17 01:55:46","issue":"129","event":"plan","action":"re-review","detail":"이슈/댓글 변경 — plan 재작성"}
+{"timestamp":"2026-07-17 01:55:46","issue":"130","event":"pipeline","action":"midbatch-refill","detail":"빈 슬롯 자동 리필 (소스: request)"}
+{"timestamp":"2026-07-17 01:57:52","skill":"plan","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":144,"logFile":"agents/plan-127.log"}
+{"timestamp":"2026-07-17 01:57:52","issue":"127","event":"plan","action":"re-review-applied","detail":"plan 재작성 반영"}
+{"timestamp":"2026-07-17 01:58:38","skill":"plan","issue":"130","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":171,"logFile":"agents/plan-130.log"}
+{"timestamp":"2026-07-17 01:58:38","issue":"130","event":"plan","action":"no-plan-file","detail":"plan 파일 미생성 — 질문 종료 추정"}
+{"timestamp":"2026-07-17 01:58:40","issue":"130","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-17 01:58:40","issue":"130","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-17 01:58:52","skill":"plan","issue":"131","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":204,"logFile":"agents/plan-131.log"}
+{"timestamp":"2026-07-17 01:58:52","issue":"131","event":"plan","action":"re-review-applied","detail":"plan 재작성 반영"}
+{"timestamp":"2026-07-17 02:01:47","skill":"code","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":235,"logFile":"agents/code-127.log"}
+{"timestamp":"2026-07-17 02:02:00","skill":"code","issue":"131","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":188,"logFile":"agents/code-131.log"}
+{"timestamp":"2026-07-17 02:02:14","skill":"plan","issue":"129","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":388,"logFile":"agents/plan-129.log"}
+{"timestamp":"2026-07-17 02:03:40","skill":"plan","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":492,"logFile":"agents/plan-128.log"}
+{"timestamp":"2026-07-17 02:03:40","issue":"128","event":"plan","action":"re-review-applied","detail":"plan 재작성 반영"}
+{"timestamp":"2026-07-17 02:06:13","skill":"commit-mr","issue":"127","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":265,"logFile":"agents/commit-mr-127.log"}
+{"timestamp":"2026-07-17 02:06:20","issue":"127","event":"commit-mr","action":"wip-collapsed","detail":"collapsed=1 leftover=0"}
+{"timestamp":"2026-07-17 02:06:23","issue":"127","event":"ci","action":"wait-start","detail":"max=900s"}
+{"timestamp":"2026-07-17 02:06:35","skill":"commit-mr","issue":"131","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":274,"logFile":"agents/commit-mr-131.log"}
+{"timestamp":"2026-07-17 02:06:36","issue":"131","event":"pipeline","action":"skip-review","detail":"no-non-plan-diff"}
+{"timestamp":"2026-07-17 02:06:36","issue":"131","event":"worker","action":"fail-empty","detail":"plan 외 코드 변경 0건 — code 단계가 구현을 누락했거나 no-op"}
+{"timestamp":"2026-07-17 02:06:37","issue":"131","event":"approval","action":"label-consumed","detail":"branch=131-announcements-empty-state-guidance (terminal)"}
+{"timestamp":"2026-07-17 02:06:37","issue":"131","event":"worker","action":"fail-stall","detail":"코드 변경 0건으로 2회 재개했으나 미수렴. plan 스코프 누락 의심 — 재계획(plan 파일 삭제 후 재생성)/드롭/후속이슈 분리 중 택하세요. 자동 재개는 중단했습니다(devloop:continue 제거)."}
+{"timestamp":"2026-07-17 02:06:37","issue":"131","event":"pipeline","action":"noprogress-stall","detail":"strike=2 unchecked=0\n0"}
+{"timestamp":"2026-07-17 02:08:00","issue":"127","event":"ci","action":"skipped","detail":"no-pipeline"}
+{"timestamp":"2026-07-17 02:11:12","skill":"code","issue":"128","model":"gpt-5.4-mini","status":"success","tokens":{"input":0,"output":0,"cache":0},"duration":452,"logFile":"agents/code-128.log"}

@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useState, useMemo, useCallback, useEffect } from "react";
 import SiteHeader from "@/components/layout/SiteHeader";
 import AreaFilter from "./_components/AreaFilter";
+import { formatWonAmount } from "./_lib/formatWonAmount";
 import SupportedRegionNotice from "./_components/SupportedRegionNotice";
 import { REGIONS } from "./_lib/regions";
 
@@ -479,7 +480,12 @@ export default function RealPricePage() {
                             <td className="px-3 py-3 font-medium">{t.aptNm}</td>
                             <td className="px-3 py-3 text-muted-foreground">{t.umdNm}</td>
                             <td className="px-3 py-3 text-right font-medium text-primary">
-                              {t.dealAmount?.trim()}만원
+                              {formatWonAmount(
+                                parseInt(
+                                  t.dealAmount?.replace(/,/g, "").trim() || "0",
+                                  10,
+                                ),
+                              )}
                             </td>
                             <td className="px-3 py-3 text-right">{t.excluUseAr}m²</td>
                             <td className="px-3 py-3 text-right">{t.floor}층</td>

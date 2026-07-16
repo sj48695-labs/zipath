@@ -11,6 +11,7 @@ import {
   ScatterChart,
   Scatter,
 } from "recharts";
+import { formatWonAmount } from "../_lib/formatWonAmount";
 
 interface DongAverage {
   name: string;
@@ -54,10 +55,7 @@ export default function RealPriceCharts({
                 tick={{ fontSize: 12 }}
               />
               <Tooltip
-                formatter={(value: unknown) => [
-                  `${Number(value).toLocaleString()}만원`,
-                  "평균가",
-                ]}
+                formatter={(value: unknown) => [formatWonAmount(Number(value)), "평균가"]}
                 labelFormatter={(label: unknown) => String(label)}
               />
               <Bar
@@ -94,7 +92,7 @@ export default function RealPriceCharts({
                 formatter={(value: unknown, name: unknown) => {
                   const v = Number(value);
                   const n = String(name);
-                  if (n === "가격") return [`${v.toLocaleString()}만원`, n];
+                  if (n === "가격") return [formatWonAmount(v), n];
                   return [`${v}m²`, n];
                 }}
               />
