@@ -1,4 +1,10 @@
 import { Injectable } from "@nestjs/common";
+import type {
+  SubscriptionPointBreakdown,
+  SubscriptionSimulationInput,
+  SubscriptionSimulationResponse,
+  SubscriptionResult,
+} from "@zipath/types";
 
 interface ScoreTier {
   threshold: number;
@@ -55,75 +61,118 @@ function lookupScore(table: ScoreTier[], value: number): number {
   return table.find((tier) => value >= tier.threshold)?.score ?? 0;
 }
 
-export interface SimulationInput {
-  age: number;
-  income: number;
-  homelessMonths: number;
-  dependents?: number;
-  savingsMonths?: number;
-  region?: string;
-  isMarried?: boolean;
-  isFirstHome?: boolean;
-}
-
-export interface PointBreakdown {
-  category: string;
-  score: number;
-  maxScore: number;
-  description: string;
+function formatSavingsDuration(years: number, months: number): string {
+  return `가입 ${years}년 ${months}개월`;
 }
 
 @Injectable()
 export class SubscriptionService {
-  simulate(input: SimulationInput) {
-    const { age, income, homelessMonths, dependents = 0, isMarried = false, isFirstHome = false } = input;
-    const results = [];
+  simulate(input: SubscriptionSimulationInput): SubscriptionSimulationResponse {
+    const {
+      age,
+      income,
+      homelessMonths,
+      dependents = 0,
+      isMarried = false,
+      isFirstHome = false,
+    } = input;
+    const results: SubscriptionResult[] = [];
 
     // 1순위 일반공급
     if (age >= 19 && homelessMonths >= 24) {
       if (income <= 6000) {
-        results.push({ type: "1순위 일반공급", eligible: true, reason: "만 19세 이상, 무주택 2년 이상, 소득 기준 충족" });
+        results.push({
+          type: "1순위 일반공급",
+          eligible: true,
+          reason: "만 19세 이상, 무주택 2년 이상, 소득 기준 충족",
+        });
       } else {
-        results.push({ type: "1순위 일반공급", eligible: false, reason: `소득 기준 초과 (${income}만원 > 6,000만원)` });
+        results.push({
+          type: "1순위 일반공급",
+          eligible: false,
+          reason: `소득 기준 초과 (${income}만원 > 6,000만원)`,
+        });
       }
     } else {
       const reasons: string[] = [];
       if (age < 19) reasons.push("만 19세 미만");
-      if (homelessMonths < 24) reasons.push(`무주택 기간 부족 (${homelessMonths}개월 < 24개월)`);
-      results.push({ type: "1순위 일반공급", eligible: false, reason: reasons.join(", ") });
+      if (homelessMonths < 24) {
+        reasons.push(`무주택 기간 부족 (${homelessMonths}개월 < 24개월)`);
+      }
+      results.push({
+        type: "1순위 일반공급",
+        eligible: false,
+        reason: reasons.join(", "),
+      });
     }
 
     // 2순위
     if (age >= 19) {
-      results.push({ type: "2순위", eligible: true, reason: "만 19세 이상 누구나 신청 가능 (당첨 확률 낮음)" });
+      results.push({
+        type: "2순위",
+        eligible: true,
+        reason: "만 19세 이상 누구나 신청 가능 (당첨 확률 낮음)",
+      });
     }
 
     // 특별공급 - 신혼부부
     if (isMarried && income <= 7000) {
-      results.push({ type: "특별공급 (신혼부부)", eligible: true, reason: "혼인 상태 + 소득 기준 충족 (7,000만원 이하)" });
+      results.push({
+        type: "특별공급 (신혼부부)",
+        eligible: true,
+        reason: "혼인 상태 + 소득 기준 충족 (7,000만원 이하)",
+      });
     } else if (isMarried && income > 7000) {
-      results.push({ type: "특별공급 (신혼부부)", eligible: false, reason: `소득 기준 초과 (${income}만원 > 7,000만원)` });
+      results.push({
+        type: "특별공급 (신혼부부)",
+        eligible: false,
+        reason: `소득 기준 초과 (${income}만원 > 7,000만원)`,
+      });
     } else if (!isMarried) {
-      results.push({ type: "특별공급 (신혼부부)", eligible: false, reason: "혼인 상태가 아닙니다" });
+      results.push({
+        type: "특별공급 (신혼부부)",
+        eligible: false,
+        reason: "혼인 상태가 아닙니다",
+      });
     }
 
     // 특별공급 - 생애최초
     if (isFirstHome && income <= 6000 && homelessMonths >= 0) {
-      results.push({ type: "특별공급 (생애최초)", eligible: true, reason: "생애최초 주택 구입 + 소득 기준 충족" });
+      results.push({
+        type: "특별공급 (생애최초)",
+        eligible: true,
+        reason: "생애최초 주택 구입 + 소득 기준 충족",
+      });
     } else if (!isFirstHome) {
-      results.push({ type: "특별공급 (생애최초)", eligible: false, reason: "생애최초 주택 구입 대상이 아닙니다" });
+      results.push({
+        type: "특별공급 (생애최초)",
+        eligible: false,
+        reason: "생애최초 주택 구입 대상이 아닙니다",
+      });
     } else if (income > 6000) {
-      results.push({ type: "특별공급 (생애최초)", eligible: false, reason: `소득 기준 초과 (${income}만원 > 6,000만원)` });
+      results.push({
+        type: "특별공급 (생애최초)",
+        eligible: false,
+        reason: `소득 기준 초과 (${income}만원 > 6,000만원)`,
+      });
     }
 
     // 특별공급 - 다자녀
     if (dependents >= 3) {
-      results.push({ type: "특별공급 (다자녀)", eligible: true, reason: `미성년 자녀 ${dependents}명 (3명 이상)` });
+      results.push({
+        type: "특별공급 (다자녀)",
+        eligible: true,
+        reason: `미성년 자녀 ${dependents}명 (3명 이상)`,
+      });
     }
 
     // 특별공급 - 노부모 부양
     if (dependents > 0 && age >= 25 && homelessMonths >= 36) {
-      results.push({ type: "특별공급 (노부모부양)", eligible: true, reason: "만 25세 이상, 무주택 3년 이상, 부양가족 있음" });
+      results.push({
+        type: "특별공급 (노부모부양)",
+        eligible: true,
+        reason: "만 25세 이상, 무주택 3년 이상, 부양가족 있음",
+      });
     }
 
     // 가점 계산 (84점 만점)
@@ -138,14 +187,16 @@ export class SubscriptionService {
       totalPoints,
       maxPoints,
       message: results.some((r) => r.eligible)
-        ? `청약 가능한 유형이 있습니다! (가점 ${totalPoints}/${maxPoints}점)`
-        : "현재 조건으로는 청약 자격이 부족합니다.",
+        ? `청약 가능한 유형이 있습니다! (입력 기준 가점 ${totalPoints}/${maxPoints}점)`
+        : "현재 입력 기준으로는 청약 자격이 부족합니다.",
     };
   }
 
-  private calculatePoints(input: SimulationInput): PointBreakdown[] {
-    const { age, homelessMonths, dependents = 0, savingsMonths } = input;
-    const points: PointBreakdown[] = [];
+  private calculatePoints(
+    input: SubscriptionSimulationInput,
+  ): SubscriptionPointBreakdown[] {
+    const { homelessMonths, dependents = 0, savingsYears, savingsMonths } = input;
+    const points: SubscriptionPointBreakdown[] = [];
 
     // 1. 무주택 기간 (최대 32점)
     const homelessYears = Math.floor(homelessMonths / 12);
@@ -165,17 +216,13 @@ export class SubscriptionService {
     });
 
     // 3. 청약통장 가입기간 (최대 17점)
-    const hasSavingsInput = savingsMonths !== undefined;
-    const savingsYears = hasSavingsInput
-      ? Math.floor(savingsMonths / 12)
-      : Math.max(0, age - 19);
+    const savingsTotalMonths = savingsYears * 12 + savingsMonths;
+    const savingsYearsForScore = Math.floor(savingsTotalMonths / 12);
     points.push({
       category: "청약통장 가입기간",
-      score: lookupScore(SAVINGS_SCORE_TABLE, savingsYears),
+      score: lookupScore(SAVINGS_SCORE_TABLE, savingsYearsForScore),
       maxScore: 17,
-      description: hasSavingsInput
-        ? `가입 ${savingsYears}년 (${savingsMonths}개월)`
-        : `추정 가입기간 약 ${savingsYears}년 (만 19세부터 계산)`,
+      description: formatSavingsDuration(savingsYears, savingsMonths),
     });
 
     return points;

@@ -35,7 +35,8 @@ export interface SubscriptionSimulationInput {
   income: number; // 만원 단위
   homelessMonths: number;
   dependents?: number; // 부양가족 수
-  savingsMonths?: number; // 청약통장 가입 개월
+  savingsYears: number; // 청약통장 가입 년수
+  savingsMonths: number; // 청약통장 가입 개월
   region?: string;
   isMarried?: boolean; // 혼인 여부
   isFirstHome?: boolean; // 생애최초 여부

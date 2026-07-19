@@ -78,6 +78,11 @@ describe("NotificationController", () => {
       expect(service.getNotifications).toHaveBeenCalledWith(42, 3, 5);
     });
 
+    it("getNotifications falls back to defaults for invalid pagination values", () => {
+      controller.getNotifications(reqWithUser(42), "0", "not-a-number");
+      expect(service.getNotifications).toHaveBeenCalledWith(42, 1, 20);
+    });
+
     it("markAsRead forwards notification id and req.user.id", () => {
       controller.markAsRead(reqWithUser(42), 100);
       expect(service.markAsRead).toHaveBeenCalledWith(100, 42);

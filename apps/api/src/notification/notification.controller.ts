@@ -30,6 +30,15 @@ interface UpdatePreferenceBody {
   isActive?: boolean;
 }
 
+function parsePageParam(value: string | undefined, fallback: number): number {
+  if (value === undefined) return fallback;
+
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) return fallback;
+
+  return parsed;
+}
+
 @UseGuards(JwtAuthGuard)
 @Controller("notifications")
 export class NotificationController {
@@ -77,8 +86,8 @@ export class NotificationController {
   ) {
     return this.notificationService.getNotifications(
       req.user.id,
-      page ? parseInt(page, 10) : 1,
-      limit ? parseInt(limit, 10) : 20,
+      parsePageParam(page, 1),
+      parsePageParam(limit, 20),
     );
   }
 

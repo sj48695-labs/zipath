@@ -3,6 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import SiteHeader from "@/components/layout/SiteHeader";
 import { fetchApi, ApiError } from "@/lib/api";
+import type {
+  SubscriptionSimulationInput,
+  SubscriptionSimulationResponse,
+} from "@zipath/types";
+import {
+  buildSubscriptionSimulationInput,
+  type SubscriptionFormState,
+} from "./utils";
 
 /** 콜드 스타트 안내를 노출하기 시작하는 경과 시간(초). */
 const COLD_START_HINT_SECONDS = 10;
@@ -10,52 +18,22 @@ const COLD_START_HINT_SECONDS = 10;
 /** 청약 자격 확인 요청 안전 타임아웃(ms). 초과 시 408 로 변환된다. */
 const REQUEST_TIMEOUT_MS = 45_000;
 
-interface SimulationPayload {
-  age: number;
-  income: number;
-  homelessMonths: number;
-  dependents: number;
-  savingsMonths?: number;
-  isMarried: boolean;
-  isFirstHome: boolean;
-}
-
-interface SimulationResult {
-  type: string;
-  eligible: boolean;
-  reason: string;
-}
-
-interface PointBreakdown {
-  category: string;
-  score: number;
-  maxScore: number;
-  description: string;
-}
-
-interface SimulationResponse {
-  results: SimulationResult[];
-  points: PointBreakdown[];
-  totalPoints: number;
-  maxPoints: number;
-  message: string;
-}
-
 export default function SubscriptionPage() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<SubscriptionFormState>({
     age: "",
     income: "",
     homelessMonths: "",
     dependents: "",
+    savingsYears: "",
     savingsMonths: "",
     isMarried: false,
     isFirstHome: false,
   });
-  const [result, setResult] = useState<SimulationResponse | null>(null);
+  const [result, setResult] = useState<SubscriptionSimulationResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
-  const lastPayloadRef = useRef<SimulationPayload | null>(null);
+  const lastPayloadRef = useRef<SubscriptionSimulationInput | null>(null);
 
   // loading 동안 1초 간격으로 경과 시간을 추적, 종료 시 정리.
   useEffect(() => {
@@ -72,13 +50,13 @@ export default function SubscriptionPage() {
 
   const showColdStartHint = loading && elapsedSeconds >= COLD_START_HINT_SECONDS;
 
-  const runSimulation = async (payload: SimulationPayload) => {
+  const runSimulation = async (payload: SubscriptionSimulationInput) => {
     setLoading(true);
     setError(null);
     setResult(null);
 
     try {
-      const data = await fetchApi<SimulationResponse>(
+      const data = await fetchApi<SubscriptionSimulationResponse>(
         "/subscription/simulate",
         {
           method: "POST",
@@ -105,15 +83,7 @@ export default function SubscriptionPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const payload: SimulationPayload = {
-      age: Number(form.age),
-      income: Number(form.income),
-      homelessMonths: Number(form.homelessMonths),
-      dependents: form.dependents ? Number(form.dependents) : 0,
-      savingsMonths: form.savingsMonths ? Number(form.savingsMonths) : undefined,
-      isMarried: form.isMarried,
-      isFirstHome: form.isFirstHome,
-    };
+    const payload = buildSubscriptionSimulationInput(form);
     lastPayloadRef.current = payload;
     void runSimulation(payload);
   };
@@ -131,7 +101,11 @@ export default function SubscriptionPage() {
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">청약 자격 시뮬레이션</h1>
         <p className="mb-8 text-muted-foreground">
-          기본 정보를 입력하면 청약 가능 여부와 예상 가점을 확인할 수 있어요.
+          기본 정보를 입력하면 청약 가능 여부와 입력 기준 예상 가점을 확인할 수 있어요.
+        </p>
+
+        <p className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+          참고용이며 법적 효력 없음
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-6 rounded-lg border p-6">
@@ -180,14 +154,32 @@ export default function SubscriptionPage() {
               />
             </div>
             <div>
+              <label className="mb-2 block text-sm font-medium">청약통장 가입기간 (년)</label>
+              <input
+                type="number"
+                min="0"
+                placeholder="예: 3"
+                value={form.savingsYears}
+                onChange={(e) => setForm({ ...form, savingsYears: e.target.value })}
+                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                required
+              />
+            </div>
+            <div>
               <label className="mb-2 block text-sm font-medium">청약통장 가입기간 (개월)</label>
               <input
                 type="number"
-                placeholder="미입력 시 나이로 추정"
+                min="0"
+                max="11"
+                placeholder="예: 6"
                 value={form.savingsMonths}
                 onChange={(e) => setForm({ ...form, savingsMonths: e.target.value })}
                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                required
               />
+              <p className="mt-1 text-xs text-muted-foreground">
+                실제 가입기간을 년/월로 입력하세요.
+              </p>
             </div>
           </div>
 
@@ -301,7 +293,7 @@ export default function SubscriptionPage() {
 
             <div className="rounded-lg border p-6">
               <h2 className="mb-4 text-lg font-semibold">
-                예상 가점: {result.totalPoints}점 / {result.maxPoints}점
+                입력한 청약통장 가입기간 기준 예상 가점: {result.totalPoints}점 / {result.maxPoints}점
               </h2>
               <div className="space-y-4">
                 {result.points.map((p, i) => (
