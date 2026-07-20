@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-// 이슈 #127 회귀 방지: /subscription·/loan·/checklist 헤더 nav 누락 버그
-const paths = ['/subscription', '/loan', '/checklist'];
+// 이슈 #127 회귀 방지: 글로벌 헤더 nav 누락 및 페이지별 로고-only 헤더 재도입 버그
+const paths = ['/', '/real-price', '/subscription', '/loan', '/checklist'];
 const navLabels = ['청약', '대출', '체크리스트', '실거래가'] as const;
 
 for (const path of paths) {
@@ -18,7 +18,7 @@ for (const path of paths) {
   });
 }
 
-for (const path of ['/subscription', '/loan']) {
+for (const path of paths) {
   test(`${path} 페이지에 참고용 법적 고지가 표시된다`, async ({ page }) => {
     const response = await page.goto(path);
     expect(response?.status()).toBeLessThan(400);
