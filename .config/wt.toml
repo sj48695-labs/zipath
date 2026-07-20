@@ -1,10 +1,12 @@
 # Worktrunk 프로젝트 설정
 
-[post-create]
+[pre-start]
 # .worktreeinclude에 명시된 gitignore 파일 복사 (.devloop 등)
 copy-ignored = "wt step copy-ignored"
-# 의존성 설치
-deps = "npm ci"
+# deps 는 non-fatal — 설치 실패가 worktree 생성을 무산시키면 부분 dir 잔존 → 같은 이름
+# 재시도가 그 위에서 또 깨져 thrash + "워크트리 증발"(2026-07-20 #127). build/pre-merge 가
+# 실제 의존성 문제를 잡는다. --loglevel=error 로 tar warn 폭주 억제.
+deps = "npm ci --no-audit --no-fund --loglevel=error || true"
 
 [post-switch]
 # IDE 새 창으로 열기
