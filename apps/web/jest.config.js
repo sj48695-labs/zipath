@@ -3,7 +3,7 @@ const config = {
   moduleFileExtensions: ["js", "json", "ts", "tsx"],
   rootDir: ".",
   roots: ["<rootDir>/src"],
-  testRegex: ".*\\.test\\.ts$",
+  testRegex: ".*\\.test\\.(ts|tsx)$",
   testPathIgnorePatterns: ["/node_modules/", "/.next/"],
   transform: {
     "^.+\\.(t|j)sx?$": [

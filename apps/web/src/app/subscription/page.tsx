@@ -101,7 +101,7 @@ export default function SubscriptionPage() {
       <main className="mx-auto max-w-3xl px-4 py-12">
         <h1 className="mb-2 text-3xl font-bold">청약 자격 시뮬레이션</h1>
         <p className="mb-8 text-muted-foreground">
-          기본 정보를 입력하면 청약 가능 여부와 입력 기준 예상 가점을 확인할 수 있어요.
+          기본 정보를 입력하면 청약 가능 여부와 입력 기준 가점을 확인할 수 있어요.
         </p>
 
         <p className="mb-6 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
@@ -293,7 +293,7 @@ export default function SubscriptionPage() {
 
             <div className="rounded-lg border p-6">
               <h2 className="mb-4 text-lg font-semibold">
-                입력한 청약통장 가입기간 기준 예상 가점: {result.totalPoints}점 / {result.maxPoints}점
+                입력한 청약통장 가입기간 기준 가점: {result.totalPoints}점 / {result.maxPoints}점
               </h2>
               <div className="space-y-4">
                 {result.points.map((p, i) => (
