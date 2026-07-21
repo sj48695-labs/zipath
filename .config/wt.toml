@@ -1,18 +1,28 @@
 # Worktrunk 프로젝트 설정
+# pre-start / pre-merge 는 pipeline(list) form([[...]]) — 항목이 위→아래 순차 실행됨을 보장한다.
+# (table form 은 wt 0.38+ 에서 병렬 실행으로 용도변경 예정 — copy-ignored→deps 및
+#  lint→test→build 순서를 지키려면 반드시 list form 이어야 한다. 2026-07-21 마이그레이션.)
 
-[pre-start]
-# .worktreeinclude에 명시된 gitignore 파일 복사 (.devloop 등)
+# .worktreeinclude에 명시된 gitignore 파일 복사 (.devloop 등) — deps 전에 순차 실행.
+[[pre-start]]
 copy-ignored = "wt step copy-ignored"
+
 # deps 는 non-fatal — 설치 실패가 worktree 생성을 무산시키면 부분 dir 잔존 → 같은 이름
 # 재시도가 그 위에서 또 깨져 thrash + "워크트리 증발"(2026-07-20 #127). build/pre-merge 가
 # 실제 의존성 문제를 잡는다. --loglevel=error 로 tar warn 폭주 억제.
+[[pre-start]]
 deps = "npm ci --no-audit --no-fund --loglevel=error || true"
 
 [post-switch]
 # IDE 새 창으로 열기
 ide = "agy {{ worktree_path }}"
 
-[pre-merge]
+# pre-merge 도 list form — lint→test→build 순차 보장.
+[[pre-merge]]
 lint = "npx turbo lint"
+
+[[pre-merge]]
 test = "npm test -w @zipath/api"
+
+[[pre-merge]]
 build = "npx turbo build"
