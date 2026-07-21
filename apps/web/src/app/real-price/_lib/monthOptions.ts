@@ -9,6 +9,14 @@ export interface RealPriceMonthState {
   trendToMonth: string;
 }
 
+export function getInitialRealPriceMonthState(): RealPriceMonthState {
+  return {
+    dealYmd: "",
+    trendFromMonth: "",
+    trendToMonth: "",
+  };
+}
+
 export function buildMonthOptions(referenceDate: Date): MonthOption[] {
   const options: MonthOption[] = [];
   for (let i = 0; i < 12; i++) {
@@ -23,8 +31,9 @@ export function buildMonthOptions(referenceDate: Date): MonthOption[] {
 export function buildRealPriceMonthState(
   monthOptions: MonthOption[],
 ): RealPriceMonthState {
-  const dealYmd = monthOptions[0]?.value ?? "";
-  const trendToMonth = monthOptions[0]?.value ?? "";
+  const initialMonthState = getInitialRealPriceMonthState();
+  const dealYmd = monthOptions[0]?.value ?? initialMonthState.dealYmd;
+  const trendToMonth = monthOptions[0]?.value ?? initialMonthState.trendToMonth;
   const trendFromMonth = monthOptions[5]?.value ?? trendToMonth;
 
   return {

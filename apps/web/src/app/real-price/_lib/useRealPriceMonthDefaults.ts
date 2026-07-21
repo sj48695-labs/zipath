@@ -4,6 +4,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
 import {
   buildMonthOptions,
   buildRealPriceMonthState,
+  getInitialRealPriceMonthState,
   type MonthOption,
 } from "./monthOptions";
 
@@ -19,9 +20,12 @@ interface UseRealPriceMonthDefaultsResult {
 
 export function useRealPriceMonthDefaults(): UseRealPriceMonthDefaultsResult {
   const [monthOptions, setMonthOptions] = useState<MonthOption[]>([]);
-  const [dealYmd, setDealYmd] = useState("");
-  const [trendFromMonth, setTrendFromMonth] = useState("");
-  const [trendToMonth, setTrendToMonth] = useState("");
+  const initialMonthState = getInitialRealPriceMonthState();
+  const [dealYmd, setDealYmd] = useState(initialMonthState.dealYmd);
+  const [trendFromMonth, setTrendFromMonth] = useState(
+    initialMonthState.trendFromMonth,
+  );
+  const [trendToMonth, setTrendToMonth] = useState(initialMonthState.trendToMonth);
 
   useEffect(() => {
     const options = buildMonthOptions(new Date());

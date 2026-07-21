@@ -242,6 +242,10 @@ export default function RegionCompareClient() {
         <p className="mb-8 text-muted-foreground">
           2~4개 지역의 아파트 실거래가를 비교합니다.
         </p>
+        <p className="mb-8 text-xs text-muted-foreground">
+          * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은
+          국토교통부 실거래가 공개시스템을 확인해주세요.
+        </p>
 
         <div className="mb-6 rounded-lg border bg-card p-4">
           <SupportedRegionNotice variant="inline" className="mb-3" />
