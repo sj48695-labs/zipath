@@ -60,6 +60,35 @@ test("공고 페이지는 데이터 없음 상태에서 다음 행동과 법적 
   ).toBeVisible();
 });
 
+test("공고 페이지는 로딩 중 상태를 먼저 보여준다", async ({ page }) => {
+  let releaseRoute: (() => void) | null = null;
+  const routeReady = new Promise<void>((resolve) => {
+    releaseRoute = resolve;
+  });
+
+  await page.route("**/api/announcements**", async (route) => {
+    await routeReady;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(createResponse([], "2026-07-05T00:00:00.000Z")),
+    });
+  });
+
+  const navigation = page.goto("/announcements");
+
+  await expect(page.getByRole("status")).toContainText(
+    "공고를 불러오는 중입니다.",
+  );
+  await expect(page.getByText("잠시만 기다려주세요.")).toBeVisible();
+
+  releaseRoute?.();
+  const response = await navigation;
+  expect(response?.status()).toBeLessThan(400);
+
+  await expect(page.getByText("현재 등록된 공고가 없습니다.")).toBeVisible();
+});
+
 test("공고 페이지는 필터 결과 없음 상태를 별도로 안내한다", async ({
   page,
 }) => {
@@ -74,7 +103,7 @@ test("공고 페이지는 필터 결과 없음 상태를 별도로 안내한다"
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify(createResponse(items, "2026-07-05T00:00:00.000Z")),
+      body: JSON.stringify(createResponse(items, null)),
     });
   });
 
@@ -87,6 +116,7 @@ test("공고 페이지는 필터 결과 없음 상태를 별도로 안내한다"
   await page.getByRole("button", { name: "필터 적용" }).click();
 
   await expect(page.getByText("선택한 지역의 공고가 없습니다.")).toBeVisible();
+  await expect(page.getByText("데이터 출처: 청약홈")).toBeVisible();
   await expect(page.getByRole("button", { name: "필터 초기화" })).toBeVisible();
   await expect(
     page.getByRole("link", { name: "청약홈에서 직접 확인하기" }),

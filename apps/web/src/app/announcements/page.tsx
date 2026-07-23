@@ -198,7 +198,13 @@ export default function AnnouncementsPage() {
 
         {loading && (
           <div role="status" aria-live="polite" className="grid gap-4">
-            <span className="sr-only">공고를 불러오는 중</span>
+            <div className="flex items-center gap-2 rounded-lg border bg-card px-4 py-3 text-sm text-muted-foreground">
+              <span
+                aria-hidden="true"
+                className="h-4 w-4 animate-spin rounded-full border-2 border-muted-foreground/30 border-t-primary"
+              />
+              <span>공고를 불러오는 중입니다. 잠시만 기다려주세요.</span>
+            </div>
             {Array.from({ length: 4 }).map((_, i) => (
               <div
                 key={i}
@@ -253,7 +259,7 @@ export default function AnnouncementsPage() {
             <p className="mt-2 text-sm text-muted-foreground">
               {lastSyncedAt
                 ? `현재 저장된 공고가 없어요. 마지막 동기화: ${formatKoreanDateTime(lastSyncedAt)}`
-                : "아직 동기화된 공고 정보가 없습니다. 잠시 후 다시 확인하거나 청약홈 원문을 살펴보세요."}
+                : "아직 동기화된 공고 정보가 없습니다. 데이터 출처: 청약홈"}
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <button
@@ -279,8 +285,11 @@ export default function AnnouncementsPage() {
           <div className="rounded-lg border p-6 text-center">
             <p className="text-lg font-medium">선택한 지역의 공고가 없습니다.</p>
             <p className="mt-2 text-sm text-muted-foreground">
-              현재 {regionFilter} 지역에 맞는 공고가 없습니다. 지역명을
-              바꾸거나 필터를 지워 전체 목록을 확인해보세요.
+              현재 {regionFilter} 지역에 맞는 공고가 없습니다.{" "}
+              {lastSyncedAt
+                ? `마지막 동기화: ${formatKoreanDateTime(lastSyncedAt)}`
+                : "데이터 출처: 청약홈"}
+              . 지역명을 바꾸거나 필터를 지워 전체 목록을 확인해보세요.
             </p>
             <div className="mt-4 flex flex-wrap justify-center gap-2">
               <button
