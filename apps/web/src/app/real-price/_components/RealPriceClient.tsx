@@ -8,6 +8,9 @@ import AreaFilter from "./AreaFilter";
 import SupportedRegionNotice from "./SupportedRegionNotice";
 import { formatWonAmount } from "../_lib/formatWonAmount";
 import { REGIONS } from "../_lib/regions";
+import {
+  type RealPriceMonthDefaults,
+} from "../_lib/monthOptions";
 import { useRealPriceMonthDefaults } from "../_lib/useRealPriceMonthDefaults";
 
 const MonthlyPriceTrendChart = dynamic(
@@ -60,6 +63,10 @@ interface AreaRange {
 
 type ViewMode = "table" | "chart" | "trend";
 
+interface RealPriceClientProps {
+  initialMonthDefaults: RealPriceMonthDefaults;
+}
+
 function getRecord(value: unknown): Record<string, unknown> | null {
   if (typeof value !== "object" || value === null) return null;
   return value as Record<string, unknown>;
@@ -90,7 +97,9 @@ function getMonthlyItems(data: unknown): MonthlyPriceSummaryItem[] {
   return Array.isArray(monthly) ? (monthly as MonthlyPriceSummaryItem[]) : [];
 }
 
-export default function RealPriceClient() {
+export default function RealPriceClient({
+  initialMonthDefaults,
+}: RealPriceClientProps) {
   const [regionCode, setRegionCode] = useState("11680");
   const {
     monthOptions,
@@ -100,7 +109,7 @@ export default function RealPriceClient() {
     setDealYmd,
     setTrendFromMonth,
     setTrendToMonth,
-  } = useRealPriceMonthDefaults();
+  } = useRealPriceMonthDefaults({ initialMonthDefaults });
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -233,7 +242,11 @@ export default function RealPriceClient() {
           국토교통부 아파트 매매 실거래가 데이터를 조회합니다.
         </p>
         <p className="mb-8 text-xs text-muted-foreground">
-          * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은 국토교통부 실거래가 공개시스템을 확인해주세요.
+          <span className="font-medium">참고용이며 법적 효력 없음</span>
+          <span className="ml-1">
+            * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은
+            국토교통부 실거래가 공개시스템을 확인해주세요.
+          </span>
         </p>
 
         <div className="mb-4 flex gap-2">

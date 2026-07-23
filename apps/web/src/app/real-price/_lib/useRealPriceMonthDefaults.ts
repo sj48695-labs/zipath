@@ -1,12 +1,7 @@
 "use client";
 
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
-import {
-  buildMonthOptions,
-  buildRealPriceMonthState,
-  getInitialRealPriceMonthState,
-  type MonthOption,
-} from "./monthOptions";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import { type RealPriceMonthDefaults, type MonthOption } from "./monthOptions";
 
 interface UseRealPriceMonthDefaultsResult {
   monthOptions: MonthOption[];
@@ -18,24 +13,23 @@ interface UseRealPriceMonthDefaultsResult {
   setTrendToMonth: Dispatch<SetStateAction<string>>;
 }
 
-export function useRealPriceMonthDefaults(): UseRealPriceMonthDefaultsResult {
-  const [monthOptions, setMonthOptions] = useState<MonthOption[]>([]);
-  const initialMonthState = getInitialRealPriceMonthState();
-  const [dealYmd, setDealYmd] = useState(initialMonthState.dealYmd);
-  const [trendFromMonth, setTrendFromMonth] = useState(
-    initialMonthState.trendFromMonth,
+interface UseRealPriceMonthDefaultsInput {
+  initialMonthDefaults: RealPriceMonthDefaults;
+}
+
+export function useRealPriceMonthDefaults({
+  initialMonthDefaults,
+}: UseRealPriceMonthDefaultsInput): UseRealPriceMonthDefaultsResult {
+  const [monthOptions, setMonthOptions] = useState<MonthOption[]>(
+    initialMonthDefaults.monthOptions,
   );
-  const [trendToMonth, setTrendToMonth] = useState(initialMonthState.trendToMonth);
-
-  useEffect(() => {
-    const options = buildMonthOptions(new Date());
-    const initialMonthState = buildRealPriceMonthState(options);
-
-    setMonthOptions(options);
-    setDealYmd(initialMonthState.dealYmd);
-    setTrendFromMonth(initialMonthState.trendFromMonth);
-    setTrendToMonth(initialMonthState.trendToMonth);
-  }, []);
+  const [dealYmd, setDealYmd] = useState(initialMonthDefaults.dealYmd);
+  const [trendFromMonth, setTrendFromMonth] = useState(
+    initialMonthDefaults.trendFromMonth,
+  );
+  const [trendToMonth, setTrendToMonth] = useState(
+    initialMonthDefaults.trendToMonth,
+  );
 
   return {
     monthOptions,

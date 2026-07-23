@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test';
 const routes = ['/real-price', '/real-price/compare'] as const;
 const hydrationErrorPattern =
   /hydration|did not match|text content does not match|expected server html|minified react error #\d+/i;
+const legalDisclaimerPattern = /참고용이며 법적 효력 없음/;
 
 for (const route of routes) {
   test(`${route} 에서 hydration 경고가 없다`, async ({ page }) => {
@@ -28,6 +29,7 @@ for (const route of routes) {
     expect(response?.status()).toBeLessThan(400);
 
     await expect(page.getByRole('heading').first()).toBeVisible();
+    await expect(page.getByText(legalDisclaimerPattern)).toBeVisible();
     await page.waitForLoadState('networkidle').catch(() => {});
     expect(hydrationMessages).toEqual([]);
   });

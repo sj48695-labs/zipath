@@ -7,6 +7,7 @@ import SiteHeader from "@/components/layout/SiteHeader";
 import SupportedRegionNotice from "../../_components/SupportedRegionNotice";
 import { REGIONS, type Region } from "../../_lib/regions";
 import { formatWonAmount } from "../../_lib/formatWonAmount";
+import { type RealPriceMonthDefaults } from "../../_lib/monthOptions";
 import { useRealPriceMonthDefaults } from "../../_lib/useRealPriceMonthDefaults";
 
 const RegionCompareCharts = dynamic(
@@ -61,6 +62,10 @@ const REGION_COLORS = [
   "hsl(142, 71%, 45%)",
   "hsl(45, 93%, 47%)",
 ];
+
+interface RegionCompareClientProps {
+  initialMonthDefaults: RealPriceMonthDefaults;
+}
 
 function getTradeItems(data: unknown): Trade[] {
   if (typeof data !== "object" || data === null) {
@@ -133,10 +138,13 @@ function computeStats(trades: Trade[], region: Region): RegionStats {
   };
 }
 
-export default function RegionCompareClient() {
+export default function RegionCompareClient({
+  initialMonthDefaults,
+}: RegionCompareClientProps) {
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
-  const { monthOptions, dealYmd, setDealYmd } =
-    useRealPriceMonthDefaults();
+  const { monthOptions, dealYmd, setDealYmd } = useRealPriceMonthDefaults({
+    initialMonthDefaults,
+  });
   const [regionStats, setRegionStats] = useState<RegionStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -243,8 +251,11 @@ export default function RegionCompareClient() {
           2~4개 지역의 아파트 실거래가를 비교합니다.
         </p>
         <p className="mb-8 text-xs text-muted-foreground">
-          * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은
-          국토교통부 실거래가 공개시스템을 확인해주세요.
+          <span className="font-medium">참고용이며 법적 효력 없음</span>
+          <span className="ml-1">
+            * 본 정보는 참고용이며 법적 효력이 없습니다. 정확한 실거래 내역은
+            국토교통부 실거래가 공개시스템을 확인해주세요.
+          </span>
         </p>
 
         <div className="mb-6 rounded-lg border bg-card p-4">
