@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 
 // 이슈 #127 회귀 방지: 글로벌 헤더 nav 누락 및 페이지별 로고-only 헤더 재도입 버그
-const paths = ['/', '/real-price', '/subscription', '/loan', '/checklist'];
+const paths = ['/', '/real-price', '/real-price/compare', '/subscription', '/loan', '/checklist'];
 const navLabels = ['청약', '대출', '체크리스트', '실거래가'] as const;
 
 for (const path of paths) {
