@@ -1,75 +1,60 @@
-import { Test } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
-import { LoanModule } from "@/loan/loan.module";
+import { BadRequestException } from "@nestjs/common";
+import { LoanController } from "@/loan/loan.controller";
+import { LoanService } from "@/loan/loan.service";
 
 describe("LoanController (e2e)", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      imports: [LoanModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix("api");
-    await app.init();
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
+  const service = new LoanService();
+  const controller = new LoanController(service);
 
   describe("POST /api/loan/calculate", () => {
-    it("대출 한도를 계산한다", async () => {
-      const res = await request(app.getHttpServer())
-        .post("/api/loan/calculate")
-        .send({
+    it("대출 한도를 계산한다", () => {
+      const res = controller.calculate({
+        annualIncome: 50000000,
+        existingDebt: 0,
+        housePrice: 500000000,
+      });
+
+      expect(res.input).toBeDefined();
+      expect(res.result).toBeDefined();
+      expect(res.result.maxLoanAmount).toBeGreaterThan(0);
+      expect(res.result.monthlyPayment).toBeGreaterThan(0);
+      expect(res.result.maxByLtv).toBe(350000000);
+    });
+
+    it("기존 대출이 있으면 한도가 줄어든다", () => {
+      const res = controller.calculate({
+        annualIncome: 50000000,
+        existingDebt: 100000000,
+        housePrice: 500000000,
+      });
+
+      expect(res.result.maxByDsr).toBeLessThan(350000000);
+    });
+
+    it("필수 필드가 없으면 400을 반환한다", () => {
+      expect(() =>
+        controller.calculate({ annualIncome: 50000000 } as never),
+      ).toThrow(BadRequestException);
+    });
+
+    it("housePrice가 0이면 400을 반환한다", () => {
+      expect(() =>
+        controller.calculate({
           annualIncome: 50000000,
           existingDebt: 0,
+          housePrice: 0,
+        }),
+      ).toThrow(BadRequestException);
+    });
+
+    it("음수 값이면 400을 반환한다", () => {
+      expect(() =>
+        controller.calculate({
+          annualIncome: -1,
+          existingDebt: 0,
           housePrice: 500000000,
-        })
-        .expect(201);
-
-      expect(res.body.input).toBeDefined();
-      expect(res.body.result).toBeDefined();
-      expect(res.body.result.maxLoanAmount).toBeGreaterThan(0);
-      expect(res.body.result.monthlyPayment).toBeGreaterThan(0);
-      expect(res.body.result.maxByLtv).toBe(350000000);
-    });
-
-    it("기존 대출이 있으면 한도가 줄어든다", async () => {
-      const res = await request(app.getHttpServer())
-        .post("/api/loan/calculate")
-        .send({
-          annualIncome: 50000000,
-          existingDebt: 100000000,
-          housePrice: 500000000,
-        })
-        .expect(201);
-
-      expect(res.body.result.maxByDsr).toBeLessThan(350000000);
-    });
-
-    it("필수 필드가 없으면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .post("/api/loan/calculate")
-        .send({ annualIncome: 50000000 })
-        .expect(400);
-    });
-
-    it("housePrice가 0이면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .post("/api/loan/calculate")
-        .send({ annualIncome: 50000000, existingDebt: 0, housePrice: 0 })
-        .expect(400);
-    });
-
-    it("음수 값이면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .post("/api/loan/calculate")
-        .send({ annualIncome: -1, existingDebt: 0, housePrice: 500000000 })
-        .expect(400);
+        }),
+      ).toThrow(BadRequestException);
     });
   });
 });

@@ -16,7 +16,7 @@ describe("matchRequestSchema", () => {
       income: 5000,
       homelessMonths: 36,
       dependents: 2,
-      region: "서울",
+      region: " 서울 ",
       isMarried: true,
       isFirstHome: true,
     });
@@ -84,6 +84,25 @@ describe("matchRequestSchema", () => {
       income: 5000,
       homelessMonths: 36,
       dependents: 1.5,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject infinite numeric values", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: Infinity,
+      homelessMonths: 36,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject whitespace-only region", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: 5000,
+      homelessMonths: 36,
+      region: "   ",
     });
     expect(result.success).toBe(false);
   });
