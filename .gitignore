@@ -53,6 +53,8 @@ packages/db/dist/
 # wt/devloop 로컬 런타임 상태 — 추적되면 브랜치에 수천 개 로그·중첩클론이 커밋됨(#130)
 .git-local/
 _tmpclone*
+# Playwright 브라우저/홈 캐시 (544MB) — devloop-heal 이 통째로 stash 하던 debris 원천 차단(#130)
+.tmp-playwright-*
 
 # claude
 .claude/
