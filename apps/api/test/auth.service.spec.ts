@@ -1,10 +1,20 @@
 import { UnauthorizedException } from "@nestjs/common";
-import { AuthService } from "../src/auth/auth.service";
+import { createHash } from "crypto";
 import { User } from "@zipath/db";
+import { AuthService } from "../src/auth/auth.service";
+
+interface JwtPayload {
+  sub: number;
+  email: string | null;
+}
 
 type TestUser = User & {
   interestRegions: string[];
 };
+
+function hashRefreshToken(token: string): string {
+  return createHash("sha256").update(token).digest("hex");
+}
 
 /** Helper: 최소한의 User 엔티티 생성 */
 function makeUser(overrides: Partial<TestUser> = {}): TestUser {
@@ -15,6 +25,9 @@ function makeUser(overrides: Partial<TestUser> = {}): TestUser {
     provider: "google",
     providerId: "google-123",
     interestRegions: [],
+    refreshTokenHash: null,
+    refreshTokenExpiresAt: null,
+    refreshTokenInvalidatedAt: null,
     createdAt: new Date("2026-01-01"),
     updatedAt: new Date("2026-01-01"),
     lastActiveAt: new Date("2026-01-01"),
@@ -29,7 +42,8 @@ interface MockRepository {
 }
 
 interface MockJwtService {
-  sign: jest.Mock;
+  sign: jest.Mock<string, [JwtPayload, { expiresIn: string }]>;
+  verifyAsync: jest.Mock<Promise<JwtPayload>, [string]>;
 }
 
 describe("AuthService", () => {
@@ -46,6 +60,7 @@ describe("AuthService", () => {
 
     jwtService = {
       sign: jest.fn(),
+      verifyAsync: jest.fn(),
     };
 
     service = new AuthService(
@@ -80,7 +95,13 @@ describe("AuthService", () => {
         provider: "google",
         providerId: "google-123",
       });
-      expect(userRepo.save).toHaveBeenCalled();
+      expect(userRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          refreshTokenHash: hashRefreshToken("refresh-token"),
+          refreshTokenExpiresAt: expect.any(Date),
+          refreshTokenInvalidatedAt: null,
+        }),
+      );
       expect(result.accessToken).toBe("access-token");
       expect(result.refreshToken).toBe("refresh-token");
       expect(result.user.id).toBe(1);
@@ -102,7 +123,10 @@ describe("AuthService", () => {
     });
 
     it("should update email and nickname for existing user", async () => {
-      const existingUser = makeUser({ email: "old@example.com", nickname: "옛닉" });
+      const existingUser = makeUser({
+        email: "old@example.com",
+        nickname: "옛닉",
+      });
       userRepo.findOne.mockResolvedValue(existingUser);
       userRepo.save.mockResolvedValue(existingUser);
       jwtService.sign.mockReturnValue("token");
@@ -134,6 +158,95 @@ describe("AuthService", () => {
 
       expect(existingUser.email).toBe("keep@example.com");
       expect(existingUser.nickname).toBe("유지");
+    });
+  });
+
+  // ----- refreshTokens -----
+  describe("refreshTokens", () => {
+    it("should rotate refresh token when valid", async () => {
+      const user = makeUser({
+        refreshTokenHash: hashRefreshToken("current-refresh-token"),
+        refreshTokenExpiresAt: new Date("2026-12-31T00:00:00.000Z"),
+      });
+      userRepo.findOne.mockResolvedValue(user);
+      userRepo.save.mockImplementation((saved: TestUser) => Promise.resolve(saved));
+      jwtService.verifyAsync.mockResolvedValue({
+        sub: 1,
+        email: "test@example.com",
+      });
+      jwtService.sign
+        .mockReturnValueOnce("new-access-token")
+        .mockReturnValueOnce("new-refresh-token");
+
+      const result = await service.refreshTokens("current-refresh-token");
+
+      expect(jwtService.verifyAsync).toHaveBeenCalledWith("current-refresh-token");
+      expect(userRepo.save).toHaveBeenCalledWith(
+        expect.objectContaining({
+          refreshTokenHash: hashRefreshToken("new-refresh-token"),
+          refreshTokenExpiresAt: expect.any(Date),
+          refreshTokenInvalidatedAt: null,
+        }),
+      );
+      expect(result.accessToken).toBe("new-access-token");
+      expect(result.refreshToken).toBe("new-refresh-token");
+    });
+
+    it("should reject expired refresh token", async () => {
+      const user = makeUser({
+        refreshTokenHash: hashRefreshToken("expired-refresh-token"),
+        refreshTokenExpiresAt: new Date("2025-01-01T00:00:00.000Z"),
+      });
+      userRepo.findOne.mockResolvedValue(user);
+      jwtService.verifyAsync.mockResolvedValue({
+        sub: 1,
+        email: "test@example.com",
+      });
+
+      await expect(
+        service.refreshTokens("expired-refresh-token"),
+      ).rejects.toThrow(UnauthorizedException);
+      expect(userRepo.save).not.toHaveBeenCalled();
+    });
+
+    it("should reject forged refresh token", async () => {
+      jwtService.verifyAsync.mockRejectedValue(new Error("invalid signature"));
+
+      await expect(
+        service.refreshTokens("forged-refresh-token"),
+      ).rejects.toThrow(UnauthorizedException);
+      expect(userRepo.findOne).not.toHaveBeenCalled();
+      expect(userRepo.save).not.toHaveBeenCalled();
+    });
+
+    it("should reject reused refresh token after rotation", async () => {
+      const user = makeUser({
+        refreshTokenHash: hashRefreshToken("current-refresh-token"),
+        refreshTokenExpiresAt: new Date("2026-12-31T00:00:00.000Z"),
+      });
+      userRepo.findOne.mockResolvedValue(user);
+      userRepo.save.mockImplementation((saved: TestUser) => Promise.resolve(saved));
+      jwtService.verifyAsync.mockResolvedValue({
+        sub: 1,
+        email: "test@example.com",
+      });
+      jwtService.sign
+        .mockReturnValueOnce("rotated-access-token")
+        .mockReturnValueOnce("rotated-refresh-token");
+
+      await service.refreshTokens("current-refresh-token");
+
+      await expect(
+        service.refreshTokens("current-refresh-token"),
+      ).rejects.toThrow(UnauthorizedException);
+      expect(user.refreshTokenInvalidatedAt).toBeInstanceOf(Date);
+      expect(user.refreshTokenHash).toBeNull();
+      expect(user.refreshTokenExpiresAt).toBeNull();
+      expect(userRepo.save).toHaveBeenCalledTimes(2);
+
+      await expect(
+        service.refreshTokens("rotated-refresh-token"),
+      ).rejects.toThrow(UnauthorizedException);
     });
   });
 
@@ -173,14 +286,23 @@ describe("AuthService", () => {
         nickname: null,
       });
 
-      expect(jwtService.sign).toHaveBeenCalledWith(
-        { sub: 1, email: "test@example.com" },
-        { expiresIn: "7d" },
+      expect(jwtService.sign.mock.calls[1]?.[0]).toEqual(
+        expect.objectContaining({
+          sub: 1,
+          email: "test@example.com",
+          jti: expect.any(String),
+        }),
       );
+      expect(jwtService.sign.mock.calls[1]?.[1]).toEqual({ expiresIn: "7d" });
     });
 
     it("should include user info in token response", async () => {
-      const user = makeUser({ id: 42, email: "u@z.com", nickname: "닉", provider: "naver" });
+      const user = makeUser({
+        id: 42,
+        email: "u@z.com",
+        nickname: "닉",
+        provider: "naver",
+      });
       userRepo.findOne.mockResolvedValue(null);
       userRepo.create.mockReturnValue(user);
       userRepo.save.mockResolvedValue(user);
@@ -209,7 +331,10 @@ describe("AuthService", () => {
       userRepo.findOne.mockResolvedValue(user);
       userRepo.save.mockResolvedValue(user);
 
-      const result = await service.validateJwtPayload({ sub: 1, email: "test@example.com" });
+      const result = await service.validateJwtPayload({
+        sub: 1,
+        email: "test@example.com",
+      });
 
       expect(result.id).toBe(1);
       expect(userRepo.save).toHaveBeenCalled();
@@ -257,7 +382,7 @@ describe("AuthService", () => {
     it("should save and return updated interest regions", async () => {
       const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
+      userRepo.save.mockImplementation((saved: TestUser) => Promise.resolve(saved));
 
       const result = await service.updateInterestRegions(1, [
         "서울 강남구",
@@ -272,7 +397,7 @@ describe("AuthService", () => {
     it("should trim, drop empties and dedupe regions", async () => {
       const user = makeUser();
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
+      userRepo.save.mockImplementation((saved: TestUser) => Promise.resolve(saved));
 
       const result = await service.updateInterestRegions(1, [
         "  서울 강남구  ",
@@ -291,7 +416,7 @@ describe("AuthService", () => {
     it("should allow clearing all regions with empty array", async () => {
       const user = makeUser({ interestRegions: ["서울 강남구"] });
       userRepo.findOne.mockResolvedValue(user);
-      userRepo.save.mockImplementation((u: TestUser) => Promise.resolve(u));
+      userRepo.save.mockImplementation((saved: TestUser) => Promise.resolve(saved));
 
       const result = await service.updateInterestRegions(1, []);
 

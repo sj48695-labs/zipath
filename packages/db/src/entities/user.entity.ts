@@ -26,6 +26,15 @@ export class User {
   @Column({ type: "simple-array", default: "" })
   interestRegions!: string[]; // 관심 지역 목록 (예: "서울 강남구")
 
+  @Column({ type: "varchar", nullable: true })
+  refreshTokenHash!: string | null;
+
+  @Column({ type: "timestamp", nullable: true })
+  refreshTokenExpiresAt!: Date | null;
+
+  @Column({ type: "timestamp", nullable: true })
+  refreshTokenInvalidatedAt!: Date | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 

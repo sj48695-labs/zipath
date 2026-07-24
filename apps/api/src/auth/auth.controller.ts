@@ -13,7 +13,7 @@ import { ConfigService } from "@nestjs/config";
 import { Response } from "express";
 import { z } from "zod";
 import type { SsoProvider } from "@zipath/types";
-import { AuthService } from "./auth.service";
+import { AuthService, type AuthResponse } from "./auth.service";
 import { GoogleAuthGuard } from "./google-auth.guard";
 import { KakaoAuthGuard } from "./kakao-auth.guard";
 import { NaverAuthGuard } from "./naver-auth.guard";
@@ -137,7 +137,7 @@ export class AuthController {
   /** OAuth 콜백에서 받은 프로필로 로그인/회원가입 */
   @Public()
   @Post("login")
-  async login(@Body() body: unknown) {
+  async login(@Body() body: unknown): Promise<AuthResponse> {
     const parsed = oauthLoginSchema.safeParse(body);
     if (!parsed.success) {
       throw new BadRequestException(
@@ -150,13 +150,12 @@ export class AuthController {
   /** 토큰 갱신 */
   @Public()
   @Post("refresh")
-  async refresh(@Body() body: unknown) {
+  async refresh(@Body() body: unknown): Promise<AuthResponse> {
     const parsed = refreshSchema.safeParse(body);
     if (!parsed.success) {
       throw new BadRequestException("refreshToken이 필요합니다.");
     }
-    // refresh 토큰 검증은 서비스에서 처리
-    return { message: "TODO: refresh token rotation" };
+    return this.authService.refreshTokens(parsed.data.refreshToken);
   }
 
   /** 내 프로필 */
