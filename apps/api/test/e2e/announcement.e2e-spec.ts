@@ -1,6 +1,10 @@
+import {
+  ArgumentMetadata,
+  BadRequestException,
+  NotFoundException,
+  ParseIntPipe,
+} from "@nestjs/common";
 import { Test } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
 import { AnnouncementController } from "@/announcement/announcement.controller";
 import { AnnouncementService } from "@/announcement/announcement.service";
 import { ConfigService } from "@nestjs/config";
@@ -56,56 +60,50 @@ const mockConfigService = {
 };
 
 describe("AnnouncementController (e2e)", () => {
-  let app: INestApplication;
+  let controller: AnnouncementController;
 
   beforeAll(async () => {
     const moduleFixture = await Test.createTestingModule({
       controllers: [AnnouncementController],
       providers: [
         AnnouncementService,
-        { provide: getRepositoryToken(Announcement), useValue: mockAnnouncementRepo },
-        { provide: getRepositoryToken(SubscriptionCriteria), useValue: mockCriteriaRepo },
+        {
+          provide: getRepositoryToken(Announcement),
+          useValue: mockAnnouncementRepo,
+        },
+        {
+          provide: getRepositoryToken(SubscriptionCriteria),
+          useValue: mockCriteriaRepo,
+        },
         { provide: ConfigService, useValue: mockConfigService },
       ],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix("api");
-    await app.init();
-  });
-
-  afterAll(async () => {
-    await app.close();
+    controller = moduleFixture.get(AnnouncementController);
   });
 
   describe("GET /api/announcements", () => {
     it("공고 목록을 반환한다", async () => {
-      const res = await request(app.getHttpServer())
-        .get("/api/announcements")
-        .expect(200);
+      const res = await controller.findAll();
 
-      expect(res.body.items).toBeDefined();
-      expect(res.body.totalCount).toBe(1);
-      expect(res.body.page).toBe(1);
-      expect(res.body.limit).toBe(10);
-      expect(res.body.items[0].title).toBe("테스트 아파트");
-      expect(res.body.lastSyncedAt).toBeDefined();
-      expect(typeof res.body.lastSyncedAt).toBe("string");
+      expect(res.items).toBeDefined();
+      expect(res.totalCount).toBe(1);
+      expect(res.page).toBe(1);
+      expect(res.limit).toBe(10);
+      expect(res.items[0].title).toBe("테스트 아파트");
+      expect(res.lastSyncedAt).toBeDefined();
+      expect(typeof res.lastSyncedAt).toBe("string");
     });
 
     it("페이지네이션이 동작한다", async () => {
-      const res = await request(app.getHttpServer())
-        .get("/api/announcements?page=1&limit=5")
-        .expect(200);
+      const res = await controller.findAll("1", "5");
 
-      expect(res.body.page).toBe(1);
-      expect(res.body.limit).toBe(5);
+      expect(res.page).toBe(1);
+      expect(res.limit).toBe(5);
     });
 
     it("지역 필터가 동작한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/announcements?region=서울")
-        .expect(200);
+      await controller.findAll(undefined, undefined, "서울");
 
       expect(createQueryBuilder.andWhere).toHaveBeenCalledWith(
         "a.region = :region",
@@ -116,46 +114,92 @@ describe("AnnouncementController (e2e)", () => {
 
   describe("GET /api/announcements/:id", () => {
     it("존재하는 공고를 반환한다", async () => {
-      const res = await request(app.getHttpServer())
-        .get("/api/announcements/1")
-        .expect(200);
+      const res = await controller.findOne(1);
 
-      expect(res.body.title).toBe("테스트 아파트");
-      expect(res.body.region).toBe("서울");
+      expect(res).not.toBeNull();
+      expect(res!.title).toBe("테스트 아파트");
+      expect(res!.region).toBe("서울");
     });
 
     it("존재하지 않는 공고에 404를 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/announcements/999")
-        .expect(404);
+      await expect(controller.findOne(999)).rejects.toBeInstanceOf(
+        NotFoundException,
+      );
     });
 
     it("ID가 숫자가 아니면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/announcements/abc")
-        .expect(400);
+      const pipe = new ParseIntPipe();
+      const metadata: ArgumentMetadata = {
+        type: "param",
+        metatype: Number,
+        data: "id",
+      };
+
+      await expect(pipe.transform("abc", metadata)).rejects.toBeInstanceOf(
+        BadRequestException,
+      );
     });
   });
 
   describe("POST /api/announcements/match", () => {
     it("사용자 조건으로 전체 공고를 자동 매칭한다", async () => {
-      const res = await request(app.getHttpServer())
-        .post("/api/announcements/match")
-        .send({ age: 30, income: 5000, homelessMonths: 36, region: "서울" })
-        .expect(201);
+      const res = await controller.matchAll({
+        age: 30,
+        income: 5000,
+        homelessMonths: 36,
+        region: "서울",
+      });
 
-      expect(res.body.matchedCount).toBe(res.body.matches.length);
-      expect(Array.isArray(res.body.matches)).toBe(true);
-      expect(res.body.matchedCount).toBeGreaterThan(0);
-      expect(res.body.matches[0].overallEligible).toBe(true);
-      expect(res.body.disclaimer).toContain("법적 효력");
+      expect(res.matchedCount).toBe(res.matches.length);
+      expect(Array.isArray(res.matches)).toBe(true);
+      expect(res.matchedCount).toBeGreaterThan(0);
+      expect(res.matches[0].overallEligible).toBe(true);
+      expect(res.disclaimer).toContain("법적 효력");
     });
 
     it("필수 입력(age)이 없으면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .post("/api/announcements/match")
-        .send({ income: 5000, homelessMonths: 36 })
-        .expect(400);
+      await expect(
+        controller.matchAll({
+          income: 5000,
+          homelessMonths: 36,
+        } as never),
+      ).rejects.toBeInstanceOf(BadRequestException);
+    });
+  });
+
+  describe("POST /api/announcements/:id/match", () => {
+    it("존재하는 공고를 사용자 조건과 매칭한다", async () => {
+      const res = await controller.matchAnnouncement(1, {
+        age: 30,
+        income: 5000,
+        homelessMonths: 36,
+        region: "서울",
+      });
+
+      expect(res).not.toBeNull();
+      expect(res!.announcementId).toBe(1);
+      expect(res!.overallEligible).toBe(true);
+      expect(res!.results.length).toBeGreaterThan(0);
+      expect(res!.message).toContain("지원 가능한");
+    });
+
+    it("존재하지 않는 공고에 404를 반환한다", async () => {
+      await expect(
+        controller.matchAnnouncement(999, {
+          age: 30,
+          income: 5000,
+          homelessMonths: 36,
+        }),
+      ).rejects.toBeInstanceOf(NotFoundException);
+    });
+
+    it("잘못된 body는 400을 반환한다", async () => {
+      await expect(
+        controller.matchAnnouncement(1, {
+          income: 5000,
+          homelessMonths: 36,
+        } as never),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
   });
 });

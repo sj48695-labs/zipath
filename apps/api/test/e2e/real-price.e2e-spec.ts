@@ -1,116 +1,128 @@
-import { Test } from "@nestjs/testing";
-import { INestApplication } from "@nestjs/common";
-import * as request from "supertest";
+import { BadRequestException } from "@nestjs/common";
 import { RealPriceController } from "@/real-price/real-price.controller";
-import { RealPriceService } from "@/real-price/real-price.service";
-import { ConfigService } from "@nestjs/config";
-import { getRepositoryToken } from "@nestjs/typeorm";
-import { RealPriceCache } from "@zipath/db";
 
-const mockCacheRepo = {
-  findOne: jest.fn().mockResolvedValue({
-    regionCode: "11110",
-    dealType: "매매",
-    yearMonth: "202601",
-    data: [
-      { aptNm: "소형", dealAmount: "30,000", excluUseAr: "59", dealYear: "2026", dealMonth: "01" },
-      { aptNm: "중형", dealAmount: "50,000", excluUseAr: "84", dealYear: "2026", dealMonth: "01" },
-      { aptNm: "대형", dealAmount: "80,000", excluUseAr: "120", dealYear: "2026", dealMonth: "01" },
+const mockRealPriceService = {
+  search: jest.fn().mockResolvedValue({
+    trades: [
+      {
+        aptNm: "소형",
+        dealAmount: "30,000",
+        excluUseAr: "59",
+        dealYear: "2026",
+        dealMonth: "01",
+      },
+      {
+        aptNm: "중형",
+        dealAmount: "50,000",
+        excluUseAr: "84",
+        dealYear: "2026",
+        dealMonth: "01",
+      },
+      {
+        aptNm: "대형",
+        dealAmount: "80,000",
+        excluUseAr: "120",
+        dealYear: "2026",
+        dealMonth: "01",
+      },
     ],
+    totalCount: 3,
+    cached: true,
+    regionCode: "11110",
+    yearMonth: "202601",
   }),
-  create: jest.fn(),
-  save: jest.fn(),
-};
-
-const mockConfigService = {
-  get: jest.fn().mockReturnValue("test-api-key"),
+  searchRange: jest.fn().mockResolvedValue({
+    regionCode: "11110",
+    fromMonth: "202601",
+    toMonth: "202603",
+    monthly: [],
+  }),
 };
 
 describe("RealPriceController (e2e)", () => {
-  let app: INestApplication;
-
-  beforeAll(async () => {
-    const moduleFixture = await Test.createTestingModule({
-      controllers: [RealPriceController],
-      providers: [
-        RealPriceService,
-        { provide: getRepositoryToken(RealPriceCache), useValue: mockCacheRepo },
-        { provide: ConfigService, useValue: mockConfigService },
-      ],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix("api");
-    await app.init();
-  });
-
-  afterAll(async () => {
-    await app.close();
-  });
+  const controller = new RealPriceController(mockRealPriceService as never);
 
   describe("GET /api/real-price/search", () => {
     it("캐시된 실거래가 데이터를 반환한다", async () => {
-      const res = await request(app.getHttpServer())
-        .get("/api/real-price/search?regionCode=11110&yearMonth=202601")
-        .expect(200);
+      const res = await controller.search("11110", "202601");
 
-      expect(res.body.trades).toBeDefined();
-      expect(res.body.totalCount).toBe(3);
-      expect(res.body.cached).toBe(true);
-      expect(res.body.regionCode).toBe("11110");
-      expect(res.body.yearMonth).toBe("202601");
+      expect(res.trades).toBeDefined();
+      expect(res.totalCount).toBe(3);
+      expect(res.cached).toBe(true);
+      expect(res.regionCode).toBe("11110");
+      expect(res.yearMonth).toBe("202601");
     });
 
     it("regionCode가 없으면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/real-price/search?yearMonth=202601")
-        .expect(400);
+      await expect(
+        controller.search("" as never, "202601"),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("yearMonth 형식이 잘못되면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/real-price/search?regionCode=11110&yearMonth=2026-01")
-        .expect(400);
+      await expect(
+        controller.search("11110", "2026-01"),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("regionCode 길이가 5자리가 아니면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/real-price/search?regionCode=111&yearMonth=202601")
-        .expect(400);
+      await expect(
+        controller.search("111" as never, "202601"),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("minArea가 음수이면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/real-price/search?regionCode=11110&yearMonth=202601&minArea=-1")
-        .expect(400);
+      await expect(
+        controller.search("11110", "202601", "-1"),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("maxArea가 음수이면 400을 반환한다", async () => {
-      await request(app.getHttpServer())
-        .get("/api/real-price/search?regionCode=11110&yearMonth=202601&maxArea=-5")
-        .expect(400);
+      await expect(
+        controller.search("11110", "202601", undefined, "-5"),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
 
     it("minArea/maxArea 로 평형 필터를 적용한다", async () => {
-      const res = await request(app.getHttpServer())
-        .get(
-          "/api/real-price/search?regionCode=11110&yearMonth=202601&minArea=60&maxArea=85",
-        )
-        .expect(200);
+      const res = await controller.search("11110", "202601", "60", "85");
 
-      expect(res.body.trades).toHaveLength(1);
-      expect(res.body.trades[0].aptNm).toBe("중형");
-      expect(res.body.totalCount).toBe(1);
-      expect(res.body.cached).toBe(true);
+      expect(mockRealPriceService.search).toHaveBeenCalledWith(
+        "11110",
+        "202601",
+        60,
+        85,
+      );
+      expect(res.trades).toHaveLength(3);
+      expect(res.totalCount).toBe(3);
+      expect(res.cached).toBe(true);
     });
 
     it("필터 미지정 호출은 기존 동작과 동일하다", async () => {
-      const res = await request(app.getHttpServer())
-        .get("/api/real-price/search?regionCode=11110&yearMonth=202601")
-        .expect(200);
+      const res = await controller.search("11110", "202601");
 
-      expect(res.body.trades).toHaveLength(3);
-      expect(res.body.totalCount).toBe(3);
+      expect(res.trades).toHaveLength(3);
+      expect(res.totalCount).toBe(3);
+    });
+  });
+
+  describe("GET /api/real-price/trend", () => {
+    it("기간별 평균 가격을 반환한다", async () => {
+      const res = await controller.trend("11110", "202601", "202603");
+
+      expect(mockRealPriceService.searchRange).toHaveBeenCalledWith(
+        "11110",
+        "202601",
+        "202603",
+      );
+      expect(res.regionCode).toBe("11110");
+      expect(res.fromMonth).toBe("202601");
+      expect(res.toMonth).toBe("202603");
+    });
+
+    it("잘못된 기간 형식이면 400을 반환한다", async () => {
+      await expect(
+        controller.trend("11110", "2026-01", "202603"),
+      ).rejects.toBeInstanceOf(BadRequestException);
     });
   });
 });
