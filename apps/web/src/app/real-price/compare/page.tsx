@@ -10,16 +10,14 @@ import {
   REGIONS,
   type Region,
 } from "../_lib/regions";
+import ChartLoadingState from "../_components/ChartLoadingState";
+import { buildRecentMonthOptions, type MonthOption } from "../_lib/monthOptions";
 
 const RegionCompareCharts = dynamic(
   () => import("./_components/RegionCompareCharts"),
   {
     ssr: false,
-    loading: () => (
-      <div className="rounded-lg border p-6 text-center text-muted-foreground">
-        차트를 불러오는 중입니다.
-      </div>
-    ),
+    loading: () => <ChartLoadingState />,
   },
 );
 
@@ -64,18 +62,6 @@ const REGION_COLORS = [
   "hsl(45, 93%, 47%)",
 ];
 
-function buildMonthOptions() {
-  const options: { value: string; label: string }[] = [];
-  const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const value = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
-    options.push({ value, label });
-  }
-  return options;
-}
-
 function formatPrice(value: number): string {
   return formatWonAmount(value);
 }
@@ -114,9 +100,7 @@ function computeStats(trades: Trade[], region: Region): RegionStats {
 export default function RegionComparePage() {
   const [selectedRegions, setSelectedRegions] = useState<string[]>([]);
   const [dealYmd, setDealYmd] = useState("");
-  const [monthOptions, setMonthOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [monthOptions, setMonthOptions] = useState<MonthOption[]>([]);
   const [regionStats, setRegionStats] = useState<RegionStats[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,7 +110,7 @@ export default function RegionComparePage() {
   // 월 목록은 `new Date()`에 의존하므로 SSR/CSR 결과가 달라질 수 있다.
   // 하이드레이션 불일치를 피하기 위해 클라이언트 마운트 이후에만 계산한다.
   useEffect(() => {
-    const options = buildMonthOptions();
+    const options = buildRecentMonthOptions(new Date());
     setMonthOptions(options);
     setDealYmd((prev) => prev || options[0]?.value || "");
   }, []);

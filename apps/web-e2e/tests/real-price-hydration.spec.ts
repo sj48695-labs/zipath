@@ -52,6 +52,7 @@ for (const path of ["/real-price", "/real-price/compare"] as const) {
     ).toBeVisible();
 
     await page.waitForTimeout(500);
+    await expect(page.getByLabel("계약월")).not.toHaveValue("");
     expect(issues).toEqual([]);
   });
 }

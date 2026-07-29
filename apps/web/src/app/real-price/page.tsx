@@ -8,26 +8,20 @@ import AreaFilter from "./_components/AreaFilter";
 import { formatWonAmount } from "./_lib/formatWonAmount";
 import SupportedRegionNotice from "./_components/SupportedRegionNotice";
 import { REGIONS } from "./_lib/regions";
+import ChartLoadingState from "./_components/ChartLoadingState";
+import { buildRecentMonthOptions, type MonthOption } from "./_lib/monthOptions";
 
 const MonthlyPriceTrendChart = dynamic(
   () => import("./_components/MonthlyPriceTrendChart"),
   {
     ssr: false,
-    loading: () => (
-      <div className="rounded-lg border p-6 text-center text-muted-foreground">
-        차트를 불러오는 중입니다.
-      </div>
-    ),
+    loading: () => <ChartLoadingState />,
   },
 );
 
 const RealPriceCharts = dynamic(() => import("./_components/RealPriceCharts"), {
   ssr: false,
-  loading: () => (
-    <div className="rounded-lg border p-6 text-center text-muted-foreground">
-      차트를 불러오는 중입니다.
-    </div>
-  ),
+  loading: () => <ChartLoadingState />,
 });
 
 interface Trade {
@@ -91,18 +85,6 @@ function getMonthlyItems(data: unknown): MonthlyPriceSummaryItem[] {
   return Array.isArray(monthly) ? (monthly as MonthlyPriceSummaryItem[]) : [];
 }
 
-function getMonthOptions() {
-  const options: { value: string; label: string }[] = [];
-  const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const value = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}`;
-    const label = `${d.getFullYear()}년 ${d.getMonth() + 1}월`;
-    options.push({ value, label });
-  }
-  return options;
-}
-
 export default function RealPricePage() {
   const [regionCode, setRegionCode] = useState("11680");
   const [dealYmd, setDealYmd] = useState("");
@@ -112,9 +94,7 @@ export default function RealPricePage() {
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [areaFilter, setAreaFilter] = useState<AreaRange>({});
-  const [monthOptions, setMonthOptions] = useState<
-    { value: string; label: string }[]
-  >([]);
+  const [monthOptions, setMonthOptions] = useState<MonthOption[]>([]);
 
   // Trend-related state
   const [trendFromMonth, setTrendFromMonth] = useState("");
@@ -125,7 +105,7 @@ export default function RealPricePage() {
   const [trendSearched, setTrendSearched] = useState(false);
 
   useEffect(() => {
-    const options = getMonthOptions();
+    const options = buildRecentMonthOptions(new Date());
     setMonthOptions(options);
     setDealYmd((prev) => prev || options[0]?.value || "");
     setTrendFromMonth(
