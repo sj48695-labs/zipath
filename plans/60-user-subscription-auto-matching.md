@@ -52,7 +52,7 @@
 
 ### Phase별 구현 계획
 
-### Phase 1: DTO 검증 계약 고정 (커밋 단위)
+### Phase 1 (완료): DTO 검증 계약 고정 (커밋 단위)
 
 - 변경 파일: `apps/api/src/announcement/dto/match-request.dto.ts`, `apps/api/test/match-request.dto.spec.ts`
 - 구현:
@@ -68,7 +68,7 @@
   - 경계값/비정상 입력 거부
   - 선택 필드가 비어 있을 때의 동작
 
-### Phase 2: 매칭 엔드포인트 회귀 검증 (커밋 단위)
+### Phase 2 (완료): 매칭 엔드포인트 회귀 검증 (커밋 단위)
 
 - 의존성: Phase 1
 - 변경 파일: `apps/api/test/announcement.service.spec.ts`, `apps/api/test/e2e/announcement.e2e-spec.ts`

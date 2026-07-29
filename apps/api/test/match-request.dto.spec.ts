@@ -78,6 +78,15 @@ describe("matchRequestSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("should reject non-integer income", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: 5000.5,
+      homelessMonths: 36,
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("should reject non-integer dependents", () => {
     const result = matchRequestSchema.safeParse({
       age: 30,
@@ -103,6 +112,17 @@ describe("matchRequestSchema", () => {
       income: 5000,
       homelessMonths: 36,
       region: "   ",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject null optional flags and fields", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: 5000,
+      homelessMonths: 36,
+      region: null,
+      isMarried: null,
     });
     expect(result.success).toBe(false);
   });
