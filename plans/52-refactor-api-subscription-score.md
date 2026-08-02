@@ -17,7 +17,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: 청약 시뮬레이션 API 입력 회귀 테스트 추가 (커밋 단위)
+### Phase 1 (완료): 청약 시뮬레이션 API 입력 회귀 테스트 추가 (커밋 단위)
 
 - 변경 파일: `apps/api/test/e2e/subscription.e2e-spec.ts` (신규, 1개)
 - 구현: `SubscriptionController`와 `SubscriptionService`를 직접 구성하는 `apps/api/test/e2e/loan.e2e-spec.ts` 패턴을 따른다. `POST /api/subscription/simulate` 관례를 설명 이름에 반영하고, `savingsMonths: 180` 요청이 서비스 결과의 `청약통장 가입기간` 점수 17점 및 개월 수 설명으로 반환되는지 검증한다. `savingsMonths` 생략 시 기존 나이 기반 폴백 결과도 확인한다.
