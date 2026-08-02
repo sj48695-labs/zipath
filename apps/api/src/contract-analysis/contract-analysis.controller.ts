@@ -56,6 +56,16 @@ export class ContractAnalysisController {
     // 이미지는 영구 저장하지 않고 분석 후 폐기.
     FileInterceptor("image", {
       limits: { fileSize: MAX_IMAGE_SIZE },
+      fileFilter: (_req, file, cb) => {
+        if (!ALLOWED_IMAGE_MIME.includes(file.mimetype)) {
+          cb(
+            new BadRequestException("PNG 또는 JPEG 이미지만 업로드할 수 있습니다."),
+            false,
+          );
+        } else {
+          cb(null, true);
+        }
+      },
     }),
   )
   analyze(
@@ -70,16 +80,13 @@ export class ContractAnalysisController {
     }
     const { type, text } = parsed.data;
 
-    let analysisText = text;
-    if (!analysisText) {
+    let analysisText: string;
+    if (text !== undefined) {
+      analysisText = text;
+    } else {
       if (!image) {
         throw new BadRequestException(
           "분석할 이미지(image) 또는 텍스트(text) 중 하나는 필요합니다.",
-        );
-      }
-      if (!ALLOWED_IMAGE_MIME.includes(image.mimetype)) {
-        throw new BadRequestException(
-          "PNG 또는 JPEG 이미지만 업로드할 수 있습니다.",
         );
       }
       // 메모리 버퍼로 받아 텍스트 추출 후 폐기 (영구 저장하지 않음)

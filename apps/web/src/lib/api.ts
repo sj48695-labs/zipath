@@ -175,6 +175,13 @@ export async function fetchResponse(
   return res;
 }
 
+function getAuthHeader(): string {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
+  if (!token) throw new ApiError("로그인이 필요합니다.", 401);
+  return `Bearer ${token}`;
+}
+
 export async function fetchApi<T>(
   path: string,
   options?: FetchApiOptions,
@@ -210,10 +217,10 @@ export async function fetchApi<T>(
   return unwrapBackendData<T>(await res.json());
 }
 
-interface FetchFormOptions {
+interface FetchFormOptions
+  extends Omit<FetchResponseOptions, "body" | "headers"> {
   /** 토큰이 없으면 ApiError(401)을 throw한다. */
   auth?: boolean;
-  method?: string;
 }
 
 /**
@@ -227,34 +234,17 @@ export async function fetchApiForm<T>(
   formData: FormData,
   options?: FetchFormOptions,
 ): Promise<T> {
-  const url = `${API_BASE}${path}`;
-  const { auth, method = "POST" } = options ?? {};
-
+  const { auth, method = "POST", ...rest } = options ?? {};
   const headers: Record<string, string> = {};
 
-  if (auth) {
-    const token =
-      typeof window !== "undefined"
-        ? localStorage.getItem("accessToken")
-        : null;
-    if (!token) {
-      throw new ApiError("로그인이 필요합니다.", 401);
-    }
-    headers.Authorization = `Bearer ${token}`;
-  }
+  if (auth) headers.Authorization = getAuthHeader();
 
-  const res = await fetch(url, {
+  const res = await fetchResponse(`${API_BASE}${path}`, {
+    ...rest,
     method,
     body: formData,
     headers,
   });
-
-  if (!res.ok) {
-    const body = await res.json().catch(() => null);
-    const message =
-      (body as Record<string, unknown>)?.message ?? `API 오류 (${res.status})`;
-    throw new ApiError(String(message), res.status);
-  }
 
   return unwrapBackendData<T>(await res.json());
 }

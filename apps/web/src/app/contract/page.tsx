@@ -45,6 +45,23 @@ interface ContractAnalysisResult {
   premiumNotice?: string;
 }
 
+type RiskLevel = "safe" | "caution" | "danger";
+
+const RISK_STYLE: Record<RiskLevel, string> = {
+  danger: "bg-red-50 text-red-800",
+  caution: "bg-yellow-50 text-yellow-800",
+  safe: "bg-green-50 text-green-800",
+};
+
+function clauseCardClasses(
+  detected: boolean,
+  severity: string,
+): { card: string; text: string } {
+  if (detected) return { card: "border-green-200 bg-green-50", text: "text-green-800" };
+  if (severity === "required") return { card: "border-red-200 bg-red-50", text: "text-red-800" };
+  return { card: "border-yellow-200 bg-yellow-50", text: "text-yellow-800" };
+}
+
 const CONTRACT_TYPES: { type: ContractType; label: string; description: string; color: string }[] = [
   {
     type: "월세",
@@ -234,13 +251,7 @@ export default function ContractAnalysisPage() {
           {analysisResult && (
             <div className="mt-5 space-y-3">
               <div
-                className={`rounded-md px-4 py-3 text-sm ${
-                  analysisResult.riskLevel === "danger"
-                    ? "bg-red-50 text-red-800"
-                    : analysisResult.riskLevel === "caution"
-                      ? "bg-yellow-50 text-yellow-800"
-                      : "bg-green-50 text-green-800"
-                }`}
+                className={`rounded-md px-4 py-3 text-sm ${RISK_STYLE[analysisResult.riskLevel]}`}
               >
                 <span className="font-semibold">
                   주요 조항 {analysisResult.detectedCount}/
@@ -250,26 +261,16 @@ export default function ContractAnalysisPage() {
               </div>
 
               <ul className="space-y-2">
-                {analysisResult.clauses.map((clause) => (
+                {analysisResult.clauses.map((clause) => {
+                  const { card, text: textCls } = clauseCardClasses(clause.detected, clause.severity);
+                  return (
                   <li
                     key={clause.id}
-                    className={`rounded-md border px-4 py-3 ${
-                      clause.detected
-                        ? "border-green-200 bg-green-50"
-                        : clause.severity === "required"
-                          ? "border-red-200 bg-red-50"
-                          : "border-yellow-200 bg-yellow-50"
-                    }`}
+                    className={`rounded-md border px-4 py-3 ${card}`}
                   >
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-sm font-medium ${
-                          clause.detected
-                            ? "text-green-800"
-                            : clause.severity === "required"
-                              ? "text-red-800"
-                              : "text-yellow-800"
-                        }`}
+                        className={`text-sm font-medium ${textCls}`}
                       >
                         {clause.detected ? "검출됨" : "누락"} · {clause.label}
                       </span>
@@ -285,7 +286,8 @@ export default function ContractAnalysisPage() {
                       </p>
                     )}
                   </li>
-                ))}
+                  );
+                })}
               </ul>
 
               <p className="rounded-md bg-amber-50 px-4 py-3 text-xs text-amber-800">

@@ -50,6 +50,18 @@ export interface ContractAnalysisResult {
   disclaimer: string;
 }
 
+const EXTRACT_TEXT_SAMPLES: Record<string, string> = {
+  월세:
+    "부동산 임대차계약서. 임대인 홍길동, 임차인 김철수. 소재지 서울특별시 강남구. " +
+    "보증금 일천만원(10,000,000원), 월세 50만원, 관리비 5만원. 계약기간 2년. 특약사항: 원상복구.",
+  전세:
+    "부동산 전세계약서. 임대인 홍길동, 임차인 김철수. 소재지 서울특별시 송파구. " +
+    "전세금 삼억원(300,000,000원). 계약기간 2년. 보증금 반환은 계약 만료 시. 특약: 전세보증보험 가입.",
+  매매:
+    "부동산 매매계약서. 매도인 홍길동, 매수인 김철수. 소재지 서울특별시 마포구. " +
+    "매매대금 오억원(500,000,000원). 계약금, 중도금, 잔금 일정. 소유권이전 등기는 잔금일.",
+};
+
 const ANALYSIS_DISCLAIMER =
   "본 분석은 참고용이며 법적 효력이 없습니다. OCR 인식 정확도에 따라 일부 조항이 누락 검출될 수 있으니, 실제 계약 시 반드시 공인중개사 또는 법률 전문가의 확인을 받으세요.";
 
@@ -94,7 +106,7 @@ export class ContractAnalysisService {
       );
     }
 
-    const normalized = text?.trim() ?? "";
+    const normalized = text.trim();
     if (normalized.length === 0) {
       throw new BadRequestException("분석할 계약서 텍스트가 비어 있습니다.");
     }
@@ -152,19 +164,7 @@ export class ContractAnalysisService {
    * MVP에서는 실제 OCR 엔진을 내장하지 않고 데모용 시뮬레이션 텍스트를 생성한다.
    * (향후 외부 OCR API / 온디바이스 OCR로 이 메서드 내부만 교체하면 됨.)
    */
-  extractText(buffer: Buffer, type: string): string {
-    void buffer;
-    const samples: Record<string, string> = {
-      월세:
-        "부동산 임대차계약서. 임대인 홍길동, 임차인 김철수. 소재지 서울특별시 강남구. " +
-        "보증금 일천만원(10,000,000원), 월세 50만원, 관리비 5만원. 계약기간 2년. 특약사항: 원상복구.",
-      전세:
-        "부동산 전세계약서. 임대인 홍길동, 임차인 김철수. 소재지 서울특별시 송파구. " +
-        "전세금 삼억원(300,000,000원). 계약기간 2년. 보증금 반환은 계약 만료 시. 특약: 전세보증보험 가입.",
-      매매:
-        "부동산 매매계약서. 매도인 홍길동, 매수인 김철수. 소재지 서울특별시 마포구. " +
-        "매매대금 오억원(500,000,000원). 계약금, 중도금, 잔금 일정. 소유권이전 등기는 잔금일.",
-    };
-    return samples[type] ?? samples["월세"];
+  extractText(_buffer: Buffer, type: string): string {
+    return EXTRACT_TEXT_SAMPLES[type] ?? EXTRACT_TEXT_SAMPLES["월세"];
   }
 }
