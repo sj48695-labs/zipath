@@ -73,11 +73,30 @@ for (const { path, heading } of routes) {
     expectPendingMonthSelect(await response!.text());
 
     await expect(page.getByRole("heading", { name: heading })).toBeVisible();
-    await expect(contractMonthSelect(page)).toHaveValue(/^\d{6}$/);
-    expect(issues).toEqual([]);
+    if (path === "/real-price") {
+      await expect(
+        page.getByText("실거래가 조회는 현재 수도권·부산만 지원합니다.", {
+          exact: false,
+        }),
+      ).toBeVisible();
+      await expect(
+        page.getByText("서울·경기·인천·부산의 일부 지역으로 제한", {
+          exact: false,
+        }),
+      ).toBeVisible();
+    } else {
+      await expect(
+        page.getByText("현재 지원 범위: 수도권·부산", { exact: false }),
+      ).toBeVisible();
+      await expect(
+        page.getByText("아래 목록에서만 선택", { exact: false }),
+      ).toBeVisible();
+    }
 
     await expect(
       page.getByText("참고용이며 법적 효력 없음", { exact: false }).first(),
     ).toBeVisible();
+    await expect(contractMonthSelect(page)).toHaveValue(/^\d{6}$/);
+    expect(issues).toEqual([]);
   });
 }
