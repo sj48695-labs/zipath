@@ -22,7 +22,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: direct entry hydration 계약을 서버 HTML·클라이언트 결과로 분리
+### Phase 1 (완료): direct entry hydration 계약을 서버 HTML·클라이언트 결과로 분리
 
 - 변경 파일: `apps/web-e2e/tests/real-price-hydration.spec.ts`
 - 구현:
@@ -36,7 +36,7 @@
   - build 산출물을 `next start`로 실행하고 `ZIPATH_BASE_URL=http://127.0.0.1:<port> npm test -w @zipath/web-e2e -- real-price-hydration`를 실행한다.
   - 기본 배포 URL에서도 같은 명령을 실행해 고지 assertion만 실패하는지 별도로 기록한다.
 
-### Phase 2: 로컬 production 재현 실패 시 최초 월 상태의 단일 소스를 보강
+### Phase 2 (완료): 로컬 production 재현 실패 시 최초 월 상태의 단일 소스를 보강
 
 - 의존성: Phase 1. 로컬 build 서버의 Phase 1 검증에서 React `#418/#423/#425`·hydration message 또는 서버 HTML/계약월 계약이 실패할 때만 수행한다. 통과하면 이 phase는 변경 없이 건너뛴다.
 - 변경 파일: `apps/web/src/app/real-price/_lib/monthOptions.ts`, `apps/web/src/app/real-price/_lib/monthOptions.test.ts`, `apps/web/src/app/real-price/page.tsx`, `apps/web/src/app/real-price/compare/page.tsx`
@@ -44,8 +44,9 @@
   - `monthOptions.ts`에 두 페이지가 공유하는 빈 최초 월 상태 helper를 추가하고, `dealYmd`, `trendFromMonth`, `trendToMonth`, `monthOptions`의 첫 렌더 기준을 한 곳에 둔다.
   - `RealPricePage`와 `RegionComparePage`가 렌더 본문에서 `new Date()`나 월 options를 생성하지 않도록 유지하고, mount 이후 상태 전환만 공통 helper의 결과로 적용한다. `page.tsx`의 table/chart와 `compare/page.tsx`의 계약월 select가 같은 fallback DOM을 유지해야 한다.
   - `monthOptions.test.ts`에 빈 최초 상태와 고정 기준일의 options/default 선택값을 추가해 월 경계에서도 결정성을 검증한다.
-  - 과거 `RealPriceClient`/`RegionCompareClient` 분리는 이 검증으로 해결되지 않을 때에만 검토한다. 현재 두 큰 페이지를 재분할하는 작업은 본 phase 범위에 넣지 않는다.
-  - 선례: `buildRecentMonthOptions()`와 현재 두 page의 `useEffect` 초기화 블록.
+- 과거 `RealPriceClient`/`RegionCompareClient` 분리는 이 검증으로 해결되지 않을 때에만 검토한다. 현재 두 큰 페이지를 재분할하는 작업은 본 phase 범위에 넣지 않는다.
+- 선례: `buildRecentMonthOptions()`와 현재 두 page의 `useEffect` 초기화 블록.
+- 결과: 로컬 production build에서 Phase 1 계약과 React hydration 오류 0건을 확인했으므로, 이 조건부 phase의 소스 변경은 수행하지 않았다. 반면 배포본은 두 경로 모두 서버 HTML에 날짜 기반 옵션을 포함해 최신 소스와 불일치했으며, 기존 고지 누락보다 먼저 이 계약에서 실패했다.
 - 테스트:
   - `npm test -w @zipath/web -- monthOptions`
   - Phase 1의 build된 로컬 서버 hydration E2E
