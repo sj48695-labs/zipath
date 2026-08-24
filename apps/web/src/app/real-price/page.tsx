@@ -466,13 +466,15 @@ export default function RealPricePage() {
                 </button>
               </div>
             )}
-            {showTrendColdStartHint && (
+            {trendLoading && (
               <div
                 role="status"
                 aria-live="polite"
                 className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-700"
               >
-                서버가 준비 중입니다. 잠시만 기다려주세요. (경과 {trendElapsedSeconds}초)
+                {showTrendColdStartHint
+                  ? `서버가 준비 중입니다. 잠시만 기다려주세요. (경과 ${trendElapsedSeconds}초)`
+                  : "실거래가 추이를 조회하고 있어요. 잠시만 기다려주세요."}
               </div>
             )}
             {!trendError && !trendSearched && !trendLoading && (
@@ -500,15 +502,15 @@ export default function RealPricePage() {
                 <div className="flex justify-center py-20">
                   <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
                 </div>
-                {showColdStartHint && (
-                  <div
-                    role="status"
-                    aria-live="polite"
-                    className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-700"
-                  >
-                    서버가 준비 중입니다. 잠시만 기다려주세요. (경과 {elapsedSeconds}초)
-                  </div>
-                )}
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-700"
+                >
+                  {showColdStartHint
+                    ? `서버가 준비 중입니다. 잠시만 기다려주세요. (경과 ${elapsedSeconds}초)`
+                    : "실거래가를 조회하고 있어요. 잠시만 기다려주세요."}
+                </div>
               </>
             )}
 

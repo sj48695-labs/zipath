@@ -220,16 +220,19 @@ export default function SubscriptionPage() {
           </button>
         </form>
 
-        <div aria-live="polite">
-          {showColdStartHint && (
-            <div className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6">
-              <p className="text-sm text-amber-700">
-                서버가 잠시 준비 중입니다 (콜드 스타트). 보통 30초 이내에 응답해요.
-                잠시만 기다려주세요. (경과 {elapsedSeconds}초)
-              </p>
-            </div>
-          )}
-        </div>
+        {loading && (
+          <div
+            role="status"
+            aria-live="polite"
+            className="mt-8 rounded-lg border border-amber-200 bg-amber-50 p-6"
+          >
+            <p className="text-sm text-amber-700">
+              {showColdStartHint
+                ? `서버가 잠시 준비 중입니다 (콜드 스타트). 보통 30초 이내에 응답해요. 잠시만 기다려주세요. (경과 ${elapsedSeconds}초)`
+                : "청약 자격을 확인하고 있어요. 잠시만 기다려주세요."}
+            </p>
+          </div>
+        )}
 
         <div aria-live="polite">
           {error && (
