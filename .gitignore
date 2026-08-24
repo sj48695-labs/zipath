@@ -50,6 +50,7 @@ packages/db/dist/
 .devloop-*
 .worktrees/
 !.devloop
+!.devloop-audit.yml
 # wt/devloop 로컬 런타임 상태 — 추적되면 브랜치에 수천 개 로그·중첩클론이 커밋됨(#130)
 .git-local/
 _tmpclone*

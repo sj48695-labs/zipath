@@ -12,6 +12,9 @@ MODEL_IMPL=sonnet
 TOKEN_BUDGET=0
 TOKEN_WINDOW_MINUTES=300
 
+# .devloop-audit.yml의 다중 사용자 흐름을 우선 사용한다. yq가 없는 환경의 fallback.
+DEV_URL_AUDIT=https://zipath-web.vercel.app
+
 # ─── 커밋 형식 ──────────────────────────────────────────────────────────
 COMMIT_FORMAT=feat: #{iid} {title}
 

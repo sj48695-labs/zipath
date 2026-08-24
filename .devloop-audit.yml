@@ -1,0 +1,10 @@
+flows:
+  - name: public-home
+    url: https://zipath-web.vercel.app/
+    waitFor: networkidle
+  - name: real-price
+    url: https://zipath-web.vercel.app/real-price
+    waitFor: "main"
+  - name: announcements-empty-state
+    url: https://zipath-web.vercel.app/announcements
+    waitFor: "main"
