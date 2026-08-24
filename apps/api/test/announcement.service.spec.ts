@@ -214,7 +214,9 @@ describe("AnnouncementService", () => {
         text: jest.fn().mockResolvedValue("internal error"),
       });
 
-      await service.syncFromApi();
+      await expect(service.syncFromApi()).rejects.toBeInstanceOf(
+        BadGatewayException,
+      );
 
       expect(announcementRepo.upsert).not.toHaveBeenCalled();
     });
