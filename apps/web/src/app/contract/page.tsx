@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useCallback, useRef } from "react";
-import { fetchApi } from "@/lib/api";
+import { ApiError, fetchApi, fetchApiForm } from "@/lib/api";
+import { readCheckedItems, saveCheckedItems } from "@/lib/contract-checklist-storage";
 import SiteHeader from "@/components/layout/SiteHeader";
 
 interface ChecklistItem {
@@ -19,6 +20,23 @@ interface ContractChecklist {
   title: string;
   description: string;
   items: ChecklistItem[];
+}
+
+interface ClauseDetection {
+  id: string;
+  label: string;
+  detected: boolean;
+  severity: "required" | "recommended";
+  advice: string;
+}
+
+interface ContractAnalysisResult {
+  clauses: ClauseDetection[];
+  detectedCount: number;
+  totalCount: number;
+  riskLevel: "safe" | "caution" | "danger";
+  riskSummary: string;
+  disclaimer: string;
 }
 
 type ContractType = "월세" | "전세" | "매매";
@@ -44,37 +62,6 @@ const CONTRACT_TYPES: { type: ContractType; label: string; description: string; 
   },
 ];
 
-const CHECKED_ITEMS_STORAGE_PREFIX = "contract-checklist-checked";
-
-function getCheckedItemsStorageKey(type: ContractType): string {
-  return `${CHECKED_ITEMS_STORAGE_PREFIX}:${type}`;
-}
-
-function readCheckedItems(type: ContractType): Set<string> {
-  try {
-    const saved = window.localStorage.getItem(getCheckedItemsStorageKey(type));
-    if (!saved) return new Set();
-
-    const parsed: unknown = JSON.parse(saved);
-    return Array.isArray(parsed) && parsed.every((item) => typeof item === "string")
-      ? new Set(parsed)
-      : new Set();
-  } catch {
-    return new Set();
-  }
-}
-
-function saveCheckedItems(type: ContractType, checked: Set<string>): void {
-  try {
-    window.localStorage.setItem(
-      getCheckedItemsStorageKey(type),
-      JSON.stringify([...checked]),
-    );
-  } catch {
-    // 브라우저 저장소를 사용할 수 없어도 체크리스트는 계속 사용할 수 있다.
-  }
-}
-
 export default function ContractAnalysisPage() {
   const [selectedType, setSelectedType] = useState<ContractType | null>(null);
   const [checklist, setChecklist] = useState<ContractChecklist | null>(null);
@@ -82,6 +69,11 @@ export default function ContractAnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const [analysisType, setAnalysisType] = useState<ContractType>("월세");
+  const [analysisFile, setAnalysisFile] = useState<File | null>(null);
+  const [analysisResult, setAnalysisResult] = useState<ContractAnalysisResult | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysisError, setAnalysisError] = useState<string | null>(null);
   const checklistRequestId = useRef(0);
 
   const fetchChecklist = useCallback(async (type: ContractType) => {
@@ -137,6 +129,26 @@ export default function ContractAnalysisPage() {
     setExpandedItem((prev) => (prev === id ? null : id));
   };
 
+  const handleAnalyzeImage = useCallback(async () => {
+    if (!analysisFile) {
+      setAnalysisError("분석할 계약서 이미지를 선택해주세요.");
+      return;
+    }
+    setAnalyzing(true);
+    setAnalysisError(null);
+    setAnalysisResult(null);
+    try {
+      const formData = new FormData();
+      formData.append("type", analysisType);
+      formData.append("image", analysisFile);
+      setAnalysisResult(await fetchApiForm<ContractAnalysisResult>("/contract-analysis/analyze", formData));
+    } catch (err) {
+      setAnalysisError(err instanceof ApiError ? err.message : "OCR 분석에 실패했습니다. 다시 시도해주세요.");
+    } finally {
+      setAnalyzing(false);
+    }
+  }, [analysisFile, analysisType]);
+
   const total = checklist?.items.length ?? 0;
   const done = checked.size;
   const percentage = total > 0 ? Math.round((done / total) * 100) : 0;
@@ -161,6 +173,30 @@ export default function ContractAnalysisPage() {
           이 체크리스트는 참고용이며 법적 효력 없음으로 제공됩니다. 실제 계약 시에는
           반드시 전문가(공인중개사, 변호사)의 조언을 받으세요.
         </div>
+
+        <section className="mb-10 rounded-lg border-2 border-primary/20 bg-primary/5 p-5" aria-labelledby="image-analysis-heading">
+          <h2 id="image-analysis-heading" className="text-lg font-bold">계약서 이미지 OCR 분석</h2>
+          <p className="mb-4 text-sm text-muted-foreground">PNG 또는 JPEG 계약서 사진에서 주요 조항을 자동으로 점검합니다.</p>
+          <div className="grid gap-4 sm:grid-cols-[auto_1fr_auto] sm:items-end">
+            <label className="text-sm font-medium">계약 유형
+              <select value={analysisType} onChange={(event) => setAnalysisType(event.target.value as ContractType)} className="mt-1 block rounded-md border bg-card px-3 py-2">
+                {CONTRACT_TYPES.map((contractType) => <option key={contractType.type} value={contractType.type}>{contractType.label}</option>)}
+              </select>
+            </label>
+            <label className="text-sm font-medium">계약서 이미지 (PNG, JPEG, 최대 10MB)
+              <input type="file" accept="image/png,image/jpeg" onChange={(event) => setAnalysisFile(event.target.files?.[0] ?? null)} className="mt-1 block w-full text-sm" />
+            </label>
+            <button onClick={handleAnalyzeImage} disabled={analyzing || !analysisFile} className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50">
+              {analyzing ? "분석 중..." : "분석하기"}
+            </button>
+          </div>
+          {analysisError && <div className="mt-3 text-sm font-medium text-red-700" role="alert">{analysisError}<button onClick={handleAnalyzeImage} className="ml-2 underline">다시 시도</button></div>}
+          {analysisResult && <div className="mt-5 space-y-3" aria-live="polite">
+            <p className={`rounded-md px-4 py-3 text-sm ${analysisResult.riskLevel === "danger" ? "bg-red-50 text-red-800" : analysisResult.riskLevel === "caution" ? "bg-yellow-50 text-yellow-800" : "bg-green-50 text-green-800"}`}>주요 조항 {analysisResult.detectedCount}/{analysisResult.totalCount} 검출 — {analysisResult.riskSummary}</p>
+            <ul className="space-y-2">{analysisResult.clauses.map((clause) => <li key={clause.id} className={`rounded-md border px-4 py-3 ${clause.detected ? "border-green-200 bg-green-50" : clause.severity === "required" ? "border-red-200 bg-red-50" : "border-yellow-200 bg-yellow-50"}`}><strong>{clause.detected ? "검출됨" : "누락"} · {clause.label}</strong>{!clause.detected && <p className="mt-1 text-xs text-muted-foreground">{clause.advice}</p>}</li>)}</ul>
+            <p className="rounded-md bg-amber-50 px-4 py-3 text-xs text-amber-800">{analysisResult.disclaimer}</p>
+          </div>}
+        </section>
 
         {/* 계약 유형 선택 */}
         <div className="mb-8">

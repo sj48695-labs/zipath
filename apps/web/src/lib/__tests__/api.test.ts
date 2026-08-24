@@ -3,6 +3,7 @@ import {
   backendErrorResponse,
   createErrorBody,
   fetchApi,
+  fetchApiForm,
   fetchResponse,
   getBackendErrorMessage,
   proxyErrorBody,
@@ -178,6 +179,41 @@ describe("fetchApi", () => {
       status: 500,
       message: "API 오류 (500)",
     });
+  });
+});
+
+describe("fetchApiForm", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it("multipart 요청의 boundary를 브라우저에 맡기고 응답을 언랩한다", async () => {
+    global.fetch = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      json: async () => ({ success: true, data: { detectedCount: 0 } }),
+    } as Response);
+    const formData = new FormData();
+    formData.append("type", "월세");
+
+    await expect(fetchApiForm<{ detectedCount: number }>("/contract-analysis/analyze", formData)).resolves.toEqual({ detectedCount: 0 });
+    expect(global.fetch).toHaveBeenCalledWith(
+      expect.stringContaining("/contract-analysis/analyze"),
+      expect.objectContaining({ method: "POST", body: formData, headers: {} }),
+    );
+  });
+
+  it("OCR 요청 실패 뒤 같은 요청을 다시 시도할 수 있다", async () => {
+    global.fetch = jest
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 502, json: async () => ({ message: "OCR 실패" }) } as Response)
+      .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ success: true, data: { detectedCount: 1 } }) } as Response);
+    const formData = new FormData();
+
+    await expect(fetchApiForm("/contract-analysis/analyze", formData)).rejects.toMatchObject({ message: "OCR 실패" });
+    await expect(fetchApiForm("/contract-analysis/analyze", formData)).resolves.toEqual({ detectedCount: 1 });
   });
 });
 

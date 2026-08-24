@@ -209,6 +209,32 @@ export async function fetchApi<T>(
   return unwrapBackendData<T>(await res.json());
 }
 
+interface FetchFormOptions {
+  auth?: boolean;
+  signal?: AbortSignal;
+}
+
+/** multipart/form-data 요청. Content-Type을 지정하지 않아 boundary를 브라우저가 생성한다. */
+export async function fetchApiForm<T>(
+  path: string,
+  formData: FormData,
+  options?: FetchFormOptions,
+): Promise<T> {
+  const headers: Record<string, string> = {};
+  if (options?.auth) {
+    const token = typeof window === "undefined" ? null : window.localStorage.getItem("accessToken");
+    if (!token) throw new ApiError("로그인이 필요합니다.", 401);
+    headers.Authorization = `Bearer ${token}`;
+  }
+  const res = await fetchResponse(`${API_BASE}${path}`, {
+    method: "POST",
+    body: formData,
+    headers,
+    signal: options?.signal,
+  });
+  return unwrapBackendData<T>(await res.json());
+}
+
 /**
  * NestJS TransformInterceptor 의 {success, data} 래핑을 풀어 안쪽 data 를 반환.
  * 래핑되지 않은 응답은 그대로 통과 (안전 fallback).
