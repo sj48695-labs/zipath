@@ -31,10 +31,10 @@
 
 ## Phase별 구현 계획
 
-### Phase 0: SSO 복합 식별 제약 정합화 (커밋 단위)
+### Phase 0 (완료): SSO 복합 식별 제약 정합화 (커밋 단위)
 
-- 변경 파일: `packages/db/src/entities/user.entity.ts`, `packages/db/src/migrations/1787594035000-MakeUserProviderIdentityCompositeUnique.ts`, `apps/api/test/auth.service.spec.ts`
-- 구현: `User.providerId`의 단일 `unique: true`를 제거하고 TypeORM `@Index(["provider", "providerId"], { unique: true })`를 선언한다. 새 migration의 `up()`에서 PostgreSQL catalog로 기존 `providerId` 단일 unique constraint 이름을 조회·제거하고 `(provider, providerId)` unique constraint를 만든다; `down()`은 정확히 되돌린다. `InitialBaseline1746489600000`이 synchronize 기반이라 constraint 이름을 하드코딩하지 않는다. `AuthService.validateOAuthLogin()`의 `where: { provider, providerId }` 선례를 Apple provider로도 검증해 같은 provider ID가 서로 다른 provider와 충돌하지 않고, Apple 재로그인에서 `null` 프로필이 기존 정보를 보존함을 명시한다.
+- 변경 파일: `packages/db/src/entities/user.entity.ts`, `packages/db/src/migrations/1787594035000-MakeUserProviderIdentityCompositeUnique.ts`, `packages/types/src/index.ts`, `apps/api/src/auth/auth.service.ts`, `apps/api/test/auth.service.spec.ts`
+- 구현: Apple을 `SsoProvider`에 선행 추가해 이후 모든 OAuth 입력과 결과가 같은 union을 사용하게 한다. `User.providerId`의 단일 `unique: true`를 제거하고 TypeORM `@Index(["provider", "providerId"], { unique: true })`를 선언한다. 새 migration의 `up()`에서 PostgreSQL catalog로 기존 `providerId` 단일 unique constraint 이름을 조회·제거하고 `(provider, providerId)` unique constraint를 만든다; `down()`은 정확히 되돌린다. `InitialBaseline1746489600000`이 synchronize 기반이라 constraint 이름을 하드코딩하지 않는다. `AuthService.validateOAuthLogin()`의 `where: { provider, providerId }` 선례를 Apple provider로도 검증해 같은 provider ID가 서로 다른 provider와 충돌하지 않고, Apple 재로그인에서 `null` 프로필이 기존 정보를 보존함을 명시한다.
 - 테스트: `apps/api/test/auth.service.spec.ts`의 `makeUser()`와 `should not overwrite email/nickname with null` 선례에 `provider: "apple"` 케이스를 추가한다. migration은 TypeORM/PostgreSQL SQL 형태를 검토해 기존 데이터 보존과 rollback을 확인한다.
 
 ### Phase 1: Apple 설정·공유 타입·의존성 추가 (커밋 단위)
