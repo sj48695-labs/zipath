@@ -88,11 +88,11 @@ export class AnnouncementService {
     };
   }
 
-  /** 가장 최근 동기화 시각(MAX(updatedAt))을 ISO 문자열로 반환, 데이터 없으면 null */
+  /** 가장 최근 캐시 동기화 시각(MAX(fetchedAt))을 ISO 문자열로 반환, 데이터 없으면 null */
   private async getLastSyncedAt(): Promise<string | null> {
     const raw = await this.announcementRepo
       .createQueryBuilder("a")
-      .select("MAX(a.updatedAt)", "max")
+      .select("MAX(a.fetchedAt)", "max")
       .getRawOne<{ max: Date | string | null }>();
 
     const max = raw?.max ?? null;
