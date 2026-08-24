@@ -55,7 +55,7 @@
 - 선례: `apps/web/src/lib/api.ts`의 `combineSignals()`·`fetchApi()`, `apps/web/src/lib/__tests__/api.test.ts`의 AbortController mock.
 - 테스트: 짧은 `timeoutMs`에서 `timeout`/408, fetch 거부와 외부 abort에서 `network`, non-OK 응답의 backend message 보존, 정상 `Response`의 원문 반환을 unit test로 고정한다.
 
-### Phase 5: 실거래가 단건·추이 조회에 대기 안내와 재시도 적용
+### Phase 5 (완료): 실거래가 단건·추이 조회에 대기 안내와 재시도 적용
 
 - 의존성: Phase 4
 - 변경 파일: `apps/web/src/app/real-price/page.tsx`, `apps/web/src/app/real-price/real-price-error.ts` (신규), `apps/web/src/app/real-price/real-price-error.test.ts` (신규)

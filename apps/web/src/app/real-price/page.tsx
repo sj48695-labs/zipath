@@ -2,14 +2,22 @@
 
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import SiteHeader from "@/components/layout/SiteHeader";
+import { ApiError, fetchResponse } from "@/lib/api";
 import AreaFilter from "./_components/AreaFilter";
 import { formatWonAmount } from "./_lib/formatWonAmount";
 import SupportedRegionNotice from "./_components/SupportedRegionNotice";
 import { REGIONS } from "./_lib/regions";
 import ChartLoadingState from "./_components/ChartLoadingState";
 import { buildRecentMonthOptions, type MonthOption } from "./_lib/monthOptions";
+import {
+  getRealPriceErrorViewModel,
+  type RealPriceErrorViewModel,
+} from "./real-price-error";
+
+const REQUEST_TIMEOUT_MS = 45_000;
+const COLD_START_HINT_SECONDS = 10;
 
 const MonthlyPriceTrendChart = dynamic(
   () => import("./_components/MonthlyPriceTrendChart"),
@@ -90,7 +98,7 @@ export default function RealPricePage() {
   const [dealYmd, setDealYmd] = useState("");
   const [trades, setTrades] = useState<Trade[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<RealPriceErrorViewModel | null>(null);
   const [searched, setSearched] = useState(false);
   const [viewMode, setViewMode] = useState<ViewMode>("table");
   const [areaFilter, setAreaFilter] = useState<AreaRange>({});
@@ -101,8 +109,12 @@ export default function RealPricePage() {
   const [trendToMonth, setTrendToMonth] = useState("");
   const [trendData, setTrendData] = useState<MonthlyPriceSummaryItem[]>([]);
   const [trendLoading, setTrendLoading] = useState(false);
-  const [trendError, setTrendError] = useState<string | null>(null);
+  const [trendError, setTrendError] = useState<RealPriceErrorViewModel | null>(null);
   const [trendSearched, setTrendSearched] = useState(false);
+  const [elapsedSeconds, setElapsedSeconds] = useState(0);
+  const [trendElapsedSeconds, setTrendElapsedSeconds] = useState(0);
+  const lastSearchUrlRef = useRef<string | null>(null);
+  const lastTrendSearchUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     const options = buildRecentMonthOptions(new Date());
@@ -113,6 +125,30 @@ export default function RealPricePage() {
     );
     setTrendToMonth((prev) => prev || options[0]?.value || "");
   }, []);
+
+  useEffect(() => {
+    if (!loading) {
+      setElapsedSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const id = setInterval(() => {
+      setElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [loading]);
+
+  useEffect(() => {
+    if (!trendLoading) {
+      setTrendElapsedSeconds(0);
+      return;
+    }
+    const startedAt = Date.now();
+    const id = setInterval(() => {
+      setTrendElapsedSeconds(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [trendLoading]);
 
   // 법정동별 평균 가격
   const avgByDong = useMemo(() => {
@@ -144,81 +180,119 @@ export default function RealPricePage() {
       .filter((d) => d.area > 0 && d.price > 0);
   }, [trades]);
 
-  async function handleSearch() {
-    if (!dealYmd) {
-      setError("계약월을 불러온 후 다시 시도해주세요.");
-      return;
-    }
-
+  const runSearch = async (url: string) => {
     setLoading(true);
     setError(null);
     setSearched(true);
     try {
-      const params = new URLSearchParams({
-        LAWD_CD: regionCode,
-        DEAL_YMD: dealYmd,
-        numOfRows: "50",
-      });
-      if (areaFilter.min !== undefined) {
-        params.set("minArea", String(areaFilter.min));
-      }
-      if (areaFilter.max !== undefined) {
-        params.set("maxArea", String(areaFilter.max));
-      }
-      const res = await fetch(`/api/real-price?${params.toString()}`);
+      const res = await fetchResponse(url, { timeoutMs: REQUEST_TIMEOUT_MS });
       const data: unknown = await res.json();
 
       const errorMessage = getErrorMessage(data);
       if (errorMessage) {
-        setError(errorMessage);
+        setError(getRealPriceErrorViewModel(data));
         setTrades([]);
         return;
       }
 
       // 백엔드 RealPriceResponse 포맷 지원 + 기존 공공API 포맷 fallback
       setTrades(getTradeItems(data));
-    } catch {
-      setError("데이터를 불러오는 데 실패했습니다.");
+    } catch (err) {
+      setError(getRealPriceErrorViewModel(err));
       setTrades([]);
     } finally {
       setLoading(false);
     }
+  };
+
+  function handleSearch() {
+    if (!dealYmd) {
+      setError(
+        getRealPriceErrorViewModel(
+          new ApiError("계약월을 불러온 후 다시 시도해주세요.", 400),
+        ),
+      );
+      return;
+    }
+
+    const params = new URLSearchParams({
+      LAWD_CD: regionCode,
+      DEAL_YMD: dealYmd,
+      numOfRows: "50",
+    });
+    if (areaFilter.min !== undefined) {
+      params.set("minArea", String(areaFilter.min));
+    }
+    if (areaFilter.max !== undefined) {
+      params.set("maxArea", String(areaFilter.max));
+    }
+    const url = `/api/real-price?${params.toString()}`;
+    lastSearchUrlRef.current = url;
+    void runSearch(url);
   }
 
-  const handleTrendSearch = useCallback(async () => {
-    if (!trendFromMonth || !trendToMonth) {
-      setTrendError("조회 기간을 불러온 후 다시 시도해주세요.");
-      return;
-    }
-
-    if (trendFromMonth > trendToMonth) {
-      setTrendError("시작월이 종료월보다 이후입니다.");
-      return;
-    }
+  const runTrendSearch = useCallback(async (url: string) => {
     setTrendLoading(true);
     setTrendError(null);
     setTrendSearched(true);
     try {
-      const res = await fetch(
-        `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`,
-      );
+      const res = await fetchResponse(url, { timeoutMs: REQUEST_TIMEOUT_MS });
       const data: unknown = await res.json();
 
       const errorMessage = getErrorMessage(data);
       if (errorMessage) {
-        setTrendError(errorMessage);
+        setTrendError(getRealPriceErrorViewModel(data));
         setTrendData([]);
         return;
       }
 
       setTrendData(getMonthlyItems(data));
-    } catch {
-      setTrendError("추이 데이터를 불러오는 데 실패했습니다.");
+    } catch (err) {
+      setTrendError(getRealPriceErrorViewModel(err));
       setTrendData([]);
     } finally {
       setTrendLoading(false);
     }
-  }, [regionCode, trendFromMonth, trendToMonth]);
+  }, []);
+
+  const handleTrendSearch = useCallback(() => {
+    if (!trendFromMonth || !trendToMonth) {
+      setTrendError(
+        getRealPriceErrorViewModel(
+          new ApiError("조회 기간을 불러온 후 다시 시도해주세요.", 400),
+        ),
+      );
+      return;
+    }
+
+    if (trendFromMonth > trendToMonth) {
+      setTrendError(
+        getRealPriceErrorViewModel(
+          new ApiError("시작월이 종료월보다 이후입니다.", 400),
+        ),
+      );
+      return;
+    }
+    const url = `/api/real-price/trend?regionCode=${regionCode}&fromMonth=${trendFromMonth}&toMonth=${trendToMonth}`;
+    lastTrendSearchUrlRef.current = url;
+    void runTrendSearch(url);
+  }, [regionCode, runTrendSearch, trendFromMonth, trendToMonth]);
+
+  const handleRetry = () => {
+    if (lastSearchUrlRef.current) {
+      void runSearch(lastSearchUrlRef.current);
+    }
+  };
+
+  const handleTrendRetry = () => {
+    if (lastTrendSearchUrlRef.current) {
+      void runTrendSearch(lastTrendSearchUrlRef.current);
+    }
+  };
+
+  const showColdStartHint = loading && elapsedSeconds >= COLD_START_HINT_SECONDS;
+  const showTrendColdStartHint =
+    trendLoading && trendElapsedSeconds >= COLD_START_HINT_SECONDS;
 
   return (
     <div className="min-h-screen">
@@ -375,11 +449,30 @@ export default function RealPricePage() {
         {viewMode === "trend" && (
           <>
             {trendError && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-                <p className="font-medium text-red-800">{trendError}</p>
-                <p className="mt-2 text-sm text-red-600">
-                  data.go.kr API 키가 설정되어 있는지 확인해주세요.
-                </p>
+              <div
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 p-6 text-center"
+              >
+                <p className="font-medium text-red-800">{trendError.title}</p>
+                <p className="mt-2 text-sm text-red-600">{trendError.message}</p>
+                <p className="mt-2 text-xs text-red-500">{trendError.note}</p>
+                <button
+                  type="button"
+                  onClick={handleTrendRetry}
+                  disabled={trendLoading}
+                  className="mt-4 rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+                >
+                  다시 시도
+                </button>
+              </div>
+            )}
+            {showTrendColdStartHint && (
+              <div
+                role="status"
+                aria-live="polite"
+                className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-700"
+              >
+                서버가 준비 중입니다. 잠시만 기다려주세요. (경과 {trendElapsedSeconds}초)
               </div>
             )}
             {!trendError && !trendSearched && !trendLoading && (
@@ -403,17 +496,38 @@ export default function RealPricePage() {
         {viewMode !== "trend" && (
           <>
             {loading && (
-              <div className="flex justify-center py-20">
-                <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
-              </div>
+              <>
+                <div className="flex justify-center py-20">
+                  <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
+                </div>
+                {showColdStartHint && (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="mb-4 rounded-lg border border-amber-200 bg-amber-50 p-4 text-center text-sm text-amber-700"
+                  >
+                    서버가 준비 중입니다. 잠시만 기다려주세요. (경과 {elapsedSeconds}초)
+                  </div>
+                )}
+              </>
             )}
 
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-center">
-                <p className="font-medium text-red-800">{error}</p>
-                <p className="mt-2 text-sm text-red-600">
-                  data.go.kr API 키가 설정되어 있는지 확인해주세요.
-                </p>
+              <div
+                role="alert"
+                className="rounded-lg border border-red-200 bg-red-50 p-6 text-center"
+              >
+                <p className="font-medium text-red-800">{error.title}</p>
+                <p className="mt-2 text-sm text-red-600">{error.message}</p>
+                <p className="mt-2 text-xs text-red-500">{error.note}</p>
+                <button
+                  type="button"
+                  onClick={handleRetry}
+                  disabled={loading}
+                  className="mt-4 rounded-md border border-red-300 bg-white px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-100 disabled:opacity-50"
+                >
+                  다시 시도
+                </button>
               </div>
             )}
 
