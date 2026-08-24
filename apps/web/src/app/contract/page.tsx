@@ -269,12 +269,16 @@ export default function ContractAnalysisPage() {
                           >
                             <div className="flex items-start gap-3 p-4">
                               <input
+                                id={item.id}
                                 type="checkbox"
                                 checked={isChecked}
                                 onChange={() => toggleCheck(item.id)}
                                 className="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 cursor-pointer"
                               />
-                              <div className="min-w-0 flex-1">
+                              <label
+                                htmlFor={item.id}
+                                className="min-w-0 flex-1 cursor-pointer"
+                              >
                                 <div className="flex items-center gap-2">
                                   <span
                                     className={`font-medium ${
@@ -294,7 +298,7 @@ export default function ContractAnalysisPage() {
                                 <p className="mt-1 text-sm text-muted-foreground">
                                   {item.description}
                                 </p>
-                              </div>
+                              </label>
                               <button
                                 onClick={() => toggleExpand(item.id)}
                                 className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
