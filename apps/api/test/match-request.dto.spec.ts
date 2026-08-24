@@ -16,7 +16,7 @@ describe("matchRequestSchema", () => {
       income: 5000,
       homelessMonths: 36,
       dependents: 2,
-      region: "서울",
+      region: " 서울 ",
       isMarried: true,
       isFirstHome: true,
     });
@@ -78,12 +78,51 @@ describe("matchRequestSchema", () => {
     expect(result.success).toBe(false);
   });
 
+  it("should reject non-integer income", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: 5000.5,
+      homelessMonths: 36,
+    });
+    expect(result.success).toBe(false);
+  });
+
   it("should reject non-integer dependents", () => {
     const result = matchRequestSchema.safeParse({
       age: 30,
       income: 5000,
       homelessMonths: 36,
       dependents: 1.5,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject infinite numeric values", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: Infinity,
+      homelessMonths: 36,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject whitespace-only region", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: 5000,
+      homelessMonths: 36,
+      region: "   ",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("should reject null optional flags and fields", () => {
+    const result = matchRequestSchema.safeParse({
+      age: 30,
+      income: 5000,
+      homelessMonths: 36,
+      region: null,
+      isMarried: null,
     });
     expect(result.success).toBe(false);
   });
