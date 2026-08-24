@@ -174,14 +174,6 @@ export async function fetchResponse(
 
   return res;
 }
-
-function getAuthHeader(): string {
-  const token =
-    typeof window !== "undefined" ? localStorage.getItem("accessToken") : null;
-  if (!token) throw new ApiError("로그인이 필요합니다.", 401);
-  return `Bearer ${token}`;
-}
-
 export async function fetchApi<T>(
   path: string,
   options?: FetchApiOptions,
@@ -214,38 +206,6 @@ export async function fetchApi<T>(
 
   // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.
   // 페이지 코드는 unwrapped 형태를 기대하므로 여기서 풀어서 반환.
-  return unwrapBackendData<T>(await res.json());
-}
-
-interface FetchFormOptions
-  extends Omit<FetchResponseOptions, "body" | "headers"> {
-  /** 토큰이 없으면 ApiError(401)을 throw한다. */
-  auth?: boolean;
-}
-
-/**
- * multipart/form-data(파일 업로드) 전용 fetch 헬퍼.
- *
- * fetchApi 는 Content-Type: application/json 을 고정하므로 파일 업로드에 부적합하다.
- * 이 헬퍼는 Content-Type 을 설정하지 않아 브라우저가 multipart boundary 를 자동 지정한다.
- */
-export async function fetchApiForm<T>(
-  path: string,
-  formData: FormData,
-  options?: FetchFormOptions,
-): Promise<T> {
-  const { auth, method = "POST", ...rest } = options ?? {};
-  const headers: Record<string, string> = {};
-
-  if (auth) headers.Authorization = getAuthHeader();
-
-  const res = await fetchResponse(`${API_BASE}${path}`, {
-    ...rest,
-    method,
-    body: formData,
-    headers,
-  });
-
   return unwrapBackendData<T>(await res.json());
 }
 
