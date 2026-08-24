@@ -44,6 +44,20 @@
   계약이 실패할 때에만 실패한 경로의 초기 상태와 오류를 근거로 별도 수정 phase를
   추가한다.
 
+### Phase 2: 운영 배포본 동기화 후 hydration 계약 재확인
+
+- 변경 파일: 없음 — 현재 worktree의 production build는 두 경로 모두 빈 값의
+  비활성 계약월 `<select>`와 `불러오는 중...`을 서버 HTML에 렌더링한다.
+- 확인 결과: 2026-08-25 `https://zipath-web.vercel.app` 대상 계약에서
+  `/real-price`, `/real-price/compare`가 모두 `202605`부터의 계약월 목록을
+  서버 HTML에 렌더링해 Phase 1 계약에 실패했다. 이는 최신 `develop` 소스가
+  아직 해당 운영 배포본에 반영되지 않은 상태다.
+- 조치: 최신 `develop`을 포함한 웹 배포를 완료한 뒤
+  `npm test -w @zipath/web-e2e -- real-price-hydration.spec.ts`를 운영 기본 URL에
+  다시 실행한다. 두 경로가 통과하면 Phase 1과 Phase 2를 완료 처리하고,
+  React #418/#423/#425 또는 hydration 오류가 재현될 때에만 별도 코드 수정
+  phase를 추가한다.
+
 ## 테스트 계획
 
 1. 운영 기본 URL에서 `apps/web-e2e/tests/real-price-hydration.spec.ts`를 실행한다.
