@@ -1,111 +1,87 @@
-## Plan #122 청약 자격 확인 응답 대기 타임아웃 피드백 개선
+# #122 청약·실거래가 API 장기 대기 피드백 및 재시도 정책
 
 - 플랜식별자: `E2A91C4F`
-- 출처: GitHub Issue #122
-- 브랜치: `122-subscription-timeout`
-- 동일 배치 형제 이슈: `#128 #127 #132 #129 #123 #131 #130`
-- 회의록: `/tmp/pm-meeting-1dH3g5` 는 현재 워크트리에 없음
+- 출처: [GitHub Issue #122](https://github.com/sj48695-labs/zipath/issues/122)
+- 최신 이슈 확인: 2026-08-25 KST
 
-### 지시사항 (원본 보존)
+## 변경 이력 반영
 
-#122: 청약 자격 확인 API 응답 대기 중 타임아웃/에러 피드백 추가. Render 콜드 스타트와 네트워크 실패를 구분 가능한 사용자 메시지로 처리.
+기존 계획은 청약 자격 확인 요청만 대상으로 했고 P1–P3은 완료 처리되어 있다. 2026-08-25 댓글은 같은 장기 대기가 `/real-price`의 단건 실거래가 조회에서도 재현됨을 추가했으며, 범위를 **공통 요청 timeout·재시도·오류 상태 정책**으로 일반화하고 두 화면의 회귀 검증을 요구한다.
 
-### 목표
+완료된 P1–P3의 구현 및 완료 표시는 유지한다. 새 요구사항은 P4–P6에서 처리한다. `/real-price/compare`와 서버의 공공 API 연동 변경은 이번 범위에 포함하지 않는다.
 
-청약 자격 확인 요청이 오래 걸리거나 실패할 때, 사용자가 현재 상황을 구분해서 이해할 수 있게 만든다.
+## 현재 구조 분석
 
-- Render 콜드 스타트로 인한 지연
-- 실제 네트워크 실패
-- 백엔드가 내려준 일반 오류
+- `apps/web/src/lib/api.ts`의 `fetchApi()`는 `AbortController`와 `ApiError.kind`(`timeout`/`network`/`http`)를 제공하지만, `API_BASE`를 붙여 Nest API 응답을 unwrap하는 클라이언트다. 현재 same-origin Next.js API route를 직접 호출하는 실거래가 화면에는 사용할 수 없다.
+- `apps/web/src/app/subscription/page.tsx`는 45초 요청 제한, 10초 후 Render 콜드 스타트 안내, 실패 후 동일 payload 재시도를 이미 갖췄다. `subscription-error.ts`가 오류 종류별 문구를 분리하며 관련 unit test도 있다.
+- `apps/web/src/app/real-price/page.tsx`의 `handleSearch()`와 `handleTrendSearch()`는 `/api/real-price` 및 `/api/real-price/trend`를 직접 `fetch`한다. 두 요청 모두 timeout·오류 종류 분류·재시도 UI가 없고, 단건 조회는 스피너와 disabled 버튼만 노출한다.
+- `apps/web-e2e/tests/real-price-hydration.spec.ts`는 `/real-price`의 브라우저 선례이며, Playwright 설정은 `ZIPATH_BASE_URL`로 대상 환경을 바꿀 수 있다. 단위 테스트는 Jest 기반이다.
 
-### 범위
+## 변경 파일
 
-- 수정 범위는 우선 `apps/web` 로 제한한다.
-- TypeScript strict 유지, `any` 추가 금지.
-- 기존 법적 고지 문구(`참고용이며 법적 효력 없음`)는 유지한다.
-- 공공API 연동 변경은 이번 이슈 범위 밖이다.
+- `apps/web/src/lib/api.ts`
+- `apps/web/src/lib/__tests__/api.test.ts`
+- `apps/web/src/app/real-price/page.tsx`
+- `apps/web/src/app/real-price/real-price-error.ts` (신규)
+- `apps/web/src/app/real-price/real-price-error.test.ts` (신규)
+- `apps/web-e2e/tests/request-feedback.spec.ts` (신규)
 
-### 확인된 후보
-
-1. `apps/web/src/lib/api.ts`
-   - `fetchApi()`가 abort 를 `408` 으로 바꾸고 있지만, 네트워크 실패와 타임아웃을 사용자 레벨에서 더 분명하게 구분하려면 오류 메타데이터가 필요하다.
-   - 현재 `ApiError` 는 `status` 중심이라, 408 이 Render 콜드 스타트인지 다른 실패인지 UI 쪽에서 구별하기 어렵다.
-
-2. `apps/web/src/app/subscription/page.tsx`
-   - `runSimulation()` 은 `ApiError` / 비-`ApiError` 만 나누고 있어 메시지 분기가 충분히 세밀하지 않다.
-   - `elapsedSeconds`, `showColdStartHint`, `handleRetry` 가 이미 있어 사용자 피드백을 다듬기 좋은 위치다.
-
-3. `apps/web/src/lib/__tests__/api.test.ts`
-   - `timeoutMs` 경로와 abort 경로가 이미 있어, 네트워크 실패 분기까지 포함한 계약을 고정하기 좋다.
-
-4. `apps/web/src/app/loan/page.tsx`
-   - 같은 `fetchApi` / `ApiError` 조합을 쓰는 선례다.
-   - 이슈의 핵심은 subscription 화면이므로 이 파일은 수정 대상이 아니라 패턴 참고용이다.
+## Phase별 구현 계획
 
 ### Phase 1 (완료): 공통 API 오류 분류를 명시화
 
-#### 작업
+- 변경 파일: `apps/web/src/lib/api.ts`, `apps/web/src/lib/__tests__/api.test.ts`
+- 구현: `ApiError.kind`와 `fetchApi()`의 abort/네트워크/HTTP 정규화를 추가해 timeout과 연결 실패를 구별한다.
+- 선례: `apps/web/src/app/loan/page.tsx`, `apps/web/src/lib/__tests__/api.test.ts`
+- 테스트: timeout은 `kind: "timeout"`·408, fetch 거부는 `kind: "network"`, HTTP 오류는 백엔드 메시지를 유지한다.
 
-- `apps/web/src/lib/api.ts`
-  - `ApiError` 에 timeout / network / http 를 구분할 수 있는 최소 메타데이터를 추가한다.
-  - `fetchApi()` 의 `AbortError` 는 timeout 으로 정규화하고, fetch 자체 실패는 network failure 로 정규화한다.
-  - 기존 `unwrapBackendData()` 와 `getBackendErrorMessage()` 동작은 유지한다.
-- `apps/web/src/lib/__tests__/api.test.ts`
-  - timeout 이 Render 콜드 스타트 설명으로 이어질 수 있는지 검증한다.
-  - 네트워크 실패가 timeout 과 다른 오류 종류로 들어오는지 검증한다.
-  - HTTP 4xx/5xx 는 기존처럼 backend message 를 우선하는지 검증한다.
+### Phase 2 (완료): 청약 자격 확인 사용자 메시지 분기
 
-#### 선례 파일
+- 변경 파일: `apps/web/src/app/subscription/page.tsx`, `apps/web/src/app/subscription/subscription-error.ts`, `apps/web/src/app/subscription/subscription-error.test.ts`
+- 구현: `runSimulation()`에 45초 제한과 10초 콜드 스타트 안내를 적용하고, `handleRetry()`가 마지막 payload를 재요청하도록 한다.
+- 선례: `apps/web/src/app/loan/page.tsx`, `apps/web/src/app/subscription/subscription-error.test.ts`
+- 테스트: timeout·network·HTTP 오류별 문구와 재시도 동선을 검증한다.
 
-- `apps/web/src/app/loan/page.tsx`
-- `apps/web/src/lib/__tests__/api.test.ts`
+### Phase 3 (완료): 청약 화면 회귀 검증
 
-#### 테스트 시나리오
+- 변경 파일: Phase 1–2 변경 파일
+- 구현: 법적 고지와 기존 API 호출 경로를 보존한 채 웹 테스트·빌드를 검증한다.
+- 테스트: `npm test -w @zipath/web`, `npm run build -w @zipath/web`.
 
-- `timeoutMs` 초과 시 timeout 성격의 `ApiError` 가 나온다.
-- `fetch` 가 네트워크 오류로 reject 될 때 timeout 과 다른 분류가 유지된다.
-- 응답이 `ok = false` 일 때는 기존 backend 메시지가 유지된다.
+### Phase 4: same-origin 요청도 공통 timeout 오류 계약을 사용
 
-### Phase 2 (완료): subscription 화면 사용자 메시지 분기
+- 변경 파일: `apps/web/src/lib/api.ts`, `apps/web/src/lib/__tests__/api.test.ts`
+- 구현: `fetchApi()`가 쓰는 abort 및 `ApiError` 정규화 로직을, 응답 unwrap 없이 검증된 `Response`를 돌려주는 exported `fetchResponse()` 헬퍼로 추출한다. `fetchResponse()`는 timeout 기본값/명시값, 외부 abort, 네트워크 실패 및 non-OK HTTP 응답을 현재 `ApiError.kind`·`parseErrorBody()` 계약과 동일하게 처리한다. `fetchApi()`는 `fetchResponse()`를 사용하도록 정리해 기존 청약 동작을 바꾸지 않는다.
+- 선례: `apps/web/src/lib/api.ts`의 `combineSignals()`·`fetchApi()`, `apps/web/src/lib/__tests__/api.test.ts`의 AbortController mock.
+- 테스트: 짧은 `timeoutMs`에서 `timeout`/408, fetch 거부와 외부 abort에서 `network`, non-OK 응답의 backend message 보존, 정상 `Response`의 원문 반환을 unit test로 고정한다.
 
-#### 작업
+### Phase 5: 실거래가 단건·추이 조회에 대기 안내와 재시도 적용
 
-- `apps/web/src/app/subscription/page.tsx`
-  - `runSimulation()` 의 catch 블록을 `ApiError` 종류 기준으로 분기한다.
-  - timeout 은 Render 콜드 스타트 맥락의 안내 문구로, network failure 는 연결 불안정 문구로 표시한다.
-  - `elapsedSeconds` 와 `showColdStartHint` 는 유지하되, 실제 에러 메시지와 중복되지 않게 정리한다.
-  - 재시도 버튼은 그대로 유지하되, 각 실패 유형에서 기대 행동이 더 분명하게 보이도록 카피를 정돈한다.
+- 의존성: Phase 4
+- 변경 파일: `apps/web/src/app/real-price/page.tsx`, `apps/web/src/app/real-price/real-price-error.ts` (신규), `apps/web/src/app/real-price/real-price-error.test.ts` (신규)
+- 구현: `real-price-error.ts`에 `ApiError.kind`를 사용자 문구·제목·보조 안내로 바꾸는 순수 `getRealPriceErrorViewModel()`을 둔다. timeout은 Render 서버 준비 안내와 재시도를, network는 연결 확인 안내를, HTTP/프록시 오류는 서버 메시지를 유지한다. `page.tsx`의 `handleSearch()`와 `handleTrendSearch()`는 `fetchResponse()`와 45초 timeout을 사용하고 각 마지막 요청 파라미터를 보존한다. 단건과 추이 화면 모두 10초 후 `role="status"`/`aria-live` 진행 안내(경과 시간 포함), 실패 후 해당 요청을 다시 실행하는 버튼, `role="alert"` 오류 상태를 표시한다. 기존 법적 고지, 결과/빈 결과 및 차트 loading 상태는 유지한다.
+- 선례: `apps/web/src/app/subscription/page.tsx`의 `elapsedSeconds`, `showColdStartHint`, `handleRetry`, `apps/web/src/app/subscription/subscription-error.ts`, `apps/web/src/app/announcements/page.tsx`의 `role="status"`·`role="alert"` 패턴.
+- 테스트: 순수 mapper에서 timeout/network/http 문구를 검증하고, 정상 결과와 기존 proxy `{ error: string }` 메시지 처리가 유지되는지 검증한다.
 
-#### 선례 파일
+### Phase 6: 두 화면의 브라우저 회귀 계약 추가
 
-- `apps/web/src/app/subscription/page.tsx`
-- `apps/web/src/app/loan/page.tsx`
+- 의존성: Phase 5
+- 변경 파일: `apps/web-e2e/tests/request-feedback.spec.ts` (신규)
+- 구현: Playwright의 `page.route()`로 실제 외부 API에 의존하지 않는 지연·연결 실패 응답을 만들고 `/subscription`, `/real-price`의 사용자 흐름을 검증한다. 긴 대기에서는 진행/서버 준비 안내와 disabled 중복 요청 방지를, 실패 뒤에는 오류 `alert`와 재시도 버튼을 확인한다. 재시도 요청이 같은 subscription payload 및 real-price query를 다시 보내는지도 확인한다.
+- 선례: `apps/web-e2e/tests/real-price-hydration.spec.ts`의 페이지 진입·locator 방식, `apps/web-e2e/tests/real-price-compare.spec.ts`의 기본 UI 검사.
+- 테스트: `ZIPATH_BASE_URL=<검증 대상> npm test -w @zipath/web-e2e -- request-feedback.spec.ts`; unit test 및 production build도 함께 실행한다.
 
-#### 테스트 시나리오
+## 테스트 계획
 
-- 45초 timeout 발생 시 "서버 준비 중" 류의 안내가 나오고 재시도 동선이 유지된다.
-- 네트워크 실패 시 Render 콜드 스타트 안내와 다른 메시지가 나온다.
-- 일반 backend 오류는 backend 가 내려준 메시지를 유지한다.
-- 첫 렌더와 loading skeleton 은 현재와 동일하게 안정적으로 유지한다.
+1. `npm test -w @zipath/web` — 공통 same-origin timeout 헬퍼와 두 화면의 오류 mapper를 검증한다.
+2. `npm run build -w @zipath/web` — client/server import 및 TypeScript strict 회귀를 확인한다.
+3. `ZIPATH_BASE_URL=<검증 대상> npm test -w @zipath/web-e2e -- request-feedback.spec.ts` — Playwright route mock으로 subscription·real-price의 대기/오류/재시도를 검증한다.
+4. 필요 시 `npx turbo lint` — 변경 파일의 lint를 확인한다.
 
-### Phase 3 (완료): 회귀 검증
+## 완료 기준
 
-#### 작업
-
-- subscription 화면의 timeout / network / backend error 케이스를 다시 확인한다.
-- 웹 테스트와 빌드를 돌려서 `ApiError` 타입 변경이 다른 화면에 파급되지 않았는지 확인한다.
-- 법적 고지 문구와 기존 API 호출 경로가 그대로 남아 있는지 점검한다.
-
-#### 확인 명령
-
-- `npm test -w @zipath/web`
-- `npm run build -w @zipath/web`
-- 필요 시 `npx turbo lint`
-
-### 완료 기준
-
-- timeout 과 network failure 가 사용자 메시지 레벨에서 구분된다.
-- Render 콜드 스타트는 retry 를 유도하는 안내로 표현된다.
-- backend 오류는 backend 메시지를 유지한다.
-- `any` 타입이 추가되지 않는다.
-- 웹 테스트/빌드가 통과한다.
+- subscription과 real-price 단건/추이 조회가 45초 안에 완료되지 않으면 timeout으로 종료하고 다시 시도할 수 있다.
+- 두 화면은 10초 이상 대기 시 Render 콜드 스타트 가능성과 경과 상태를 접근 가능한 방식으로 알린다.
+- timeout, 네트워크 실패, 서버 HTTP 오류가 서로 다른 사용자 메시지로 표시되며 서버 메시지는 보존된다.
+- 동일 입력/조회 조건으로 재시도하고, 기존 법적 고지 및 정상 결과·빈 결과 표시를 유지한다.
+- `any`를 추가하지 않고 웹 unit test, build, 대상 E2E가 통과한다.
