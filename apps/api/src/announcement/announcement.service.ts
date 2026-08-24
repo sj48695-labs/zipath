@@ -8,6 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { XMLParser } from "fast-xml-parser";
+import type { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 import { Announcement, SubscriptionCriteria } from "@zipath/db";
 import { Cron } from "@nestjs/schedule";
 import { MatchRequestDto } from "./dto/match-request.dto";
@@ -27,6 +28,7 @@ interface ApiAnnouncement {
   SUBSCRPT_AREA_CODE_NM: string;
   HOUSE_DTL_SECD_NM: string;
   PBLANC_URL: string;
+  BSNS_MBY_NM?: string;
 }
 
 @Injectable()
@@ -86,11 +88,11 @@ export class AnnouncementService {
     };
   }
 
-  /** 가장 최근 동기화 시각(MAX(updatedAt))을 ISO 문자열로 반환, 데이터 없으면 null */
+  /** 가장 최근 캐시 동기화 시각(MAX(fetchedAt))을 ISO 문자열로 반환, 데이터 없으면 null */
   private async getLastSyncedAt(): Promise<string | null> {
     const raw = await this.announcementRepo
       .createQueryBuilder("a")
-      .select("MAX(a.updatedAt)", "max")
+      .select("MAX(a.fetchedAt)", "max")
       .getRawOne<{ max: Date | string | null }>();
 
     const max = raw?.max ?? null;
@@ -199,34 +201,32 @@ export class AnnouncementService {
     }
 
     try {
-      let created = 0;
-      for (const item of items) {
-        const existingKey = `${item.HOUSE_MANAGE_NO}-${item.PBLANC_NO}`;
-
-        // 이미 저장된 공고인지 확인 (title + organization 조합)
-        const existing = await this.announcementRepo.findOne({
-          where: { title: item.HOUSE_NM, organization: existingKey },
-        });
-
-        if (existing) continue;
-
-        const announcement = this.announcementRepo.create({
+      const now = new Date();
+      const rows: QueryDeepPartialEntity<Announcement>[] = items.map(
+        (item) => ({
+          externalId: `${item.HOUSE_MANAGE_NO}-${item.PBLANC_NO}`,
           title: item.HOUSE_NM || "공고",
-          organization: existingKey,
+          organization: item.BSNS_MBY_NM || "LH",
           region: item.SUBSCRPT_AREA_CODE_NM || "전국",
-          supplyType: item.HOUSE_DTL_SECD_NM || item.HOUSE_SECD_NM || "공공분양",
+          supplyType:
+            item.HOUSE_DTL_SECD_NM || item.HOUSE_SECD_NM || "공공분양",
           startDate: this.parseDate(item.RCEPT_BGNDE),
           endDate: this.parseDate(item.RCEPT_ENDDE),
           detailUrl: item.PBLANC_URL || null,
           summary: this.buildSummary(item),
-          rawData: item as unknown as Record<string, unknown>,
-        });
+          // TypeORM의 upsert 타입은 jsonb 객체를 재귀 partial로 표현한다.
+          // API 원본은 그대로 저장하되, 이 경계에서만 해당 타입으로 변환한다.
+          rawData:
+            item as unknown as QueryDeepPartialEntity<Record<string, unknown>>,
+          fetchedAt: now,
+        }),
+      );
 
-        await this.announcementRepo.save(announcement);
-        created++;
-      }
+      await this.announcementRepo.upsert(rows, {
+        conflictPaths: ["externalId"],
+      });
 
-      this.logger.log(`공고 동기화 완료: ${created}건 신규 저장`);
+      this.logger.log(`공고 동기화 완료: ${rows.length}건 (신규+갱신)`);
     } catch (err) {
       if (err instanceof BadGatewayException) {
         throw err;

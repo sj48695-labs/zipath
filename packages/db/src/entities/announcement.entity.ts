@@ -4,12 +4,17 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from "typeorm";
 
 @Entity()
+@Index("UQ_announcement_external_id", ["externalId"], { unique: true })
 export class Announcement {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column({ type: "varchar" })
+  externalId!: string;
 
   @Column({ type: 'varchar' })
   title!: string;
@@ -37,6 +42,9 @@ export class Announcement {
 
   @Column({ nullable: true, type: "jsonb" })
   rawData!: Record<string, unknown> | null;
+
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  fetchedAt!: Date;
 
   @CreateDateColumn()
   createdAt!: Date;
