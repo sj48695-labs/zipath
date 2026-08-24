@@ -63,7 +63,7 @@
 - 선례: `apps/web/src/app/subscription/page.tsx`의 `elapsedSeconds`, `showColdStartHint`, `handleRetry`, `apps/web/src/app/subscription/subscription-error.ts`, `apps/web/src/app/announcements/page.tsx`의 `role="status"`·`role="alert"` 패턴.
 - 테스트: 순수 mapper에서 timeout/network/http 문구를 검증하고, 정상 결과와 기존 proxy `{ error: string }` 메시지 처리가 유지되는지 검증한다.
 
-### Phase 6: 두 화면의 브라우저 회귀 계약 추가
+### Phase 6 (완료): 두 화면의 브라우저 회귀 계약 추가
 
 - 의존성: Phase 5
 - 변경 파일: `apps/web-e2e/tests/request-feedback.spec.ts` (신규)
