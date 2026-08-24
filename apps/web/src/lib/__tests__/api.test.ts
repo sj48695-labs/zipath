@@ -3,6 +3,7 @@ import {
   backendErrorResponse,
   createErrorBody,
   fetchApi,
+  fetchResponse,
   getBackendErrorMessage,
   proxyErrorBody,
   unwrapBackendData,
@@ -177,6 +178,98 @@ describe("fetchApi", () => {
       status: 500,
       message: "API 오류 (500)",
     });
+  });
+});
+
+describe("fetchResponse", () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+    jest.useRealTimers();
+  });
+
+  function jsonResponse(body: unknown, ok = true, status = 200): Response {
+    return {
+      ok,
+      status,
+      json: async () => body,
+    } as unknown as Response;
+  }
+
+  function abortingFetch(): typeof fetch {
+    return jest.fn((_url: string, init?: RequestInit) => {
+      return new Promise<Response>((_resolve, reject) => {
+        init?.signal?.addEventListener("abort", () => {
+          reject(Object.assign(new Error("aborted"), { name: "AbortError" }));
+        });
+      });
+    }) as unknown as typeof fetch;
+  }
+
+  it("기본 timeoutMs에서 timeout ApiError(408)로 정규화한다", async () => {
+    jest.useFakeTimers();
+    global.fetch = abortingFetch();
+
+    const request = fetchResponse("/slow");
+    const assertion = expect(request).rejects.toMatchObject({
+      status: 408,
+      kind: "timeout",
+    });
+    await jest.advanceTimersByTimeAsync(60_000);
+
+    await assertion;
+  });
+
+  it("명시한 짧은 timeoutMs에서 timeout ApiError(408)로 정규화한다", async () => {
+    global.fetch = abortingFetch();
+
+    await expect(fetchResponse("/slow", { timeoutMs: 20 })).rejects.toMatchObject({
+      status: 408,
+      kind: "timeout",
+    });
+  });
+
+  it("fetch 거부와 외부 abort를 network ApiError로 정규화한다", async () => {
+    global.fetch = jest.fn().mockRejectedValue(new TypeError("failed to fetch"));
+    await expect(fetchResponse("/offline")).rejects.toMatchObject({
+      status: 0,
+      kind: "network",
+    });
+
+    global.fetch = abortingFetch();
+    const controller = new AbortController();
+    const request = fetchResponse("/slow", { signal: controller.signal });
+    controller.abort();
+
+    await expect(request).rejects.toMatchObject({
+      status: 0,
+      kind: "network",
+    });
+  });
+
+  it("non-OK 응답의 backend message를 보존한다", async () => {
+    global.fetch = jest.fn().mockResolvedValue(
+      jsonResponse(
+        { error: { code: "UPSTREAM_ERROR", message: "업스트림 오류" } },
+        false,
+        502,
+      ),
+    );
+
+    await expect(fetchResponse("/bad")).rejects.toMatchObject({
+      status: 502,
+      kind: "http",
+      code: "UPSTREAM_ERROR",
+      message: "업스트림 오류",
+    });
+  });
+
+  it("정상 응답은 원문 Response를 그대로 반환한다", async () => {
+    const response = jsonResponse({ success: true, data: { value: 42 } });
+    global.fetch = jest.fn().mockResolvedValue(response);
+
+    await expect(fetchResponse("/ok")).resolves.toBe(response);
   });
 });
 

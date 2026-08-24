@@ -75,15 +75,18 @@ export function parseErrorBody(
   return { message: `API 오류 (${status})` };
 }
 
-interface FetchApiOptions extends Omit<RequestInit, "headers"> {
-  /** 토큰이 없으면 ApiError(401)을 throw한다. */
-  auth?: boolean;
-  headers?: Record<string, string>;
+export interface FetchResponseOptions extends RequestInit {
   /**
    * 안전 타임아웃(ms). 초과 시 요청을 중단하고 ApiError(408)로 변환한다.
    * 미지정 시 60초. Render 콜드 스타트(30~35초)는 정상 완료되도록 충분히 길게.
    */
   timeoutMs?: number;
+}
+
+interface FetchApiOptions extends Omit<FetchResponseOptions, "headers"> {
+  /** 토큰이 없으면 ApiError(401)을 throw한다. */
+  auth?: boolean;
+  headers?: Record<string, string>;
 }
 
 const DEFAULT_TIMEOUT_MS = 60_000;
@@ -114,30 +117,15 @@ function combineSignals(
   return controller.signal;
 }
 
-export async function fetchApi<T>(
-  path: string,
-  options?: FetchApiOptions,
-): Promise<T> {
-  const url = `${API_BASE}${path}`;
-  const { auth, headers, timeoutMs, signal: externalSignal, ...rest } =
-    options ?? {};
-
-  const finalHeaders: Record<string, string> = {
-    "Content-Type": "application/json",
-    ...headers,
-  };
-
-  if (auth) {
-    const token =
-      typeof window !== "undefined"
-        ? window.localStorage.getItem("accessToken")
-        : null;
-    if (!token) {
-      throw new ApiError("로그인이 필요합니다.", 401);
-    }
-    finalHeaders.Authorization = `Bearer ${token}`;
-  }
-
+/**
+ * 응답 body 를 변형하지 않고, timeout·네트워크·HTTP 오류를 ApiError 로 정규화한다.
+ * same-origin Next.js API route 호출과 API_BASE 호출이 같은 오류 계약을 사용한다.
+ */
+export async function fetchResponse(
+  url: string,
+  options?: FetchResponseOptions,
+): Promise<Response> {
+  const { timeoutMs, signal: externalSignal, ...rest } = options ?? {};
   const timeoutController = new AbortController();
   const timer = setTimeout(
     () => timeoutController.abort(),
@@ -149,7 +137,6 @@ export async function fetchApi<T>(
   try {
     res = await fetch(url, {
       ...rest,
-      headers: finalHeaders,
       signal,
     });
   } catch (err) {
@@ -184,6 +171,39 @@ export async function fetchApi<T>(
     const { message, code } = parseErrorBody(body, res.status);
     throw new ApiError(message, res.status, "http", code);
   }
+
+  return res;
+}
+
+export async function fetchApi<T>(
+  path: string,
+  options?: FetchApiOptions,
+): Promise<T> {
+  const { auth, headers, timeoutMs, signal: externalSignal, ...rest } =
+    options ?? {};
+
+  const finalHeaders: Record<string, string> = {
+    "Content-Type": "application/json",
+    ...headers,
+  };
+
+  if (auth) {
+    const token =
+      typeof window !== "undefined"
+        ? window.localStorage.getItem("accessToken")
+        : null;
+    if (!token) {
+      throw new ApiError("로그인이 필요합니다.", 401);
+    }
+    finalHeaders.Authorization = `Bearer ${token}`;
+  }
+
+  const res = await fetchResponse(`${API_BASE}${path}`, {
+    ...rest,
+    headers: finalHeaders,
+    signal: externalSignal,
+    timeoutMs,
+  });
 
   // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.
   // 페이지 코드는 unwrapped 형태를 기대하므로 여기서 풀어서 반환.

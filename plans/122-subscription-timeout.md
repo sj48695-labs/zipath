@@ -48,7 +48,7 @@
 - 구현: 법적 고지와 기존 API 호출 경로를 보존한 채 웹 테스트·빌드를 검증한다.
 - 테스트: `npm test -w @zipath/web`, `npm run build -w @zipath/web`.
 
-### Phase 4: same-origin 요청도 공통 timeout 오류 계약을 사용
+### Phase 4 (완료): same-origin 요청도 공통 timeout 오류 계약을 사용
 
 - 변경 파일: `apps/web/src/lib/api.ts`, `apps/web/src/lib/__tests__/api.test.ts`
 - 구현: `fetchApi()`가 쓰는 abort 및 `ApiError` 정규화 로직을, 응답 unwrap 없이 검증된 `Response`를 돌려주는 exported `fetchResponse()` 헬퍼로 추출한다. `fetchResponse()`는 timeout 기본값/명시값, 외부 abort, 네트워크 실패 및 non-OK HTTP 응답을 현재 `ApiError.kind`·`parseErrorBody()` 계약과 동일하게 처리한다. `fetchApi()`는 `fetchResponse()`를 사용하도록 정리해 기존 청약 동작을 바꾸지 않는다.
