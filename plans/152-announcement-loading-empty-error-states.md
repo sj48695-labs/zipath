@@ -17,7 +17,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: 공고 목록 상태 안내와 복구 흐름 완성 (커밋 단위)
+### Phase 1 (완료): 공고 목록 상태 안내와 복구 흐름 완성 (커밋 단위)
 
 - 변경 파일: `apps/web/src/app/announcements/page.tsx`, `apps/web-e2e/tests/announcements.spec.ts`
 - 구현:
