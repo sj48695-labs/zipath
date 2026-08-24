@@ -47,7 +47,7 @@ TypeORM 의 `Repository.upsert(entities, { conflictPaths: ["externalId"], skipUp
 
 ### 구현 단계 (Phase)
 
-1. [ ] **Phase 1: 엔티티 확장 — fetchedAt + externalId + UNIQUE**
+1. [x] **Phase 1: 엔티티 확장 — fetchedAt + externalId + UNIQUE**
    - 파일: `packages/db/src/entities/announcement.entity.ts`
    - 변경:
      - `externalId: string` (varchar, NOT NULL, UNIQUE) — `HOUSE_MANAGE_NO-PBLANC_NO` 저장 전용 컬럼.
@@ -57,7 +57,7 @@ TypeORM 의 `Repository.upsert(entities, { conflictPaths: ["externalId"], skipUp
      - 컬럼 추가 → `UPDATE announcement SET external_id = organization, fetched_at = created_at` backfill → NOT NULL/UNIQUE 제약.
    - 커밋: `feat(db): #59 [P1] Announcement.fetchedAt + externalId UNIQUE 컬럼 추가`
 
-2. [ ] **Phase 2: 서비스 upsert 전환 + fetchedAt 세팅**
+2. [x] **Phase 2: 서비스 upsert 전환 + fetchedAt 세팅**
    - 파일: `apps/api/src/announcement/announcement.service.ts`
    - 변경:
      - 기존 `findOne → save` 루프를 제거하고 `announcementRepo.upsert(items, { conflictPaths: ["externalId"] })` 단일 호출로 교체 (배치 1회).
@@ -66,7 +66,7 @@ TypeORM 의 `Repository.upsert(entities, { conflictPaths: ["externalId"], skipUp
      - 로그: `upsert ${items.length}건 (신규+갱신)` 형태로 정정.
    - 커밋: `feat(api): #59 [P2] LH 공고 upsert + fetchedAt 갱신`
 
-3. [ ] **Phase 3: cleanup 3개월 fetchedAt 정책 추가**
+3. [x] **Phase 3: cleanup 3개월 fetchedAt 정책 추가**
    - 파일: `apps/api/src/cleanup/cleanup.service.ts`, `apps/api/src/cleanup/cleanup.service.spec.ts`
    - 변경:
      - 신규 메서드 `cleanStaleAnnouncements()` — `fetchedAt < threeMonthsAgo` 인 row 삭제 (기존 `cleanOldAnnouncements` 의 endDate 6개월 정책은 유지).
@@ -74,7 +74,7 @@ TypeORM 의 `Repository.upsert(entities, { conflictPaths: ["externalId"], skipUp
      - spec: `cleanStaleAnnouncements` 가 `fetchedAt` 키로 `delete` 호출하는지 검증.
    - 커밋: `feat(api): #59 [P3] fetchedAt 3개월 초과 공고 정리`
 
-4. [ ] **Phase 4: AnnouncementService 유닛 테스트**
+4. [x] **Phase 4: AnnouncementService 유닛 테스트**
    - 신규 파일: `apps/api/src/announcement/announcement.service.spec.ts`
    - 케이스:
      - `syncFromApi`: fetch mock — 정상 JSON 응답 → `upsert` 가 `externalId`/`fetchedAt` 포함하여 호출되는지.

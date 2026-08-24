@@ -214,7 +214,10 @@ export class AnnouncementService {
           endDate: this.parseDate(item.RCEPT_ENDDE),
           detailUrl: item.PBLANC_URL || null,
           summary: this.buildSummary(item),
-          rawData: item as unknown as Record<string, unknown>,
+          // TypeORM의 upsert 타입은 jsonb 객체를 재귀 partial로 표현한다.
+          // API 원본은 그대로 저장하되, 이 경계에서만 해당 타입으로 변환한다.
+          rawData:
+            item as unknown as QueryDeepPartialEntity<Record<string, unknown>>,
           fetchedAt: now,
         }),
       );
