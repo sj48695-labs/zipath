@@ -304,6 +304,15 @@ export default function AnnouncementsPage() {
 
         {!loading && announcements.length > 0 && (
           <>
+            <div className="mb-4 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+              <span>출처: 청약홈</span>
+              {lastSyncedAt && (
+                <span>
+                  마지막 갱신: {formatKoreanDateTime(lastSyncedAt)}
+                </span>
+              )}
+            </div>
+
             <div className="grid gap-4">
               {announcements.map((item) => (
                 <div

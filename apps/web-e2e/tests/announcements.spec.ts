@@ -49,7 +49,9 @@ test("공고 페이지는 데이터 없음 상태에서 다음 행동과 법적 
   expect(response?.status()).toBeLessThan(400);
 
   await expect(page.getByRole("heading", { name: "공공분양 공고" })).toBeVisible();
-  await expect(page.getByText("참고용이며 법적 효력 없음")).toBeVisible();
+  await expect(
+    page.getByText("참고용이며 법적 효력 없음", { exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("현재 등록된 공고가 없습니다.")).toBeVisible();
   await expect(page.getByText("마지막 동기화")).toBeVisible();
   await expect(
@@ -58,6 +60,57 @@ test("공고 페이지는 데이터 없음 상태에서 다음 행동과 법적 
   await expect(
     page.getByRole("button", { name: "다시 불러오기" }),
   ).toBeVisible();
+});
+
+test("공고 페이지는 정상 목록에 갱신일과 청약홈 출처를 안내한다", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/api/announcements**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        createResponse([sampleItem], "2026-07-05T00:00:00.000Z"),
+      ),
+    });
+  });
+
+  await page.goto("/announcements");
+
+  await expect(page.getByRole("link", { name: "테스트 아파트" })).toBeInViewport();
+  await expect(page.getByRole("link", { name: "상세보기" })).toBeInViewport();
+  await expect(page.getByText("마지막 갱신: 2026년 7월 5일 09:00")).toBeVisible();
+  await expect(page.getByText("출처: 청약홈")).toBeVisible();
+  await expect(
+    page.getByText("참고용이며 법적 효력 없음", { exact: true }),
+  ).toBeVisible();
+});
+
+test("공고 페이지는 모바일에서 응답을 기다리는 동안 로딩 상태를 보여준다", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let releaseResponse: (() => void) | undefined;
+  const responseHeld = new Promise<void>((resolve) => {
+    releaseResponse = resolve;
+  });
+
+  await page.route("**/api/announcements**", async (route) => {
+    await responseHeld;
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(createResponse([sampleItem], null)),
+    });
+  });
+
+  await page.goto("/announcements");
+
+  await expect(page.getByRole("status")).toContainText("공고를 불러오는 중");
+  await expect(page.getByRole("status")).toBeInViewport();
+  await expect(page.getByRole("status").locator(":scope > div")).toHaveCount(4);
+
+  releaseResponse?.();
+  await expect(page.getByText("테스트 아파트")).toBeVisible();
 });
 
 test("공고 페이지는 필터 결과 없음 상태를 별도로 안내한다", async ({
@@ -87,15 +140,39 @@ test("공고 페이지는 필터 결과 없음 상태를 별도로 안내한다"
   await page.getByRole("button", { name: "필터 적용" }).click();
 
   await expect(page.getByText("선택한 지역의 공고가 없습니다.")).toBeVisible();
-  await expect(page.getByRole("button", { name: "필터 초기화" })).toBeVisible();
+  await expect(
+    page
+      .getByText("선택한 지역의 공고가 없습니다.")
+      .locator("..")
+      .getByRole("button", { name: "필터 초기화" }),
+  ).toBeVisible();
   await expect(
     page.getByRole("link", { name: "청약홈에서 직접 확인하기" }),
   ).toBeVisible();
-  expect(requestedUrls.some((url) => url.includes("region=서울"))).toBe(true);
+  expect(
+    requestedUrls.some(
+      (requestedUrl) =>
+        new URL(requestedUrl).searchParams.get("region") === "서울",
+    ),
+  ).toBe(true);
 });
 
-test("공고 페이지는 API 실패를 빈 상태와 분리해 보여준다", async ({ page }) => {
+test("공고 페이지는 모바일에서 API 실패를 빈 상태와 분리해 보여준다", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  let requestCount = 0;
+  let shouldSucceed = false;
+
   await page.route("**/api/announcements**", async (route) => {
+    requestCount += 1;
+    if (shouldSucceed) {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(createResponse([sampleItem], null)),
+      });
+      return;
+    }
+
     await route.fulfill({
       status: 500,
       contentType: "application/json",
@@ -108,9 +185,36 @@ test("공고 페이지는 API 실패를 빈 상태와 분리해 보여준다", a
   const response = await page.goto("/announcements");
   expect(response?.status()).toBeLessThan(400);
 
-  await expect(page.getByRole("alert")).toContainText(
+  await expect(page.locator("main").getByRole("alert")).toContainText(
     "공고 API 응답이 올바르지 않습니다.",
   );
-  await expect(page.getByRole("button", { name: "다시 시도" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "다시 시도" })).toBeInViewport();
   await expect(page.getByText("현재 등록된 공고가 없습니다.")).toHaveCount(0);
+
+  const initialRequestCount = requestCount;
+  shouldSucceed = true;
+  await page.getByRole("button", { name: "다시 시도" }).click();
+  await expect(page.getByText("테스트 아파트")).toBeVisible();
+  expect(requestCount).toBeGreaterThan(initialRequestCount);
+});
+
+test("공고 페이지는 모바일에서도 빈 상태와 복구 행동을 보여준다", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route("**/api/announcements**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(createResponse([], null)),
+    });
+  });
+
+  await page.goto("/announcements");
+
+  await expect(page.getByText("현재 등록된 공고가 없습니다.")).toBeInViewport();
+  await expect(
+    page.getByRole("button", { name: "다시 불러오기" }),
+  ).toBeInViewport();
+  await expect(
+    page.getByRole("link", { name: "청약홈에서 직접 확인하기" }),
+  ).toBeInViewport();
 });
