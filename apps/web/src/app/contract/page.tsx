@@ -158,7 +158,7 @@ export default function ContractAnalysisPage() {
 
         {/* 법적 고지 */}
         <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          이 체크리스트는 참고용이며 법적 효력이 없습니다. 실제 계약 시에는
+          이 체크리스트는 참고용이며 법적 효력 없음으로 제공됩니다. 실제 계약 시에는
           반드시 전문가(공인중개사, 변호사)의 조언을 받으세요.
         </div>
 
