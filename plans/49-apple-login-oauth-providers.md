@@ -37,27 +37,27 @@
 - 구현: Apple을 `SsoProvider`에 선행 추가해 이후 모든 OAuth 입력과 결과가 같은 union을 사용하게 한다. `User.providerId`의 단일 `unique: true`를 제거하고 TypeORM `@Index(["provider", "providerId"], { unique: true })`를 선언한다. 새 migration의 `up()`에서 PostgreSQL catalog로 기존 `providerId` 단일 unique constraint 이름을 조회·제거하고 `(provider, providerId)` unique constraint를 만든다; `down()`은 정확히 되돌린다. `InitialBaseline1746489600000`이 synchronize 기반이라 constraint 이름을 하드코딩하지 않는다. `AuthService.validateOAuthLogin()`의 `where: { provider, providerId }` 선례를 Apple provider로도 검증해 같은 provider ID가 서로 다른 provider와 충돌하지 않고, Apple 재로그인에서 `null` 프로필이 기존 정보를 보존함을 명시한다.
 - 테스트: `apps/api/test/auth.service.spec.ts`의 `makeUser()`와 `should not overwrite email/nickname with null` 선례에 `provider: "apple"` 케이스를 추가한다. migration은 TypeORM/PostgreSQL SQL 형태를 검토해 기존 데이터 보존과 rollback을 확인한다.
 
-### Phase 1: Apple 설정·공유 타입·의존성 추가 (커밋 단위)
+### Phase 1 (완료): Apple 설정·공유 타입·의존성 추가 (커밋 단위)
 
 - 변경 파일: `packages/types/src/index.ts`, `apps/api/package.json`, `package-lock.json`, `apps/api/src/config/env.validation.ts`, `apps/api/test/env.validation.spec.ts`
 - 구현: `SsoProvider`에 `"apple"`을 추가해 `OAuthLoginInput`/`UserProfile`/`AuthTokens`가 자동으로 같은 union을 사용하게 한다. Passport 기반 Apple strategy가 Apple authorization code와 ID token을 검증할 수 있도록 필요한 runtime 패키지와 타입을 추가한다. `APPLE_CLIENT_ID`, `APPLE_TEAM_ID`, `APPLE_KEY_ID`, `APPLE_PRIVATE_KEY`, `APPLE_CALLBACK_URL`을 optional env로 정의하고, credential 네 값은 all-or-none으로 검증하며 callback URL은 HTTPS Apple 웹 callback 값으로 설정한다. private key의 줄바꿈 환경변수 표현을 strategy에 안전하게 전달할 수 있도록 정규화 요구를 계약으로 문서화한다.
 - 테스트: `env.validation.spec.ts`의 Google/Toss 쌍 검증 선례를 따라 Apple 전체 미설정·빈 문자열 미설정·일부만 설정 실패·전체 설정 통과·callback URL 기본값을 검사한다. 패키지 설치 뒤 API TypeScript 빌드가 새 dependency 타입을 해석하는지 확인한다.
 
-### Phase 2: Passport Apple strategy와 state/nonce 보호 추가 (커밋 단위)
+### Phase 2 (완료): Passport Apple strategy와 state/nonce 보호 추가 (커밋 단위)
 
 - 의존성: Phase 1
 - 변경 파일: `apps/api/src/auth/apple.strategy.ts`, `apps/api/src/auth/apple-auth.guard.ts`, `apps/api/src/auth/auth.module.ts`, `apps/api/test/apple.strategy.spec.ts`
 - 구현: `GoogleStrategy`/`GoogleAuthGuard` 패턴을 확장한 `AppleStrategy`와 `AppleAuthGuard`를 추가하고 `conditionalOAuthProvider(AppleStrategy, "APPLE_CLIENT_ID", "Apple")`로 등록한다. authorization request는 `scope: ["name", "email"]`, `response_mode: "form_post"`, cryptographically-random `state`와 `nonce`를 보낸다. 시작 요청에서 `state`·`nonce`를 httpOnly 보안 cookie에 보관하고, POST callback에서 만료·불일치·재사용을 거부한 뒤 즉시 cookie를 제거한다. Apple ID token의 issuer/audience/expiry/signature와 nonce를 검증하고, Apple subject를 `providerId`, private relay를 포함한 email, 최초 응답의 이름을 nickname으로 `OAuthLoginInput`에 매핑한다. Apple이 이름·`user` object를 재전송하지 않는 재로그인에도 null-safe 매핑을 유지한다.
 - 테스트: `google.strategy.spec.ts`의 ConfigService mock/경고/`validate()` 선례를 따라 Apple 설정 누락 시 비활성화 경고, full profile 및 private relay mapping, 이름·이메일 없는 재로그인 mapping을 검증한다. Guard/strategy options가 `form_post`, `state`, `nonce`를 요청하고 callback state·nonce의 정상/불일치/만료/재사용과 ID-token claim 검증 실패를 거부하는지 검증한다.
 
-### Phase 3: Apple form_post callback 및 OAuth URL 계약 추가 (커밋 단위)
+### Phase 3 (완료): Apple form_post callback 및 OAuth URL 계약 추가 (커밋 단위)
 
 - 의존성: Phase 2
 - 변경 파일: `apps/api/src/auth/auth.controller.ts`, `apps/api/test/auth.controller.spec.ts`
 - 구현: 기존 Google/Kakao/Naver start/callback 쌍을 보존한 채 `GET /auth/apple`과 `POST /auth/apple/callback`을 `AppleAuthGuard`로 추가한다. 성공 경로는 기존 `googleCallback()`의 `validateOAuthLogin()` 및 `/auth/callback?accessToken=&refreshToken=` redirect 계약을 재사용한다. Apple의 `user_cancelled_authorize` 및 거부 error는 토큰을 발급하지 않고 frontend 로그인 화면으로 안전한 오류 코드만 전달한다. form body를 신뢰하지 않고 Phase 2의 guard 검증을 통과한 `req.user`만 사용한다.
 - 테스트: 새 controller unit test에서 Apple 성공 POST callback의 auth service 호출·token redirect, cancel/deny error의 token 없는 login redirect, state/nonce 거부를 검증한다. 그리고 기존 Google/Kakao/Naver `GET /auth/{provider}` 및 callback URL이 변경되지 않았음을 route/redirect 회귀 테스트로 고정한다.
 
-### Phase 4: 웹 Apple 버튼과 로그인 URL 회귀 방지 (커밋 단위)
+### Phase 4 (완료): 웹 Apple 버튼과 로그인 URL 회귀 방지 (커밋 단위)
 
 - 의존성: Phase 3
 - 변경 파일: `apps/web/src/app/login/page.tsx`, `apps/web/src/app/login/oauth-providers.ts`, `apps/web/src/app/login/oauth-providers.test.ts`

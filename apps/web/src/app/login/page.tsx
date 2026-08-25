@@ -2,37 +2,12 @@
 
 import Link from "next/link";
 import SiteHeader from "@/components/layout/SiteHeader";
+import { OAUTH_PROVIDERS, getOAuthLoginUrl } from "./oauth-providers";
 
-const OAUTH_PROVIDERS = [
-  {
-    id: "google" as const,
-    name: "Google",
-    color: "bg-white border hover:bg-gray-50",
-    textColor: "text-gray-700",
-    icon: "G",
-  },
-  {
-    id: "kakao" as const,
-    name: "카카오",
-    color: "bg-[#FEE500] hover:bg-[#FDD800]",
-    textColor: "text-[#191919]",
-    icon: "K",
-  },
-  {
-    id: "naver" as const,
-    name: "네이버",
-    color: "bg-[#03C75A] hover:bg-[#02B350]",
-    textColor: "text-white",
-    icon: "N",
-  },
-];
-
-function handleOAuthLogin(provider: string) {
+function handleOAuthLogin(provider: "google" | "kakao" | "naver" | "apple") {
   // OAuth 플로우: 프론트에서 Provider 로그인 페이지로 리다이렉트
   // 콜백에서 profile 정보를 받아 POST /api/auth/login 호출
-  const apiUrl =
-    process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000/api";
-  window.location.href = `${apiUrl}/auth/oauth/${provider}`;
+  window.location.href = getOAuthLoginUrl(provider);
 }
 
 export default function LoginPage() {
@@ -63,6 +38,9 @@ export default function LoginPage() {
 
         <p className="mt-8 text-center text-xs text-muted-foreground">
           로그인 없이도 모든 기본 기능을 이용할 수 있습니다.
+        </p>
+        <p className="mt-2 text-center text-xs text-muted-foreground">
+          참고용이며 법적 효력 없음
         </p>
         <Link
           href="/"
