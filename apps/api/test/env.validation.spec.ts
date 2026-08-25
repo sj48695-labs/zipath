@@ -94,6 +94,33 @@ describe("envValidationSchema", () => {
   });
 
   describe("선택 기능 키 쌍 검증", () => {
+    it("Apple credential 전체 미설정은 통과한다", () => {
+      expect(validate(baseEnv).error).toBeUndefined();
+    });
+
+    it("Apple credential 일부만 설정하면 에러", () => {
+      const { error } = validate({ ...baseEnv, APPLE_CLIENT_ID: "service-id" });
+      expect(error?.message).toContain("APPLE_TEAM_ID");
+    });
+
+    it("Apple credential 전체 설정과 HTTPS callback URL은 통과한다", () => {
+      const { error, value } = validate({
+        ...baseEnv,
+        APPLE_CLIENT_ID: "service-id",
+        APPLE_TEAM_ID: "team-id",
+        APPLE_KEY_ID: "key-id",
+        APPLE_PRIVATE_KEY: "private-key",
+        APPLE_CALLBACK_URL: "https://api.example.com/api/auth/apple/callback",
+      });
+      expect(error).toBeUndefined();
+      expect(value.APPLE_CALLBACK_URL).toBe("https://api.example.com/api/auth/apple/callback");
+    });
+
+    it("Apple callback URL 기본값은 HTTPS다", () => {
+      const { value } = validate(baseEnv);
+      expect(value.APPLE_CALLBACK_URL).toBe("https://localhost:4000/api/auth/apple/callback");
+    });
+
     it("OAuth client id 만 있으면 에러", () => {
       const { error } = validate({ ...baseEnv, GOOGLE_CLIENT_ID: "g" });
       expect(error).toBeDefined();

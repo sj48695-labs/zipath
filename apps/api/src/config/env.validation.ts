@@ -44,6 +44,13 @@ export const envValidationSchema = Joi.object({
     .uri()
     .default("http://localhost:4000/auth/naver/callback"),
 
+  // OAuth (Apple) - 네 credential은 함께 설정되어야 한다.
+  APPLE_CLIENT_ID: optionalEnv,
+  APPLE_TEAM_ID: optionalEnv,
+  APPLE_KEY_ID: optionalEnv,
+  APPLE_PRIVATE_KEY: optionalEnv,
+  APPLE_CALLBACK_URL: Joi.string().uri({ scheme: ["https"] }).default("https://localhost:4000/api/auth/apple/callback"),
+
   // 결제 (Toss) - 설정하지 않으면 데모 키/서버 검증 생략, 설정 시 쌍 필수
   TOSS_CLIENT_KEY: optionalEnv,
   TOSS_SECRET_KEY: optionalEnv,
@@ -51,6 +58,7 @@ export const envValidationSchema = Joi.object({
   .and("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET")
   .and("KAKAO_CLIENT_ID", "KAKAO_CLIENT_SECRET")
   .and("NAVER_CLIENT_ID", "NAVER_CLIENT_SECRET")
+  .and("APPLE_CLIENT_ID", "APPLE_TEAM_ID", "APPLE_KEY_ID", "APPLE_PRIVATE_KEY")
   .and("TOSS_CLIENT_KEY", "TOSS_SECRET_KEY");
 
 export const envValidationOptions = {
