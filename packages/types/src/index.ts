@@ -1,5 +1,5 @@
 // 유저
-export type SsoProvider = "google" | "kakao" | "naver";
+export type SsoProvider = "google" | "kakao" | "naver" | "apple";
 
 export interface UserProfile {
   id: number;

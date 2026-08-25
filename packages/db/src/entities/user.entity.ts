@@ -4,9 +4,11 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from "typeorm";
 
 @Entity()
+@Index(["provider", "providerId"], { unique: true })
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -20,7 +22,7 @@ export class User {
   @Column({ type: "varchar", nullable: true })
   provider!: string | null; // 'google', 'kakao', 'naver' 등 (SSO 대비)
 
-  @Column({ type: "varchar", nullable: true, unique: true })
+  @Column({ type: "varchar", nullable: true })
   providerId!: string | null; // SSO provider의 유저 ID
 
   @Column({ type: "simple-array", default: "" })

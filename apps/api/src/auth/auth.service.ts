@@ -137,6 +137,7 @@ function toSsoProvider(provider: string | null): SsoProvider | null {
     case "google":
     case "kakao":
     case "naver":
+    case "apple":
       return provider;
     default:
       return null;

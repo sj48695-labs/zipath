@@ -15,6 +15,7 @@ import { z } from "zod";
 import type { SsoProvider } from "@zipath/types";
 import { AuthService } from "./auth.service";
 import { GoogleAuthGuard } from "./google-auth.guard";
+import { AppleAuthGuard } from "./apple-auth.guard";
 import { KakaoAuthGuard } from "./kakao-auth.guard";
 import { NaverAuthGuard } from "./naver-auth.guard";
 import { JwtAuthGuard } from "./jwt-auth.guard";
@@ -29,7 +30,7 @@ interface OAuthUser {
 }
 
 const oauthLoginSchema = z.object({
-  provider: z.enum(["google", "kakao", "naver"]),
+  provider: z.enum(["google", "kakao", "naver", "apple"]),
   providerId: z.string().min(1),
   email: z.string().email().nullable(),
   nickname: z.string().nullable(),
@@ -58,6 +59,35 @@ export class AuthController {
   @Get("google")
   googleLogin(): void {
     // GoogleAuthGuard가 Google OAuth 페이지로 리다이렉트
+  }
+
+  /** Apple OAuth 로그인 시작 */
+  @Public()
+  @UseGuards(AppleAuthGuard)
+  @Get("apple")
+  appleLogin(): void {}
+
+  /** Apple은 form_post로 콜백을 전송한다. */
+  @Public()
+  @UseGuards(AppleAuthGuard)
+  @Post("apple/callback")
+  async appleCallback(
+    @Request() req: { user?: OAuthUser; appleAuthError?: string },
+    @Res() res: Response,
+  ): Promise<void> {
+    const frontendUrl = this.configService.get<string>("FRONTEND_URL") || "http://localhost:3000";
+    if (req.appleAuthError) {
+      const redirectUrl = new URL("/login", frontendUrl);
+      redirectUrl.searchParams.set("error", "apple_authorization_cancelled");
+      res.redirect(redirectUrl.toString());
+      return;
+    }
+    if (!req.user) throw new BadRequestException("Apple 로그인 정보를 확인할 수 없습니다.");
+    const tokens = await this.authService.validateOAuthLogin(req.user);
+    const redirectUrl = new URL("/auth/callback", frontendUrl);
+    redirectUrl.searchParams.set("accessToken", tokens.accessToken);
+    redirectUrl.searchParams.set("refreshToken", tokens.refreshToken);
+    res.redirect(redirectUrl.toString());
   }
 
   /** Google OAuth 콜백 */

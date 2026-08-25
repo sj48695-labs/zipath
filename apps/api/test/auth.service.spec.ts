@@ -1,4 +1,5 @@
 import { UnauthorizedException } from "@nestjs/common";
+import { getMetadataArgsStorage } from "typeorm";
 import { AuthService } from "../src/auth/auth.service";
 import { User } from "@zipath/db";
 
@@ -134,6 +135,31 @@ describe("AuthService", () => {
 
       expect(existingUser.email).toBe("keep@example.com");
       expect(existingUser.nickname).toBe("유지");
+    });
+
+    it("should find an Apple user by provider and providerId", async () => {
+      const existingUser = makeUser({
+        provider: "apple",
+        providerId: "shared-subject",
+        email: "relay@privaterelay.appleid.com",
+        nickname: "Apple 사용자",
+      });
+      userRepo.findOne.mockResolvedValue(existingUser);
+      userRepo.save.mockResolvedValue(existingUser);
+      jwtService.sign.mockReturnValue("token");
+
+      await service.validateOAuthLogin({
+        provider: "apple",
+        providerId: "shared-subject",
+        email: null,
+        nickname: null,
+      });
+
+      expect(userRepo.findOne).toHaveBeenCalledWith({
+        where: { provider: "apple", providerId: "shared-subject" },
+      });
+      expect(existingUser.email).toBe("relay@privaterelay.appleid.com");
+      expect(existingUser.nickname).toBe("Apple 사용자");
     });
   });
 
@@ -305,5 +331,22 @@ describe("AuthService", () => {
         service.updateInterestRegions(999, ["서울 강남구"]),
       ).rejects.toThrow(UnauthorizedException);
     });
+  });
+});
+
+describe("User SSO identity constraint", () => {
+  it("uses provider and providerId as a composite unique index", () => {
+    const userIndices = getMetadataArgsStorage().indices.filter(
+      (index) => index.target === User,
+    );
+
+    expect(userIndices).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          columns: ["provider", "providerId"],
+          unique: true,
+        }),
+      ]),
+    );
   });
 });
