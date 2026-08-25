@@ -64,6 +64,12 @@
 - 구현: 공급자 배열과 로그인 URL 생성 함수를 `oauth-providers.ts`로 추출한다. 여기에 Apple 버튼 메타데이터를 추가하고, `getOAuthLoginUrl()`이 `${NEXT_PUBLIC_API_URL || "http://localhost:4000/api"}/auth/${provider}`를 생성하도록 해 현재의 잘못된 `/auth/oauth/{provider}`를 정정한다. `page.tsx`는 이 helper를 사용하고 Apple 취소·거부 query error를 재시도 가능한 안내로 표시한다. callback 성공과 `AuthContext`의 Zipath token 저장 흐름은 수정하지 않는다.
 - 테스트: 현재 Jest가 `.test.ts`만 수집하는 설정을 그대로 사용해, 추출한 helper와 provider metadata에서 Apple이 노출되고 Google/Kakao/Naver/Apple 각각이 정확한 `/api/auth/{provider}` 시작 URL을 생성하며 API URL override가 유지됨을 검증한다. 로그인 페이지의 오류 안내는 기존 Next client component 패턴에 맞는 렌더링 검증을 추가할 수 있을 때만 별도 UI test로 확장한다.
 
+### Phase 5 (완료): CI PostgreSQL 헬스체크 사용자 지정 (커밋 단위)
+
+- 변경 파일: `.github/workflows/ci.yml`
+- 구현: PostgreSQL 서비스의 health command가 컨테이너 기본 OS 사용자(`root`)로 접속해 존재하지 않는 DB role 오류를 내지 않도록, `POSTGRES_USER` 및 `POSTGRES_DB`와 일치하는 `zipath`/`zipath_test`를 `pg_isready`에 명시한다. 애플리케이션의 `DATABASE_URL`과 서비스 초기화 환경변수는 변경하지 않는다.
+- 검증: workflow 설정에서 health command가 `pg_isready -U zipath -d zipath_test`를 실행하는지 정적 확인하고, API 단위 테스트와 빌드를 실행한다. GitHub Actions 서비스 컨테이너 기동은 CI 재실행으로 최종 검증한다.
+
 ## 테스트 계획
 
 1. `npm test -w @zipath/api -- auth.service.spec.ts env.validation.spec.ts apple.strategy.spec.ts auth.controller.spec.ts`
