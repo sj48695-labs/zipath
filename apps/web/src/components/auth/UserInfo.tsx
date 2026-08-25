@@ -7,6 +7,7 @@ const PROVIDER_LABELS: Record<ProviderLabel, string> = {
   google: "Google",
   kakao: "카카오",
   naver: "네이버",
+  apple: "Apple",
 };
 
 function getProviderLabel(provider: UserProfile["provider"]): string {
