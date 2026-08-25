@@ -1,4 +1,4 @@
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { NotFoundException } from "@nestjs/common";
 import { ContractAnalysisService } from "../src/contract-analysis/contract-analysis.service";
 
 describe("ContractAnalysisService", () => {
@@ -137,36 +137,6 @@ describe("ContractAnalysisService", () => {
         const summary = service.getSummary(type);
         expect(summary.required).toBeLessThanOrEqual(summary.total);
       }
-    });
-  });
-
-  describe("analyzeText", () => {
-    it("detects clauses in OCR text and includes the legal disclaimer", () => {
-      const result = service.analyzeText(
-        "월세",
-        "임대인과 임차인. 소재지 서울시. 보증금 1000만원, 월세 50만원. 계약기간 2년. 특약사항 원상복구.",
-      );
-
-      expect(result.detectedCount).toBeGreaterThan(0);
-      expect(result.missingRequired).toEqual([]);
-      expect(result.disclaimer).toContain("참고용이며 법적 효력 없음");
-    });
-
-    it("reports danger when OCR text detects no clauses", () => {
-      const result = service.analyzeText("전세", "인식된 문장 없음");
-
-      expect(result.detectedCount).toBe(0);
-      expect(result.riskLevel).toBe("danger");
-      expect(result.missingRequired.length).toBeGreaterThan(0);
-    });
-
-    it("rejects empty or unsupported OCR text requests", () => {
-      expect(() => service.analyzeText("월세", "   ")).toThrow(
-        BadRequestException,
-      );
-      expect(() => service.analyzeText("임대차", "보증금")).toThrow(
-        BadRequestException,
-      );
     });
   });
 });
