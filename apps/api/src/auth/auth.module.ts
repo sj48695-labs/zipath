@@ -7,6 +7,7 @@ import { User } from "@zipath/db";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { GoogleStrategy } from "./google.strategy";
+import { AppleStrategy } from "./apple.strategy";
 import { KakaoStrategy } from "./kakao.strategy";
 import { NaverStrategy } from "./naver.strategy";
 import { JwtStrategy } from "./jwt.strategy";
@@ -52,6 +53,7 @@ function conditionalOAuthProvider(
     AuthService,
     JwtStrategy,
     conditionalOAuthProvider(GoogleStrategy, "GOOGLE_CLIENT_ID", "Google"),
+    conditionalOAuthProvider(AppleStrategy, "APPLE_CLIENT_ID", "Apple"),
     conditionalOAuthProvider(KakaoStrategy, "KAKAO_CLIENT_ID", "Kakao"),
     conditionalOAuthProvider(NaverStrategy, "NAVER_CLIENT_ID", "Naver"),
   ],
