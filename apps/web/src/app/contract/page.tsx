@@ -141,9 +141,18 @@ export default function ContractAnalysisPage() {
       const formData = new FormData();
       formData.append("type", analysisType);
       formData.append("image", analysisFile);
-      setAnalysisResult(await fetchApiForm<ContractAnalysisResult>("/contract-analysis/analyze", formData));
+      setAnalysisResult(
+        await fetchApiForm<ContractAnalysisResult>(
+          "/contract-analysis/analyze",
+          formData,
+        ),
+      );
     } catch (err) {
-      setAnalysisError(err instanceof ApiError ? err.message : "OCR 분석에 실패했습니다. 다시 시도해주세요.");
+      setAnalysisError(
+        err instanceof ApiError
+          ? err.message
+          : "OCR 분석에 실패했습니다. 다시 시도해주세요.",
+      );
     } finally {
       setAnalyzing(false);
     }
@@ -174,16 +183,25 @@ export default function ContractAnalysisPage() {
           반드시 전문가(공인중개사, 변호사)의 조언을 받으세요.
         </div>
 
-        <section className="mb-10 rounded-lg border-2 border-primary/20 bg-primary/5 p-5" aria-labelledby="image-analysis-heading">
-          <h2 id="image-analysis-heading" className="text-lg font-bold">계약서 이미지 OCR 분석</h2>
-          <p className="mb-4 text-sm text-muted-foreground">PNG 또는 JPEG 계약서 사진에서 주요 조항을 자동으로 점검합니다.</p>
+        <section
+          className="mb-10 rounded-lg border-2 border-primary/20 bg-primary/5 p-5"
+          aria-labelledby="image-analysis-heading"
+        >
+          <h2 id="image-analysis-heading" className="text-lg font-bold">
+            계약서 이미지 OCR 분석
+          </h2>
+          <p className="mb-4 text-sm text-muted-foreground">
+            PNG 또는 JPEG 계약서 사진에서 주요 조항을 자동으로 점검합니다.
+          </p>
           <div className="grid gap-4 sm:grid-cols-[auto_1fr_auto] sm:items-end">
-            <label className="text-sm font-medium">계약 유형
+            <label className="text-sm font-medium">
+              계약 유형
               <select value={analysisType} onChange={(event) => setAnalysisType(event.target.value as ContractType)} className="mt-1 block rounded-md border bg-card px-3 py-2">
                 {CONTRACT_TYPES.map((contractType) => <option key={contractType.type} value={contractType.type}>{contractType.label}</option>)}
               </select>
             </label>
-            <label className="text-sm font-medium">계약서 이미지 (PNG, JPEG, 최대 10MB)
+            <label className="text-sm font-medium">
+              계약서 이미지 (PNG, JPEG, 최대 10MB)
               <input type="file" accept="image/png,image/jpeg" onChange={(event) => setAnalysisFile(event.target.files?.[0] ?? null)} className="mt-1 block w-full text-sm" />
             </label>
             <button onClick={handleAnalyzeImage} disabled={analyzing || !analysisFile} className="rounded-md bg-primary px-5 py-2 text-sm font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50">

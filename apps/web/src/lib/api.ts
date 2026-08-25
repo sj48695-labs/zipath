@@ -222,7 +222,10 @@ export async function fetchApiForm<T>(
 ): Promise<T> {
   const headers: Record<string, string> = {};
   if (options?.auth) {
-    const token = typeof window === "undefined" ? null : window.localStorage.getItem("accessToken");
+    const token =
+      typeof window === "undefined"
+        ? null
+        : window.localStorage.getItem("accessToken");
     if (!token) throw new ApiError("로그인이 필요합니다.", 401);
     headers.Authorization = `Bearer ${token}`;
   }

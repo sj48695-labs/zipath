@@ -165,4 +165,5 @@ describe("ContractAnalysisService", () => {
       expect(() => service.analyzeText("임대차", "보증금")).toThrow(BadRequestException);
     });
   });
+
 });

@@ -61,15 +61,19 @@ export class ContractAnalysisController {
     if (!parsed.success) {
       throw new BadRequestException(parsed.error.issues.map((issue) => issue.message).join(", "));
     }
+
     const { type, text } = parsed.data;
     if (image && (!ALLOWED_IMAGE_MIME.includes(image.mimetype) || image.size > MAX_IMAGE_SIZE)) {
       throw new BadRequestException(
-        image.size > MAX_IMAGE_SIZE ? "이미지 파일은 10MB 이하만 업로드할 수 있습니다." : "PNG 또는 JPEG 이미지만 업로드할 수 있습니다.",
+        image.size > MAX_IMAGE_SIZE
+          ? "이미지 파일은 10MB 이하만 업로드할 수 있습니다."
+          : "PNG 또는 JPEG 이미지만 업로드할 수 있습니다.",
       );
     }
     if (text === undefined && !image) {
       throw new BadRequestException("분석할 이미지(image) 또는 텍스트(text) 중 하나는 필요합니다.");
     }
+
     const analysisText = text ?? this.contractAnalysisService.extractText(image!.buffer, type);
     return {
       ...this.contractAnalysisService.analyzeText(type, analysisText),

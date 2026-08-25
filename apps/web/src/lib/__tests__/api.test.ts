@@ -189,7 +189,7 @@ describe("fetchApiForm", () => {
     global.fetch = originalFetch;
   });
 
-  it("multipart 요청의 boundary를 브라우저에 맡기고 응답을 언랩한다", async () => {
+  it("uploads multipart data without setting Content-Type and unwraps its response", async () => {
     global.fetch = jest.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -205,9 +205,8 @@ describe("fetchApiForm", () => {
     );
   });
 
-  it("OCR 요청 실패 뒤 같은 요청을 다시 시도할 수 있다", async () => {
-    global.fetch = jest
-      .fn()
+  it("allows an OCR request to be retried after an upstream failure", async () => {
+    global.fetch = jest.fn()
       .mockResolvedValueOnce({ ok: false, status: 502, json: async () => ({ message: "OCR 실패" }) } as Response)
       .mockResolvedValueOnce({ ok: true, status: 200, json: async () => ({ success: true, data: { detectedCount: 1 } }) } as Response);
     const formData = new FormData();

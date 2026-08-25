@@ -36,18 +36,14 @@ describe("ContractAnalysisController", () => {
   });
 
   it("rejects non-image and oversized uploads", () => {
-    expect(() =>
-      controller.analyze(
-        { buffer: Buffer.alloc(1), mimetype: "application/pdf", size: 1 },
-        { type: "월세" },
-      ),
-    ).toThrow(BadRequestException);
-    expect(() =>
-      controller.analyze(
-        { buffer: Buffer.alloc(1), mimetype: "image/jpeg", size: 10 * 1024 * 1024 + 1 },
-        { type: "월세" },
-      ),
-    ).toThrow(BadRequestException);
+    expect(() => controller.analyze(
+      { buffer: Buffer.alloc(1), mimetype: "application/pdf", size: 1 },
+      { type: "월세" },
+    )).toThrow(BadRequestException);
+    expect(() => controller.analyze(
+      { buffer: Buffer.alloc(1), mimetype: "image/jpeg", size: 10 * 1024 * 1024 + 1 },
+      { type: "월세" },
+    )).toThrow(BadRequestException);
   });
 
   it("returns OCR extraction failures so the client can retry", () => {
@@ -55,11 +51,9 @@ describe("ContractAnalysisController", () => {
       throw new BadRequestException("OCR 텍스트를 추출하지 못했습니다.");
     });
 
-    expect(() =>
-      controller.analyze(
-        { buffer: Buffer.from("image"), mimetype: "image/jpeg", size: 5 },
-        { type: "월세" },
-      ),
-    ).toThrow("OCR 텍스트를 추출하지 못했습니다.");
+    expect(() => controller.analyze(
+      { buffer: Buffer.from("image"), mimetype: "image/jpeg", size: 5 },
+      { type: "월세" },
+    )).toThrow("OCR 텍스트를 추출하지 못했습니다.");
   });
 });
