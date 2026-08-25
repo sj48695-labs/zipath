@@ -174,6 +174,7 @@ export async function fetchResponse(
 
   return res;
 }
+
 export async function fetchApi<T>(
   path: string,
   options?: FetchApiOptions,
@@ -206,35 +207,6 @@ export async function fetchApi<T>(
 
   // 백엔드 TransformInterceptor 가 응답을 {success, data} 로 래핑함.
   // 페이지 코드는 unwrapped 형태를 기대하므로 여기서 풀어서 반환.
-  return unwrapBackendData<T>(await res.json());
-}
-
-interface FetchFormOptions {
-  auth?: boolean;
-  signal?: AbortSignal;
-}
-
-/** multipart/form-data 요청. Content-Type을 지정하지 않아 boundary를 브라우저가 생성한다. */
-export async function fetchApiForm<T>(
-  path: string,
-  formData: FormData,
-  options?: FetchFormOptions,
-): Promise<T> {
-  const headers: Record<string, string> = {};
-  if (options?.auth) {
-    const token =
-      typeof window === "undefined"
-        ? null
-        : window.localStorage.getItem("accessToken");
-    if (!token) throw new ApiError("로그인이 필요합니다.", 401);
-    headers.Authorization = `Bearer ${token}`;
-  }
-  const res = await fetchResponse(`${API_BASE}${path}`, {
-    method: "POST",
-    body: formData,
-    headers,
-    signal: options?.signal,
-  });
   return unwrapBackendData<T>(await res.json());
 }
 
