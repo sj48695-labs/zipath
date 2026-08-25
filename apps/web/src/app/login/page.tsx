@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import SiteHeader from "@/components/layout/SiteHeader";
 import { OAUTH_PROVIDERS, getOAuthLoginUrl } from "./oauth-providers";
 
@@ -11,6 +12,12 @@ function handleOAuthLogin(provider: "google" | "kakao" | "naver" | "apple") {
 }
 
 export default function LoginPage() {
+  const [oauthError, setOAuthError] = useState(false);
+
+  useEffect(() => {
+    setOAuthError(new URLSearchParams(window.location.search).get("error") === "apple_authorization_cancelled");
+  }, []);
+
   return (
     <div className="min-h-screen">
       <SiteHeader maxWidth="max-w-5xl" />
@@ -20,6 +27,11 @@ export default function LoginPage() {
         <p className="mb-10 text-sm text-muted-foreground">
           소셜 계정으로 간편하게 시작하세요
         </p>
+        {oauthError && (
+          <p className="mb-4 text-center text-sm text-destructive">
+            Apple 로그인이 취소되었거나 승인되지 않았습니다. 다시 시도해 주세요.
+          </p>
+        )}
 
         <div className="w-full space-y-3">
           {OAUTH_PROVIDERS.map((provider) => (

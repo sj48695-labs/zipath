@@ -1,9 +1,11 @@
 import { ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { AuthGuard } from "@nestjs/passport";
-import { randomBytes } from "crypto";
+import { createHmac, randomBytes, timingSafeEqual } from "crypto";
 import type { Request, Response } from "express";
 
 interface AppleOAuthRequest extends Request {
+  appleState?: string;
   appleNonce?: string;
   appleAuthError?: string;
 }
@@ -23,14 +25,28 @@ function readCookie(request: Request, name: string): string | undefined {
   return cookieHeader.split(";").map((part) => part.trim()).find((part) => part.startsWith(`${name}=`))?.slice(name.length + 1);
 }
 
-function encodeState(payload: AppleStatePayload): string {
-  return Buffer.from(JSON.stringify(payload)).toString("base64url");
+function sign(value: string, secret: string): string {
+  return createHmac("sha256", secret).update(value).digest("base64url");
 }
 
-function decodeState(value: string | undefined): AppleStatePayload | null {
+function encodeState(payload: AppleStatePayload, secret: string): string {
+  const encoded = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  return `${encoded}.${sign(encoded, secret)}`;
+}
+
+function decodeState(value: string | undefined, secret: string): AppleStatePayload | null {
   if (!value) return null;
   try {
-    const parsed: unknown = JSON.parse(Buffer.from(value, "base64url").toString("utf8"));
+    const [encoded, signature] = value.split(".");
+    if (!encoded || !signature) return null;
+    const expectedSignature = sign(encoded, secret);
+    if (
+      signature.length !== expectedSignature.length ||
+      !timingSafeEqual(Buffer.from(signature), Buffer.from(expectedSignature))
+    ) {
+      return null;
+    }
+    const parsed: unknown = JSON.parse(Buffer.from(encoded, "base64url").toString("utf8"));
     if (typeof parsed !== "object" || parsed === null) return null;
     const candidate = parsed as Partial<AppleStatePayload>;
     return typeof candidate.state === "string" && typeof candidate.nonce === "string" && typeof candidate.expiresAt === "number" ? candidate as AppleStatePayload : null;
@@ -41,25 +57,31 @@ function decodeState(value: string | undefined): AppleStatePayload | null {
 
 @Injectable()
 export class AppleAuthGuard extends AuthGuard("apple") {
+  constructor(private readonly configService: ConfigService) {
+    super();
+  }
+
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<AppleOAuthRequest>();
     const response = context.switchToHttp().getResponse<Response>();
+    const stateSecret = this.configService.get<string>("JWT_SECRET") || "zipath-dev-secret";
 
     if (request.method === "GET") {
       const state = randomBytes(32).toString("base64url");
       const nonce = randomBytes(32).toString("base64url");
-      response.cookie(APPLE_STATE_COOKIE, encodeState({ state, nonce, expiresAt: Date.now() + STATE_TTL_MS }), {
+      response.cookie(APPLE_STATE_COOKIE, encodeState({ state, nonce, expiresAt: Date.now() + STATE_TTL_MS }, stateSecret), {
         httpOnly: true,
         secure: true,
         sameSite: "none",
         maxAge: STATE_TTL_MS,
         path: "/api/auth/apple",
       });
+      request.appleState = state;
       request.appleNonce = nonce;
       return super.canActivate(context);
     }
 
-    const expected = decodeState(readCookie(request, APPLE_STATE_COOKIE));
+    const expected = decodeState(readCookie(request, APPLE_STATE_COOKIE), stateSecret);
     response.clearCookie(APPLE_STATE_COOKIE, { httpOnly: true, secure: true, sameSite: "none", path: "/api/auth/apple" });
     const receivedState = typeof request.body?.state === "string" ? request.body.state : undefined;
     if (!expected || expected.expiresAt < Date.now() || !receivedState || receivedState !== expected.state) {
@@ -75,6 +97,9 @@ export class AppleAuthGuard extends AuthGuard("apple") {
 
   getAuthenticateOptions(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest<AppleOAuthRequest>();
-    return { state: request.method === "GET" ? decodeState(readCookie(request, APPLE_STATE_COOKIE))?.state : undefined, nonce: request.appleNonce };
+    return {
+      state: request.appleState,
+      nonce: request.appleNonce,
+    };
   }
 }
