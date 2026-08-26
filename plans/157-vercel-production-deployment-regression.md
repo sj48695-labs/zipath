@@ -46,7 +46,7 @@
   - `npm test -w @zipath/web-e2e -- production-smoke.spec.ts`
   - Phase 1의 smoke job에서 같은 파일을 운영 URL로 실행한다.
 
-### Phase 3: 공고·실거래가 상태 UI E2E 계약 보강 (커밋 단위)
+### Phase 3 (완료): 공고·실거래가 상태 UI E2E 계약 보강 (커밋 단위)
 
 - 의존성: Phase 2 (운영 smoke 실행 기반)
 - 변경 파일: `apps/web-e2e/tests/announcements.spec.ts`, `apps/web-e2e/tests/real-price-status.spec.ts` (신규)
