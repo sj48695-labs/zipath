@@ -29,3 +29,9 @@
 - 청약 및 실거래가 요청 직후 `role="status"` 진행 안내, 10초 후 콜드 스타트 안내,
   45초 timeout 구현과 오류 분류, 동일 조건 재시도를 Playwright route mock으로 검증한다.
 - UI의 “참고용이며 법적 효력 없음” 고지를 회귀 테스트로 유지한다.
+
+### Phase 9 (완료): 45초 timeout 오류 분류 Playwright 검증
+
+- Playwright 가상 시간으로 청약과 실거래가 요청의 10초 콜드 스타트 안내 및
+  45초 timeout을 빠르게 재현한다.
+- timeout이 HTTP 오류가 아닌 Render 준비 안내로 분류되는지 확인한다.
