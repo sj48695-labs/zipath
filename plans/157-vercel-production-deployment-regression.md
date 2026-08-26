@@ -35,7 +35,7 @@
   - workflow YAML의 `on.push.branches`, SHA 비교 조건, 불일치 때만 create/poll하는 조건, 실패 상태 처리, secret 참조 및 smoke job 의존성을 정적 검토한다.
   - GitHub Actions의 수동 실행에서 일치/불일치 각각을 확인한다. (Vercel secret이 필요한 통합 검증)
 
-### Phase 2: 운영 홈·favicon smoke 계약 추가 (커밋 단위)
+### Phase 2 (완료): 운영 홈·favicon smoke 계약 추가 (커밋 단위)
 
 - 변경 파일: `apps/web-e2e/tests/production-smoke.spec.ts` (신규)
 - 구현:
