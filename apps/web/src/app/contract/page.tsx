@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { fetchApi } from "@/lib/api";
+import { readCheckedItems, saveCheckedItems } from "@/lib/contract-checklist-storage";
 import SiteHeader from "@/components/layout/SiteHeader";
 
 interface ChecklistItem {
@@ -51,21 +52,38 @@ export default function ContractAnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [checked, setChecked] = useState<Set<string>>(new Set());
   const [expandedItem, setExpandedItem] = useState<string | null>(null);
+  const checklistRequestId = useRef(0);
 
   const fetchChecklist = useCallback(async (type: ContractType) => {
+    const requestId = ++checklistRequestId.current;
+    const savedChecked = readCheckedItems(type);
     setLoading(true);
     setError(null);
+    setChecklist(null);
     setChecked(new Set());
     setExpandedItem(null);
     try {
       const data = await fetchApi<ContractChecklist>(
         `/contract-analysis/checklist?type=${encodeURIComponent(type)}`,
       );
-      setChecklist(data);
+      if (requestId === checklistRequestId.current) {
+        setChecklist(data);
+        setChecked(
+          new Set(
+            [...savedChecked].filter((id) =>
+              data.items.some((item) => item.id === id),
+            ),
+          ),
+        );
+      }
     } catch {
-      setError("체크리스트를 불러오는 데 실패했습니다.");
+      if (requestId === checklistRequestId.current) {
+        setError("체크리스트를 불러오는 데 실패했습니다.");
+      }
     } finally {
-      setLoading(false);
+      if (requestId === checklistRequestId.current) {
+        setLoading(false);
+      }
     }
   }, []);
 
@@ -80,6 +98,7 @@ export default function ContractAnalysisPage() {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
       else next.add(id);
+      if (selectedType) saveCheckedItems(selectedType, next);
       return next;
     });
   };
@@ -109,7 +128,7 @@ export default function ContractAnalysisPage() {
 
         {/* 법적 고지 */}
         <div className="mb-8 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
-          이 체크리스트는 참고용이며 법적 효력이 없습니다. 실제 계약 시에는
+          이 체크리스트는 참고용이며 법적 효력 없음으로 제공됩니다. 실제 계약 시에는
           반드시 전문가(공인중개사, 변호사)의 조언을 받으세요.
         </div>
 
@@ -220,12 +239,16 @@ export default function ContractAnalysisPage() {
                           >
                             <div className="flex items-start gap-3 p-4">
                               <input
+                                id={item.id}
                                 type="checkbox"
                                 checked={isChecked}
                                 onChange={() => toggleCheck(item.id)}
                                 className="mt-1 h-5 w-5 shrink-0 rounded border-gray-300 cursor-pointer"
                               />
-                              <div className="min-w-0 flex-1">
+                              <label
+                                htmlFor={item.id}
+                                className="min-w-0 flex-1 cursor-pointer"
+                              >
                                 <div className="flex items-center gap-2">
                                   <span
                                     className={`font-medium ${
@@ -245,7 +268,7 @@ export default function ContractAnalysisPage() {
                                 <p className="mt-1 text-sm text-muted-foreground">
                                   {item.description}
                                 </p>
-                              </div>
+                              </label>
                               <button
                                 onClick={() => toggleExpand(item.id)}
                                 className="shrink-0 rounded-md p-1 text-muted-foreground hover:bg-secondary hover:text-foreground"
