@@ -108,6 +108,8 @@ test("공고 페이지는 모바일에서 응답을 기다리는 동안 로딩 �
   await expect(page.getByRole("status")).toContainText("공고를 불러오는 중");
   await expect(page.getByRole("status")).toBeInViewport();
   await expect(page.getByRole("status").locator(":scope > div")).toHaveCount(4);
+  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByText("현재 등록된 공고가 없습니다.")).toHaveCount(0);
 
   releaseResponse?.();
   await expect(page.getByText("테스트 아파트")).toBeVisible();

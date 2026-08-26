@@ -1,0 +1,116 @@
+name: Production web regression
+
+on:
+  push:
+    branches: [develop]
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: "대조할 develop 커밋 SHA (비워두면 workflow 실행 SHA)"
+        required: false
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  verify-production-deployment:
+    name: Verify or recover Vercel production deployment
+    runs-on: ubuntu-latest
+    outputs:
+      base_url: ${{ steps.deployment.outputs.base_url }}
+      deployed_sha: ${{ steps.deployment.outputs.deployed_sha }}
+    # Required secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
+    # The Git source repository ID comes from github.event.repository.id.
+    steps:
+      - name: Compare and recover deployment
+        id: deployment
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha || github.sha }}
+          GITHUB_REPOSITORY_ID: ${{ github.event.repository.id }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${VERCEL_TOKEN:?VERCEL_TOKEN secret is required}"
+          : "${VERCEL_ORG_ID:?VERCEL_ORG_ID secret is required}"
+          : "${VERCEL_PROJECT_ID:?VERCEL_PROJECT_ID secret is required}"
+
+          api="https://api.vercel.com"
+          query="teamId=${VERCEL_ORG_ID}&projectId=${VERCEL_PROJECT_ID}&target=production&limit=1"
+          latest="$(curl --fail-with-body --silent --show-error \
+            -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+            "${api}/v6/deployments?${query}")"
+          latest_sha="$(jq -r '.deployments[0].meta.githubCommitSha // empty' <<<"${latest}")"
+          latest_url="$(jq -r '.deployments[0].url // empty' <<<"${latest}")"
+
+          if [[ "${latest_sha}" == "${EXPECTED_SHA}" && -n "${latest_url}" ]]; then
+            echo "Production deployment already matches ${EXPECTED_SHA}."
+            echo "deployed_sha=${latest_sha}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Production SHA mismatch (found: ${latest_sha:-missing}, expected: ${EXPECTED_SHA}); creating recovery deployment."
+            payload="$(jq -n \
+              --arg project "${VERCEL_PROJECT_ID}" \
+              --arg ref "${EXPECTED_SHA}" \
+              --argjson repoId "${GITHUB_REPOSITORY_ID}" \
+              '{project: $project, target: "production", gitSource: {type: "github", repoId: $repoId, ref: $ref}}')"
+            created="$(curl --fail-with-body --silent --show-error \
+              -X POST -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+              -H "Content-Type: application/json" \
+              -d "${payload}" \
+              "${api}/v13/deployments?teamId=${VERCEL_ORG_ID}")"
+            deployment_id="$(jq -r '.id // empty' <<<"${created}")"
+            [[ -n "${deployment_id}" ]] || { echo "Vercel deployment creation returned no id." >&2; exit 1; }
+
+            for attempt in $(seq 1 60); do
+              deployment="$(curl --fail-with-body --silent --show-error \
+                -H "Authorization: Bearer ${VERCEL_TOKEN}" \
+                "${api}/v13/deployments/${deployment_id}?teamId=${VERCEL_ORG_ID}")"
+              state="$(jq -r '.readyState // empty' <<<"${deployment}")"
+              case "${state}" in
+                READY)
+                  latest_sha="$(jq -r '.meta.githubCommitSha // empty' <<<"${deployment}")"
+                  latest_url="$(jq -r '.url // empty' <<<"${deployment}")"
+                  [[ "${latest_sha}" == "${EXPECTED_SHA}" ]] || { echo "Recovered deployment SHA does not match expected SHA." >&2; exit 1; }
+                  break
+                  ;;
+                ERROR|CANCELED)
+                  echo "Vercel deployment ended in ${state}." >&2
+                  exit 1
+                  ;;
+                *) sleep 10 ;;
+              esac
+            done
+            [[ "${state:-}" == "READY" ]] || { echo "Timed out waiting for Vercel deployment." >&2; exit 1; }
+            echo "deployed_sha=${latest_sha}" >> "$GITHUB_OUTPUT"
+          fi
+
+          echo "base_url=https://zipath-web.vercel.app" >> "$GITHUB_OUTPUT"
+          {
+            echo "## Production web deployment"
+            echo "- Expected SHA: \`${EXPECTED_SHA}\`"
+            echo "- Deployed SHA: \`${latest_sha}\`"
+            echo "- Smoke URL: https://zipath-web.vercel.app"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  smoke:
+    name: Production smoke and UI regression
+    needs: verify-production-deployment
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+        working-directory: apps/web-e2e
+      - name: Run production smoke and UI contracts
+        env:
+          ZIPATH_BASE_URL: ${{ needs.verify-production-deployment.outputs.base_url }}
+        run: npx playwright test production-smoke.spec.ts announcements.spec.ts real-price-status.spec.ts
+        working-directory: apps/web-e2e
