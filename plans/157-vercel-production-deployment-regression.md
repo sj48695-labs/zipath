@@ -22,7 +22,7 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: 운영 Vercel 배포 SHA 대조·복구 워크플로 (커밋 단위)
+### Phase 1 (완료): 운영 Vercel 배포 SHA 대조·복구 워크플로 (커밋 단위)
 
 - 변경 파일: `.github/workflows/production-web-regression.yml` (신규)
 - 구현:
