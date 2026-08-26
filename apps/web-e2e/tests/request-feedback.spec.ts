@@ -6,11 +6,15 @@ import {
   type Route,
 } from "@playwright/test";
 
-const COLD_START_WAIT_MS = 10_250;
+const COLD_START_WAIT_MS = 12_000;
 
 interface CapturedRequest {
   body: string | null;
   url: string;
+}
+
+function getErrorAlert(page: Page): Locator {
+  return page.locator('[role="alert"]').filter({ hasText: "테스트용 서버 오류" });
 }
 
 async function delayThenFail(route: Route): Promise<void> {
@@ -30,12 +34,20 @@ async function expectRequestFeedback(
   progressNotice: Locator,
 ): Promise<void> {
   await expect(submitButton).toBeDisabled();
-  await expect(progressNotice).toContainText("서버가 준비 중입니다", {
+  await expect(progressNotice).toContainText(/서버가 .*준비 중입니다/, {
     timeout: 15_000,
   });
   await expect(progressNotice).toContainText(/경과\s+1\d초/);
-  await expect(page.getByRole("alert")).toContainText("테스트용 서버 오류");
-  await expect(page.getByRole("alert").getByRole("button", { name: "다시 시도" })).toBeVisible();
+  await expect(getErrorAlert(page)).toBeVisible();
+  await expect(getErrorAlert(page).getByRole("button", { name: "다시 시도" })).toBeVisible();
+}
+
+async function expectInitialProgressNotice(
+  progressNotice: Locator,
+  message: string,
+): Promise<void> {
+  await expect(progressNotice).toBeVisible();
+  await expect(progressNotice).toContainText(message);
 }
 
 test("/subscription 장기 대기·실패 후 같은 입력으로 재시도한다", async ({ page }) => {
@@ -61,6 +73,10 @@ test("/subscription 장기 대기·실패 후 같은 입력으로 재시도한�
   await page.getByRole("checkbox", { name: "혼인 상태" }).check();
   await page.getByRole("button", { name: "자격 확인하기" }).click();
 
+  await expectInitialProgressNotice(
+    page.getByRole("status"),
+    "청약 자격을 확인하고 있어요.",
+  );
   const submitButton = page.getByRole("button", { name: /확인 중|서버 준비 중/ });
   await expectRequestFeedback(
     page,
@@ -69,7 +85,7 @@ test("/subscription 장기 대기·실패 후 같은 입력으로 재시도한�
   );
   expect(requests).toHaveLength(1);
 
-  await page.getByRole("alert").getByRole("button", { name: "다시 시도" }).click();
+  await getErrorAlert(page).getByRole("button", { name: "다시 시도" }).click();
   await expect.poll(() => requests.length).toBe(2);
   expect(requests[1]).toEqual(requests[0]);
 });
@@ -99,11 +115,15 @@ test("/real-price 장기 대기·실패 후 같은 조회 조건으로 재시도
   await expect(monthSelect).toHaveValue(/^\d{6}$/);
   await page.getByRole("button", { name: "조회", exact: true }).click();
 
+  await expectInitialProgressNotice(
+    page.getByRole("status"),
+    "실거래가를 조회하고 있어요.",
+  );
   const submitButton = page.getByRole("button", { name: "조회 중..." });
   await expectRequestFeedback(page, submitButton, page.getByRole("status"));
   expect(requests).toHaveLength(1);
 
-  await page.getByRole("alert").getByRole("button", { name: "다시 시도" }).click();
+  await getErrorAlert(page).getByRole("button", { name: "다시 시도" }).click();
   await expect.poll(() => requests.length).toBe(2);
   expect(requests[1]).toEqual(requests[0]);
 });
