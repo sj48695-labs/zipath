@@ -30,10 +30,10 @@
   - `actions/github-script` 또는 `curl`에서 Vercel REST API를 호출해 `target=production`인 최신 배포의 `meta.githubCommitSha`를 조회하고, `github.sha`와 동일한지 step output에 기록한다. 조회 실패·예상 필드 누락·실패 상태는 성공으로 간주하지 않는다.
   - SHA가 불일치하면 `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` secret을 사용해 해당 `github.sha`를 ref로 하는 production 배포를 생성하고, deployment가 `READY`가 될 때까지 제한된 polling으로 대기한다. `ERROR`/`CANCELED`/timeout은 workflow 실패로 처리한다.
   - 일치한 경우에는 재배포하지 않고, 검증 대상 URL 및 일치 SHA를 job summary에 남긴다. 불일치 복구 후에는 복구된 deployment URL(커스텀 도메인 `https://zipath-web.vercel.app`)을 다음 smoke job의 `ZIPATH_BASE_URL`로 전달한다.
-  - recovery API 계약은 Vercel Git 연결 프로젝트의 Git source deployment(`repoId`, `ref=github.sha`, `target=production`)를 사용한다. 필요한 repository ID/secret 이름은 workflow 상단 주석과 `workflow_dispatch` 입력 설명에 명시한다.
+  - recovery API 계약은 Vercel Git 연결 프로젝트의 Git source deployment(`repoId`, `ref=github.sha`, `target=production`)를 사용한다. org/project ID는 `.vercel/project.json` 값을 workflow 기본값으로 넣고, 필수 secret은 `VERCEL_TOKEN` 하나다. `main` push는 Preview만 만들고 Production alias를 바꾸지 않으므로 복구는 Vercel production deployment 생성으로 한다.
 - 테스트:
   - workflow YAML의 `on.push.branches`, SHA 비교 조건, 불일치 때만 create/poll하는 조건, 실패 상태 처리, secret 참조 및 smoke job 의존성을 정적 검토한다.
-  - GitHub Actions의 수동 실행에서 일치/불일치 각각을 확인한다. (Vercel secret이 필요한 통합 검증)
+  - GitHub Actions의 수동 실행에서 일치/불일치 각각을 확인한다. (`VERCEL_TOKEN` 필요)
 
 ### Phase 2 (완료): 운영 홈·favicon smoke 계약 추가 (커밋 단위)
 
@@ -42,6 +42,7 @@
   - `health.spec.ts`의 `page.goto('/')` HTTP 상태·title 선례를 따라, 운영 base URL에서 홈이 4xx/5xx 없이 로드되고 핵심 heading 또는 navigation이 렌더되는 smoke test를 만든다.
   - Playwright `request` fixture로 `/favicon.ico`를 요청해 HTTP 200, `image/x-icon` 또는 브라우저가 반환하는 유효 favicon content type, 비어 있지 않은 response body를 확인한다. `apps/web/src/app/favicon.ico`가 실제 운영 asset으로 제공되는 계약으로 고정한다.
   - 테스트는 live backend 상태에 의존하지 않도록 정적 shell과 favicon만 확인하며, URL은 기존 `ZIPATH_BASE_URL` 설정을 그대로 사용한다.
+  - 운영 회귀 계약: 390px 홈의 법적 고지·실거래가 링크, `/subscription` 청약통장 필드와 `확인 중` 버튼, `/real-price` 직접 접근 hydration console error 0건.
 - 테스트:
   - `npm test -w @zipath/web-e2e -- production-smoke.spec.ts`
   - Phase 1의 smoke job에서 같은 파일을 운영 URL로 실행한다.

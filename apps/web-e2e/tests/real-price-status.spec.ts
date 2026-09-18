@@ -48,7 +48,9 @@ test("실거래가 API 오류는 재시도 행동과 함께 표시한다", async
   await openSearch(page);
   await page.getByRole("button", { name: "조회", exact: true }).click();
 
-  await expect(page.getByRole("alert")).toContainText("실거래가 조회에 실패했어요");
+  await expect(page.locator("main").getByRole("alert")).toContainText(
+    "실거래가 조회에 실패했어요",
+  );
   await expect(page.getByRole("button", { name: "다시 시도" })).toBeVisible();
   await expect(page.getByText("검색 결과가 없습니다")).toHaveCount(0);
 
@@ -72,5 +74,5 @@ test("실거래가 빈 결과는 다음 검색 행동을 안내한다", async ({
   await expect(page.getByText("검색 결과가 없습니다")).toBeVisible();
   await expect(page.getByText("다른 계약월을 선택해보세요.")).toBeVisible();
   await expect(page.getByText("다른 지역을 선택해 다시 조회해보세요.")).toBeVisible();
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.locator("main").getByRole("alert")).toHaveCount(0);
 });

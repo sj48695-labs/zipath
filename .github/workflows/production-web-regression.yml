@@ -12,6 +12,11 @@ on:
 
 permissions:
   contents: read
+  deployments: read
+
+concurrency:
+  group: production-web-regression
+  cancel-in-progress: false
 
 jobs:
   verify-production-deployment:
@@ -20,23 +25,26 @@ jobs:
     outputs:
       base_url: ${{ steps.deployment.outputs.base_url }}
       deployed_sha: ${{ steps.deployment.outputs.deployed_sha }}
-    # Required secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID.
-    # The Git source repository ID comes from github.event.repository.id.
+    # Only VERCEL_TOKEN is required. Org/project IDs default to .vercel/project.json.
     steps:
       - name: Compare and recover deployment
         id: deployment
         env:
           EXPECTED_SHA: ${{ inputs.expected_sha || github.sha }}
           GITHUB_REPOSITORY_ID: ${{ github.event.repository.id }}
+          GH_TOKEN: ${{ github.token }}
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID || 'team_tVboOXByjS0ZGI7RWDcii4do' }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID || 'prj_Ap01H51sdprKmqzHhPQA4cMfkpHJ' }}
         shell: bash
         run: |
           set -euo pipefail
-          : "${VERCEL_TOKEN:?VERCEL_TOKEN secret is required}"
-          : "${VERCEL_ORG_ID:?VERCEL_ORG_ID secret is required}"
-          : "${VERCEL_PROJECT_ID:?VERCEL_PROJECT_ID secret is required}"
+          if [[ -z "${VERCEL_TOKEN}" ]]; then
+            echo "VERCEL_TOKEN repo secret is required to promote production." >&2
+            echo "Create a Vercel token and: gh secret set VERCEL_TOKEN" >&2
+            echo "Or promote the latest develop preview to Production in the Vercel dashboard." >&2
+            exit 1
+          fi
 
           api="https://api.vercel.com"
           query="teamId=${VERCEL_ORG_ID}&projectId=${VERCEL_PROJECT_ID}&target=production&limit=1"
@@ -45,6 +53,7 @@ jobs:
             "${api}/v6/deployments?${query}")"
           latest_sha="$(jq -r '.deployments[0].meta.githubCommitSha // empty' <<<"${latest}")"
           latest_url="$(jq -r '.deployments[0].url // empty' <<<"${latest}")"
+          github_prod_sha="$(gh api "repos/${GITHUB_REPOSITORY}/deployments?environment=Production&per_page=1" --jq '.[0].sha // empty' || true)"
 
           if [[ "${latest_sha}" == "${EXPECTED_SHA}" && -n "${latest_url}" ]]; then
             echo "Production deployment already matches ${EXPECTED_SHA}."
@@ -92,6 +101,7 @@ jobs:
             echo "## Production web deployment"
             echo "- Expected SHA: \`${EXPECTED_SHA}\`"
             echo "- Deployed SHA: \`${latest_sha}\`"
+            echo "- GitHub Production deployment SHA: \`${github_prod_sha:-none}\`"
             echo "- Smoke URL: https://zipath-web.vercel.app"
           } >> "$GITHUB_STEP_SUMMARY"
 
