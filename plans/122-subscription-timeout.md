@@ -44,6 +44,7 @@
 ### Phase 1: 청약 대기·오류 후 성공 복구 계약 검증 (1파일, 커밋 단위)
 
 - 상태: 미완료.
+- /code 체크포인트: 6개 복구 계약 테스트 작성 및 E2E TypeScript 검사 통과. 운영은 법적 고지 검사에서 실패, 로컬은 첫 페이지 준비 지연으로 실패하여 GREEN 미확인. `[P1]` 체크포인트는 검증 완료를 뜻하지 않으며 후속 실행에서 GREEN 확인이 필요하다.
 - 파일: `apps/web-e2e/tests/subscription-recovery.spec.ts`.
 - 읽을 심볼: 위 표의 `runSimulation`, `handleRetry`, `getSubscriptionErrorViewModel`, `fetchResponse`.
 - 선례: `production-smoke.spec.ts`의 청약 입력·성공 응답, `announcements.spec.ts`의 응답 보류, `request-feedback.spec.ts`의 payload 캡처와 동일성 비교.
@@ -64,6 +65,7 @@
 ### Phase 2: 운영 SHA와 desktop/mobile 검증 결과 보존 (1파일, 커밋 단위)
 
 - 상태: 미완료. Phase 1 이후 실행한다. 운영 배포 증거 확보가 성공 판정의 선행 조건이다.
+- /code 체크포인트: `docs/verification/122-subscription-timeout.md`에 운영 실패와 배포 SHA 조회 차단 근거 기록. 수용 조건은 미완료로 유지한다.
 - 파일: `docs/verification/122-subscription-timeout.md`.
 - 선례: #122 최신 회의 댓글의 요구사항 및 `.github/workflows/production-web-regression.yml`의 Expected/Deployed SHA·Smoke URL 기록 항목. workflow 자체는 수정·실행하지 않는다.
 - 읽기 전용 배포 조회/기존 workflow summary에서 운영 URL·Vercel deployment ID/URL·실제 source SHA·조회 시각(KST)을 기록하고, 검증 대상 develop SHA와 일치하거나 필요한 구현을 포함하는 후속 SHA인지 확인한다. GitHub의 오래된 deployment 기록이나 HTML에 필드가 있다는 사실만으로 SHA 일치를 주장하지 않는다.
