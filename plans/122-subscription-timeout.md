@@ -44,6 +44,7 @@
 ### Phase 1: 청약 대기·오류 후 성공 복구 계약 검증 (1파일, 커밋 단위)
 
 - 상태: 미완료.
+- 재개 체크포인트(2026-11-11): 기존 잔여 증거는 `3c10504`로 보존. 오류 모델/API targeted 26 tests 및 E2E tsc, 전체 lint/build 통과. 로컬 SSR에서 필수 고지 확인. Chromium 기본 버전 불일치는 설치된 브라우저를 지정하는 `/tmp/122-pw.config.ts`로 우회했으나 로컬 HTTP 500과 실행 지연으로 복구 계약 GREEN은 여전히 미확인. 구현을 재작성하지 않으며 phase 완료로 표시하지 않는다.
 - /code 체크포인트: 6개 복구 계약 테스트 작성 및 E2E TypeScript 검사 통과. 운영은 법적 고지 검사에서 실패, 로컬은 첫 페이지 준비 지연으로 실패하여 GREEN 미확인. `[P1]` 체크포인트는 검증 완료를 뜻하지 않으며 후속 실행에서 GREEN 확인이 필요하다.
 - 파일: `apps/web-e2e/tests/subscription-recovery.spec.ts`.
 - 읽을 심볼: 위 표의 `runSimulation`, `handleRetry`, `getSubscriptionErrorViewModel`, `fetchResponse`.
