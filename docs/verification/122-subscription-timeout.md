@@ -48,7 +48,7 @@ Chromium은 기본 환경의 존재하지 않는 browser 경로 대신 설치된
 - **P2:** 복구 화면까지 도달하지 못하여 모바일 접근성·가로 넘침·재시도 버튼 접근성은 미검증.
 - **Skip:** 새 디자인이나 시각 취향에 따른 변경은 하지 않았다.
 
-로컬 artifact 경로(바이너리는 커밋하지 않음):
+로컬 artifact 경로(재개 시 사용자가 staged 잔여 보존을 명시하여 기존 바이너리도 `3c10504`에 보존):
 
 - `output/playwright/122/live/initial.png`: 운영 desktop 초기 화면. 직접 열어 청약통장·법적 고지 부재 확인.
 - `output/playwright/122/live/after-submit.png`: 운영 실제 요청 60초 이후 상태.
@@ -59,3 +59,18 @@ Chromium은 기본 환경의 존재하지 않는 browser 경로 대신 설치된
 기존 구현을 바꾸거나 배포 복구를 수행하지 않는다. 후속 검토는 중단한 API 전체 테스트를 다시 실행하고, 로컬 서버 준비 후 6개 사례의 GREEN을 확보해야 한다. 운영 SHA 확인/복구 후 같은 spec과 mock 없는 실제 성공을 재검증해야 한다. `[P1]`/`[P2]` 커밋은 미완료 작업 체크포인트이며 운영 PASS를 뜻하지 않는다.
 
 Skills used: code, ponytail(full), ui-design(match), playwright.
+
+## 2026-11-11 재개 검증
+
+- 재개 소스: `0884b07`, staged 증거 보존 커밋: `3c10504`. 기존 테스트와 구현을 유지했다. 문서의 과거 실패는 이번 PASS로 덮어쓰지 않는다.
+- targeted: `npm test -w @zipath/web -- --runInBand src/app/subscription/subscription-error.test.ts src/lib/__tests__/api.test.ts` — PASS, 2 suites / 26 tests.
+- `npx tsc --noEmit -p apps/web-e2e/tsconfig.json` — PASS, exit 0.
+- `npx turbo lint` — PASS, 5/5 tasks cached. `npx turbo build` — PASS, 3/3 tasks cached. 로그: `/tmp/122-resume-{lint,build,typecheck}.log`.
+- 빌드 서버 `http://127.0.0.1:3127/subscription` SSR 응답에 `참고용이며 법적 효력 없음`과 기존 상세 고지가 모두 포함되어 있다. 필수 고지가 로컬에 없다는 판단이나 문구 수정은 필요하지 않다. 운영 고지 존재를 뜻하지 않는다.
+- 첫 재실행은 Playwright가 요구하는 `chromium_headless_shell-1223` 미설치로 실패했다. 전역 캐시나 의존성을 변경하지 않고 `/tmp/122-pw.config.ts`에서 설치된 `chromium_headless_shell-1226` 실행 파일을 지정했다. 새 브라우저 설치 시도도 `/tmp`에만 한정했다.
+- 이 임시 설정으로 network 2개와 전체 로컬 6개, 운영 6개를 실행했다. 로컬 network desktop 실행에서 HTTP 500과 실패가 관찰됐다. 개발 서버와 build/start가 같은 `.next`를 사용하는 경합이 발견되어 이번 실행의 개발 서버 둘을 중지했다. 환경 오류를 제품 결함이나 GREEN 증거로 간주하지 않는다.
+- 실행 명령: `ZIPATH_BASE_URL=http://127.0.0.1:3127 node node_modules/@playwright/test/cli.js test --config /tmp/122-pw.config.ts subscription-recovery.spec.ts --workers=1 --retries=0 --output=output/playwright/122/resume-local --reporter=list` (운영은 base URL과 output을 `https://zipath-web.vercel.app`, `resume-production`으로 변경).
+- `/tmp/122-resume-{local,production,red,api}.log`는 이번 실행 로그다. 종료 코드가 확보되지 않은 실행은 PASS로 판정하지 않는다. 운영 SHA는 이번에도 미확인이고, 기존 BLOCKED 판정을 해제하지 않는다.
+- P1 계약 GREEN, P2 운영 source SHA 및 실제 API 성공 수용 조건은 미완료다. 다음 실행은 하나의 독립된 빌드 서버만 사용해 남은 검증을 수행해야 한다. 배포 복구·workflow dispatch·secret 변경·Hold #155 재사용·형제 이슈 수정은 하지 않았다.
+
+- 최종 중단 기록: 운영 전체 spec의 첫 desktop 대기 사례도 실패했다(12.4s). 나머지 E2E 및 API 전체 테스트는 실행 예산 내 종료 결과를 확보하지 못해 이번 worktree의 검증 프로세스만 SIGTERM으로 중지했다. 따라서 전체 test는 미통과/미확인으로 남긴다. 새 실패 artifact도 `output/playwright/122/resume-*`에 보존한다.
