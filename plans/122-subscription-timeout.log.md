@@ -46,3 +46,12 @@
 - E2E: `ZIPATH_BASE_URL=http://127.0.0.1:3126 npx playwright test --config=/tmp/122-playwright.config.ts subscription-recovery.spec.ts --workers=1 --retries=0 --output=output/playwright/122/current-local`.
 - 임시 config는 설치된 Chromium 1228 executablePath만 지정하고 제품/의존성/config를 변경하지 않았다. 재현 config·원본 JSON·표준 검증 로그는 `output/playwright/122/current-verification/`에 보존한다. 상태별 화면은 `output/playwright/122/current-local/` attachment 경로에 남아 있다.
 - 제품 코드 변경 없음. 기존 SiteHeader의 필수 `참고용이며 법적 효력 없음` 고지를 초기 화면에서 검증했다.
+
+
+## 2026-11-13 /code #122 — Phase 2 운영 관찰, 미완료
+
+- Phase 1 8/8 GREEN 뒤 운영 preflight에서 고지/청약통장 필드 누락을 확인하여 운영 mock spec 반복은 생략했다.
+- mock 없는 실제 요청 1회: 50,004ms에도 확인 중. 운영의 10초 안내/45초 취소/복구/실제 API 성공은 확인되지 않았다. 관찰 종료 후 navigation 취소는 제품 timeout으로 간주하지 않는다.
+- GitHub 최신 Production deployment inactive, 현재 alias SHA 불명. Vercel token 실패 경로 재시도/배포 복구/secret/workflow 변경은 수행하지 않았다.
+- 운영 조건은 계속 미완료. 상세 보고서 `docs/verification/122-subscription-timeout.md`, 보존 증거 `output/playwright/122/current-live/evidence.json` 및 직접 확인한 desktop-after50/mobile-initial PNG.
+- API 217/web 51/targeted 26/E2E 8, E2E/web/API typecheck, lint/build 모두 exit 0. 구현 이후 표준 검증 완료. 후속 review/simplify는 파이프라인에 남긴다.

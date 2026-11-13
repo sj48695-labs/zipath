@@ -1,0 +1,65 @@
+{
+  "time": "2026-11-13T09:11:51.706Z",
+  "responses": [],
+  "errors": [
+    {
+      "url": "https://zipath-api.onrender.com/api/subscription/simulate",
+      "failure": {
+        "errorText": "net::ERR_ABORTED"
+      }
+    }
+  ],
+  "status": 200,
+  "headers": {
+    "access-control-allow-origin": "*",
+    "age": "15260413",
+    "cache-control": "public, max-age=0, must-revalidate",
+    "content-disposition": "inline",
+    "content-encoding": "br",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Fri, 13 Nov 2026 09:11:51 GMT",
+    "etag": "W/\"fcfff5729fd0fe1ef6790c7defba8508\"",
+    "server": "Vercel",
+    "strict-transport-security": "max-age=63072000; includeSubDomains; preload",
+    "vary": "RSC, Next-Router-State-Tree, Next-Router-Prefetch",
+    "x-matched-path": "/subscription",
+    "x-vercel-cache": "HIT",
+    "x-vercel-id": "icn1::59nmh-1794561111746-50690d862655"
+  },
+  "legal": 0,
+  "savings": 0,
+  "request": {
+    "url": "https://zipath-api.onrender.com/api/subscription/simulate",
+    "method": "POST",
+    "body": "{\"age\":31,\"income\":4500,\"homelessMonths\":24,\"dependents\":2,\"isMarried\":true,\"isFirstHome\":false}"
+  },
+  "after10": "청약 자격 시뮬레이션\n\n기본 정보를 입력하면 청약 가능 여부와 예상 가점을 확인할 수 있어요.\n\n나이\n연소득 (만원)\n무주택 기간 (개월)\n부양가족 수\n혼인 상태\n생애최초 주택 구입\n확인 중...",
+  "elapsedMs": 50004,
+  "after50": "청약 자격 시뮬레이션\n\n기본 정보를 입력하면 청약 가능 여부와 예상 가점을 확인할 수 있어요.\n\n나이\n연소득 (만원)\n무주택 기간 (개월)\n부양가족 수\n혼인 상태\n생애최초 주택 구입\n확인 중...",
+  "inputs": [
+    {
+      "value": "31",
+      "checked": false
+    },
+    {
+      "value": "4500",
+      "checked": false
+    },
+    {
+      "value": "24",
+      "checked": false
+    },
+    {
+      "value": "2",
+      "checked": false
+    },
+    {
+      "value": "on",
+      "checked": true
+    },
+    {
+      "value": "on",
+      "checked": false
+    }
+  ]
+}

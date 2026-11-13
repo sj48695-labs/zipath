@@ -74,3 +74,43 @@ Skills used: code, ponytail(full), ui-design(match), playwright.
 - P1 계약 GREEN, P2 운영 source SHA 및 실제 API 성공 수용 조건은 미완료다. 다음 실행은 하나의 독립된 빌드 서버만 사용해 남은 검증을 수행해야 한다. 배포 복구·workflow dispatch·secret 변경·Hold #155 재사용·형제 이슈 수정은 하지 않았다.
 
 - 최종 중단 기록: 운영 전체 spec의 첫 desktop 대기 사례도 실패했다(12.4s). 나머지 E2E 및 API 전체 테스트는 실행 예산 내 종료 결과를 확보하지 못해 이번 worktree의 검증 프로세스만 SIGTERM으로 중지했다. 따라서 전체 test는 미통과/미확인으로 남긴다. 새 실패 artifact도 `output/playwright/122/resume-*`에 보존한다.
+
+
+## 2026-11-13 18:08–18:14 KST 재검증
+
+**Phase 1 완료 / Phase 2 BLOCKED: 운영 배포 SHA 확인/복구 필요.** 이전 기록을 보존한다.
+
+### 소스 및 배포 관계
+
+- 검증 소스 HEAD `a5c72a4`, 기능 기반/develop 조회 SHA `071cc4f228d8fa9fc2a1a25936f892ba3ab4b357`. 이번 변경은 복구 테스트·기록만 포함한다.
+- 운영 URL `https://zipath-web.vercel.app/subscription`, HTTP 200. 브라우저 조회 시각 `2026-11-13T09:11:51.706Z`(18:11:51 KST).
+- 응답 `x-vercel-id=icn1::59nmh-1794561111746-50690d862655`, `x-vercel-cache=HIT`, `age=15260413`. 요청 ID와 캐시 나이로 source SHA를 추정하지 않는다.
+- GitHub 최신 Production deployment는 여전히 ID `4588149208`, SHA `e42afda31ec08f5969f9796315232ec92f1b9cd9`, 상태 `inactive`, URL `https://zipath-fp76nizas-sj48695s-projects.vercel.app`. 현재 alias의 deployment ID/source SHA는 확인되지 않았다. 이전에 실패한 Vercel token 조회는 반복하지 않았다.
+- 현재 alias에서 청약통장 입력과 `참고용이며 법적 효력 없음` 고지가 없다. 로컬에서 확인된 구현과 운영 화면이 다르다. 운영 preflight 실패로 mock spec 8개를 반복하지 않았다.
+
+### 실제 요청과 화면 증거
+
+mock 없이 실제 요청을 한 번 보냈다. `POST https://zipath-api.onrender.com/api/subscription/simulate`, body는 age=31, income=4500, homelessMonths=24, dependents=2, isMarried=true, isFirstHome=false. 기존 운영 화면에는 savingsMonths 입력이 없다.
+
+- 제출 직후와 10.5초 이후 모두 `확인 중...`만 보였다. 10초 지연 안내는 없다.
+- 50,004ms 뒤에도 응답 status·결과·timeout 안내·재시도 버튼이 없었다. 입력 네 개와 혼인 체크 상태는 유지됐다. **실제 API 성공 및 실패 복구 미확인**이다.
+- evidence.json의 `ERR_ABORTED`는 50초 관찰 후 모바일 초기 화면으로 이동할 때 발생한 취소다. 제품의 45초 timeout 증거로 사용하지 않는다.
+- P0: 운영 주 흐름이 50초에도 완료되지 않음. P1: 지연 안내/45초 복구/필수 고지/청약통장 필드 부재. P2: 복구 UI까지 도달하지 못하여 운영 재시도 접근성 미검증. Skip: 새 스타일 변경.
+- desktop 1280×900 `output/playwright/122/current-live/desktop-after50.png`, mobile 390×844 `output/playwright/122/current-live/mobile-initial.png`를 직접 열어 확인하고 보존했다. 원본 네트워크/텍스트/입력/응답 헤더는 같은 디렉터리 `evidence.json`에 보존한다. 기타 로컬 screenshot은 작업 디렉터리에 남기고 일괄 커밋하지 않았다.
+
+### 로컬 검증 (운영 성공의 대체 증거 아님)
+
+| 검증 | 결과 |
+| --- | --- |
+| 복구 spec, desktop/390px, workers=1, retries=0 | PASS 8/8, exit 0, 151.2초 |
+| web targeted subscription-error/api | PASS 26 tests, exit 0 |
+| 전체 web | PASS 11 suites / 51 tests, exit 0 |
+| `npm test -w @zipath/api -- --runInBand` | PASS 20 suites / 217 tests, exit 0 |
+| E2E/web/API `tsc --noEmit` | PASS, exit 0 |
+| `npx turbo lint` | PASS 5 cached tasks, exit 0 |
+| `npx turbo build` | PASS 3 cached tasks, exit 0 |
+| `git diff --check` | PASS |
+
+원본 명령/결과/attachment 목록과 임시 실행 config는 `output/playwright/122/current-verification/`에 보존했다. 초기 dev EMFILE 및 sandbox Chromium SIGABRT는 빌드 서버와 sandbox 밖 Chromium으로 해결했다. 실패한 준비 검사를 제품 GREEN으로 간주하지 않았다. 실제 45초를 단축하지 않았으며 desktop/mobile 모두 요청 취소·오류 제거·버튼 복구·동일 payload 재시도 성공을 확인했다.
+
+운영 담당 후속 조건: #157 후속으로 현재 production alias의 deployment ID/URL/source SHA를 확보하고, 청약통장·필수 고지·page/error/api 구현이 포함된 배포를 확인해야 한다. 이후 운영 두 viewport 복구 계약과 mock 없는 API 성공을 다시 확인해야 Phase 2 및 #122 수용 조건을 완료할 수 있다. 이번 실행에서는 배포/secret/workflow 변경, push/PR 변경, Hold #155 재사용, 형제 이슈 변경, 작업트리/브랜치 정리를 하지 않았다.
