@@ -122,5 +122,5 @@ jobs:
       - name: Run production smoke and UI contracts
         env:
           ZIPATH_BASE_URL: ${{ needs.verify-production-deployment.outputs.base_url }}
-        run: npx playwright test production-smoke.spec.ts announcements.spec.ts real-price-status.spec.ts
+        run: npx playwright test production-smoke.spec.ts announcements.spec.ts real-price-status.spec.ts real-price-timeout.spec.ts real-price-production.spec.ts
         working-directory: apps/web-e2e
