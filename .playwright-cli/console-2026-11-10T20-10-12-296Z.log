@@ -1,0 +1,67 @@
+[    1985ms] [ERROR] Failed to load resource: the server responded with a status of 404 () @ https://zipath-web.vercel.app/favicon.ico:0
+[    2368ms] Error: Minified React error #425; visit https://react.dev/errors/425 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at sq (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:146764)
+    at co (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:158778)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:99415
+    at iu (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:103866)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95222)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91087
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91094
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91199)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)
+[    2369ms] Error: Minified React error #425; visit https://react.dev/errors/425 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at sq (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:146764)
+    at co (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:158778)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:99415
+    at iu (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:103866)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95222)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91087
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91094
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91199)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)
+[    2369ms] Error: Minified React error #425; visit https://react.dev/errors/425 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at sq (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:146764)
+    at co (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:158778)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:99415
+    at iu (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:103866)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95222)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91087
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91094
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91199)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)
+[    2449ms] Error: Minified React error #425; visit https://react.dev/errors/425 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at sq (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:146764)
+    at co (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:158778)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:99415
+    at iu (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:103866)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95222)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91087
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91094
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91199)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)
+[    2449ms] Error: Minified React error #425; visit https://react.dev/errors/425 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at sq (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:146764)
+    at co (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:158778)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:99415
+    at iu (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:103866)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95222)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91087
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91094
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91199)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)
+[    2451ms] Error: Minified React error #418; visit https://react.dev/errors/418 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at t5 (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:24669)
+    at iZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:120534)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95161)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91087
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91094
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91199)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)
+[    2451ms] Error: Minified React error #423; visit https://react.dev/errors/423 for the full message or use the non-minified dev environment for full errors and additional helpful warnings.
+    at iZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:118348)
+    at ia (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:95161)
+    at https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:94983
+    at il (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:94990)
+    at oJ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:92346)
+    at oZ (https://zipath-web.vercel.app/_next/static/chunks/1dd3208c-5b0300d67d8b57bc.js:1:91765)
+    at MessagePort.M (https://zipath-web.vercel.app/_next/static/chunks/528-17d2f941dd6582ca.js:1:84738)

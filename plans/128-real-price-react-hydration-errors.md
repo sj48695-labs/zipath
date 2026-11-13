@@ -4,7 +4,7 @@
 - 출처: [#128 본문·댓글](https://github.com/sj48695-labs/zipath/issues/128), [11/13 회의 지침](https://github.com/sj48695-labs/zipath/issues/128#issuecomment-6845471837), 사용자 PM 지침.
 - 판정: #157 CLOSED, PR #147·#150 MERGED. 잔여 작업은 운영 직접 접근·새로고침의 React 오류 0건, 계약월 초기값, 실제 배포 SHA 확인이다. 최신 감사에는 React 오류가 없으며, 과거 오류 7건을 이번 결과로 보고하지 않는다.
 - 재사용: PR #154 / `128-react-hydration-7` / 현재 worktree. 기존 구현·커밋을 보존한다.
-- 상태: **plan 재검토 완료, Phase 1·2 미완료**. 이번 호출은 조사·plan 및 옆 기록 파일 커밋까지만 허용한다.
+- 상태: **plan 재검토 완료, Phase 1·2 미완료**. 현재 호출은 승인된 /code 검증 단계다. 배포·push·cleanup 금지는 유지한다.
 - 실행 기록: [128-real-price-react-hydration-errors.log.md](./128-real-price-react-hydration-errors.log.md). 기본 입력에서 제외하고 특정 증적이 필요할 때만 해당 절을 읽는다.
 
 ## 사용자와 기대 동작
@@ -36,7 +36,7 @@
 - 이번 /plan: 이 파일과 `plans/128-real-price-react-hydration-errors.log.md`만 커밋.
 - 후속 Phase 1: 옆 `.log.md` 1개.
 - 후속 Phase 2: 옆 `.log.md`, 이 plan의 완료 마커, 필요 시 `output/playwright/128/` 스크린샷 최대 2개. 상세 콘솔/HTML/행렬은 로그에 기록하여 파일 5개 이내로 유지한다.
-- 기존 staged 검증 자료는 그대로 보존하고 선택한 phase 커밋에 섞지 않는다.
+- 사용자의 stop 재개 지시에 따라 기존 staged 검증 자료 16개는 과거 증적으로 보존하고 [P2] 체크포인트 커밋에 포함한다. 신규 자료 제한과 구분한다.
 
 ## Phase별 실행 계획
 
