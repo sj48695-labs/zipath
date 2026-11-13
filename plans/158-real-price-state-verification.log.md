@@ -97,3 +97,17 @@
 - soft-reset으로 복원된 staged 8개를 그대로 보존한다. `158-review-production` 및 `158-review-production-final`의 desktop/mobile 실패 screenshot·error-context이며 P5 운영 수용 미완료 증거다. 새 성공 증거가 아니다.
 - targeted 확인: `git diff --cached --check` exit 0, error-context의 법적 고지 부재 및 pending 관찰 실패 확인. 제품·테스트 코드 변경이 없어 TDD RED/GREEN 대상은 없다.
 - 커밋은 미완료 P5의 증거 체크포인트로 남긴다. 운영 수용/phase 완료 표시는 하지 않는다.
+
+## /code P7 조사·검증 기록 (2026-11-14 KST)
+
+- 기준 소스: `2a3413bb13d90b5a14059c43a9f7f3618547c722`. 복원된 실패 증거 8개와 옆 log는 `964d7ca` (`#158 [P5]`)에 보존했다. 새 성공 증거가 아니다.
+- 읽기 전용 `GET https://zipath-web.vercel.app/real-price`: HTTP 200, `x-vercel-cache: HIT`, ETag `d32e4a781d1d1285b47e447c3640c59f`, 11,817 bytes. HTTP Date `Fri, 13 Nov 2026 16:31:25 GMT` (KST 11월 14일). 이전 운영 실패 기록과 ETag가 같다. 동일 ETag는 현재 alias SHA의 증명이 아니다. 헤더/HTML은 `/tmp/158-p7-headers.txt`, `/tmp/158-p7-production.html`.
+- [GitHub Production deployments](https://api.github.com/repos/sj48695-labs/zipath/deployments?environment=Production&per_page=3)의 최신 레코드는 여전히 ID `4588149208`, SHA `e42afda31ec08f5969f9796315232ec92f1b9cd9`, 생성 `2026-05-05T21:11:10Z`. [최신 status](https://api.github.com/repos/sj48695-labs/zipath/deployments/4588149208/statuses)는 `inactive`, 시각 `2026-05-05T21:13:47Z`, environment URL `https://zipath-fp76nizas-sj48695s-projects.vercel.app`. alias 연결 근거가 없다.
+- PR #163 병합 SHA `8bf8c6858e1633f6ac0ee022c64dd4abab844dc8`의 deployment `7768441680`은 **Preview**, 생성 `2026-11-13T15:00:29Z`. [status](https://api.github.com/repos/sj48695-labs/zipath/deployments/7768441680/statuses)는 success, URL `https://zipath-kj4sq9r48-sj48695s-projects.vercel.app`. 최신 조회 레코드 `7768624467` (`406af1bf220ccbc5e5e1aea71b1344b3330f53ea`, `2026-11-13T15:08:03Z`) 역시 Preview다. 이 URL·SHA들을 Production alias로 취급하지 않는다.
+- `vercel inspect https://zipath-web.vercel.app`는 인증 정보가 없어 조회 결과 대신 로그인 흐름을 시작했다. 인증 진행 없이 SIGINT 종료(exit 130). 접근 가능한 메타데이터만으로 실제 alias SHA·배포 시각을 확정할 수 없다.
+- 소스 `SiteHeader.tsx`에는 정확한 `참고용이며 법적 효력 없음` 고지가 있다. 이번 운영 HTML에는 해당 문자열이 없다. HTML 관찰이며 새 desktop/mobile 브라우저 시각 검증은 아니다. 기존 디자인·제품 코드는 수정하지 않았다.
+- **P1 Blocking:** 운영 배포 확인이 필요하다. 소유자가 현재 alias 연결 SHA·배포 URL·시각을 확인한 뒤 P8을 재개한다. 배포·승격·workflow dispatch·PR 조작은 수행하지 않았다.
+- **Skip:** 같은 배포인지 확인되지 않은 상태의 기존 pending 실조회 반복, telemetry·신규 차트·추측성 제품 수정. P7 조사 완료는 운영 수용 완료가 아니다. P5/P8은 미완료이며 success/empty/timeout/error·45초 종료·버튼 복구·재시도에 새 운영 통과 증거는 없다. 기존 로컬 mock 계약과 과거 실패 증거는 유지한다.
+
+- 이번 호출 최종 검증: `npm test -w @zipath/api` exit 0 (20 suites / 217 tests), `npm test -w @zipath/web -- --runInBand` exit 0 (11 suites / 51 tests). `npx turbo lint` exit 0 (5 cached tasks), `npx turbo build` exit 0 (3 cached tasks). `npm run typecheck --workspaces --if-present`, `npx tsc --noEmit -p apps/web-e2e/tsconfig.json`, `git diff --check` 모두 exit 0.
+- 로그: `/tmp/158-code-resume-{api,web,lint,build,typecheck,e2e-typecheck}-final.log`. P7은 문서·배포 식별만 수행해 새 로직/TDD RED-GREEN 대상이 없었다. 기존 상태 검증 테스트는 보존했으며 P8의 배포 조건 미충족으로 브라우저 운영 검증을 재실행하지 않았다.
