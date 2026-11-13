@@ -1,0 +1,40 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+• turbo 2.8.14
+• Packages in scope: @zipath/api, @zipath/config, @zipath/db, @zipath/types, @zipath/ui, @zipath/web, @zipath/web-e2e
+• Running lint in 7 packages
+• Remote caching disabled, using shared worktree cache
+@zipath/ui:lint: cache hit, replaying logs 17e77b74527bb6ce
+@zipath/ui:lint: 
+@zipath/ui:lint: > @zipath/ui@0.1.0 lint
+@zipath/ui:lint: > tsc --noEmit
+@zipath/ui:lint: 
+@zipath/types:lint: cache hit, replaying logs 8778b01a601703b6
+@zipath/types:lint: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/types:lint: 
+@zipath/types:lint: > @zipath/types@0.1.0 lint
+@zipath/types:lint: > tsc --noEmit
+@zipath/types:lint: 
+@zipath/web:lint: cache hit, replaying logs 22c8c55aec815e2a
+@zipath/web:lint: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/web:lint: 
+@zipath/web:lint: > @zipath/web@0.1.0 lint
+@zipath/web:lint: > next lint
+@zipath/web:lint: 
+@zipath/web:lint: ✔ No ESLint warnings or errors
+@zipath/db:build: cache hit, replaying logs 9cb31c729947ff4c
+@zipath/db:build: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/db:build: 
+@zipath/db:build: > @zipath/db@0.1.0 build
+@zipath/db:build: > tsc
+@zipath/db:build: 
+@zipath/api:lint: cache hit, replaying logs c4f47f49b40fd6d5
+@zipath/api:lint: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/api:lint: 
+@zipath/api:lint: > @zipath/api@0.1.0 lint
+@zipath/api:lint: > eslint "{src,test}/**/*.ts"
+@zipath/api:lint: 
+
+ Tasks:    5 successful, 5 total
+Cached:    5 cached, 5 total
+  Time:    3.099s >>> FULL TURBO
+

@@ -1,0 +1,87 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+• turbo 2.8.14
+• Packages in scope: @zipath/api, @zipath/config, @zipath/db, @zipath/types, @zipath/ui, @zipath/web, @zipath/web-e2e
+• Running build in 7 packages
+• Remote caching disabled, using shared worktree cache
+@zipath/db:build: cache hit, replaying logs 9cb31c729947ff4c
+@zipath/db:build: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/db:build: 
+@zipath/db:build: > @zipath/db@0.1.0 build
+@zipath/db:build: > tsc
+@zipath/db:build: 
+@zipath/api:build: cache hit, replaying logs b1345fa92bcd7008
+@zipath/api:build: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/api:build: 
+@zipath/api:build: > @zipath/api@0.1.0 build
+@zipath/api:build: > tsc -p tsconfig.json
+@zipath/api:build: 
+@zipath/web:build: cache hit, replaying logs 1e3e683ac3442f1e
+@zipath/web:build: npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+@zipath/web:build: 
+@zipath/web:build: > @zipath/web@0.1.0 build
+@zipath/web:build: > next build
+@zipath/web:build: 
+@zipath/web:build:   ▲ Next.js 14.2.35
+@zipath/web:build: 
+@zipath/web:build:    Creating an optimized production build ...
+@zipath/web:build: Browserslist: browsers data (caniuse-lite) is 6 months old. Please run:
+@zipath/web:build:   npx update-browserslist-db@latest
+@zipath/web:build:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+@zipath/web:build: Browserslist: caniuse-lite is outdated. Please run:
+@zipath/web:build:   npx update-browserslist-db@latest
+@zipath/web:build:   Why you should do it regularly: https://github.com/browserslist/update-db#readme
+@zipath/web:build:  ✓ Compiled successfully
+@zipath/web:build:    Linting and checking validity of types ...
+@zipath/web:build:    Collecting page data ...
+@zipath/web:build:    Generating static pages (0/29) ...
+@zipath/web:build:    Generating static pages (7/29) 
+@zipath/web:build:    Generating static pages (14/29) 
+@zipath/web:build:    Generating static pages (21/29) 
+@zipath/web:build:  ✓ Generating static pages (29/29)
+@zipath/web:build:    Finalizing page optimization ...
+@zipath/web:build:    Collecting build traces ...
+@zipath/web:build: 
+@zipath/web:build: Route (app)                              Size     First Load JS
+@zipath/web:build: ┌ ○ /                                    1.8 kB          105 kB
+@zipath/web:build: ├ ○ /_not-found                          873 B          88.3 kB
+@zipath/web:build: ├ ○ /ads.txt                             0 B                0 B
+@zipath/web:build: ├ ○ /announcements                       4.59 kB         104 kB
+@zipath/web:build: ├ ƒ /announcements/[id]                  5.21 kB         105 kB
+@zipath/web:build: ├ ƒ /api/announcements                   0 B                0 B
+@zipath/web:build: ├ ƒ /api/announcements/[id]              0 B                0 B
+@zipath/web:build: ├ ƒ /api/auth/profile                    0 B                0 B
+@zipath/web:build: ├ ƒ /api/auth/profile/interest-regions   0 B                0 B
+@zipath/web:build: ├ ƒ /api/contract-analysis               0 B                0 B
+@zipath/web:build: ├ ƒ /api/notifications                   0 B                0 B
+@zipath/web:build: ├ ƒ /api/real-price                      0 B                0 B
+@zipath/web:build: ├ ƒ /api/real-price/trend                0 B                0 B
+@zipath/web:build: ├ ƒ /api/registry                        0 B                0 B
+@zipath/web:build: ├ ○ /auth/callback                       1.34 kB        88.8 kB
+@zipath/web:build: ├ ○ /checklist                           1.01 kB         101 kB
+@zipath/web:build: ├ ƒ /checklist/[type]                    2.13 kB         102 kB
+@zipath/web:build: ├ ○ /contract                            3.71 kB         103 kB
+@zipath/web:build: ├ ○ /glossary                            2.28 kB         102 kB
+@zipath/web:build: ├ ○ /loan                                2.46 kB         102 kB
+@zipath/web:build: ├ ○ /login                               2.16 kB         102 kB
+@zipath/web:build: ├ ○ /notifications                       5.34 kB         105 kB
+@zipath/web:build: ├ ○ /privacy                             178 B          96.3 kB
+@zipath/web:build: ├ ○ /profile                             4 kB            104 kB
+@zipath/web:build: ├ ○ /real-price                          7.74 kB         107 kB
+@zipath/web:build: ├ ○ /real-price/compare                  6.29 kB         106 kB
+@zipath/web:build: ├ ○ /registry                            2.89 kB         103 kB
+@zipath/web:build: ├ ○ /subscription                        3.74 kB         103 kB
+@zipath/web:build: └ ○ /terms                               178 B          96.3 kB
+@zipath/web:build: + First Load JS shared by all            87.5 kB
+@zipath/web:build:   ├ chunks/1dd3208c-5b0300d67d8b57bc.js  53.6 kB
+@zipath/web:build:   ├ chunks/528-17d2f941dd6582ca.js       31.7 kB
+@zipath/web:build:   └ other shared chunks (total)          2.11 kB
+@zipath/web:build: 
+@zipath/web:build: 
+@zipath/web:build: ○  (Static)   prerendered as static content
+@zipath/web:build: ƒ  (Dynamic)  server-rendered on demand
+@zipath/web:build: 
+
+ Tasks:    3 successful, 3 total
+Cached:    3 cached, 3 total
+  Time:    5.374s >>> FULL TURBO
+

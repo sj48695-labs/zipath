@@ -34,3 +34,15 @@
 - 이번 단계에서는 브라우저·제품 테스트를 재실행하지 않았다. 기존 검증 문서의 서버 경합/브라우저 경로 실패를 근거로 후속 실행에 단일 서버 readiness와 브라우저 사전 확인을 요구한다.
 - 기존 `[P1]`/`[P2]` 커밋은 보존. 기존 plan과 검증 문서 모두 GREEN 미확인이라고 명시하므로 완료 마커를 만들지 않는다.
 - 자체 검토 2회: 범위/댓글 반영, 기존 커밋 보존, phase 크기, 실행 환경 선행 조건, 운영 SHA와 PASS 구분, 기록 분리를 확인. plan 작성 단계 완료, 구현·운영 수용 조건 미완료.
+
+
+## 2026-11-13 /code #122 — Phase 1 완료
+
+- 현 worker가 순차 TDD 수행. 새 기능을 재구현하지 않고 복구 계약 테스트를 먼저 보강했다.
+- RED: 준비된 빌드 서버의 network 사례에서 `getByRole("alert")`가 제품 오류와 Next `__next-route-announcer__` 두 개를 찾아 실패했다. GREEN: `main`으로 오류 선택자를 한정한 뒤 8/8 통과(exit 0, 151.2초). 기대값은 완화하지 않았다.
+- 숫자 31/4500/24/2/36 및 체크박스의 대기/성공/실패 입력 보존, 503→동일 payload 성공 복구 보강. 45초 하한 기준은 클릭 직전으로 이동했다.
+- 준비 실패: sandbox Chromium SIGABRT, dev watcher EMFILE/404. sandbox 밖 Chromium 및 watcher 없는 빌드 서버 3126으로 전환 후 HTTP 200·필드·고지를 확인했다. 초기 실패는 기능 실패로 판정하지 않았다. dev 종료 뒤 build/start 방식으로 확정했다.
+- targeted web 2 suites/26 tests, E2E tsc exit 0. 전체 web 11 suites/51 tests, API 20 suites/217 tests, web/API tsc, turbo lint(5 cached), build(3 cached) exit 0. diff --check 통과.
+- E2E: `ZIPATH_BASE_URL=http://127.0.0.1:3126 npx playwright test --config=/tmp/122-playwright.config.ts subscription-recovery.spec.ts --workers=1 --retries=0 --output=output/playwright/122/current-local`.
+- 임시 config는 설치된 Chromium 1228 executablePath만 지정하고 제품/의존성/config를 변경하지 않았다. 재현 config·원본 JSON·표준 검증 로그는 `output/playwright/122/current-verification/`에 보존한다. 상태별 화면은 `output/playwright/122/current-local/` attachment 경로에 남아 있다.
+- 제품 코드 변경 없음. 기존 SiteHeader의 필수 `참고용이며 법적 효력 없음` 고지를 초기 화면에서 검증했다.

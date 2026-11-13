@@ -1,0 +1,61 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+
+> @zipath/api@0.1.0 test
+> jest --config jest.config.js --runInBand --runInBand
+
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM   ERROR [AnnouncementService] DATA_GO_KR_API_KEY 미설정
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공고 동기화 완료: 1건 (신규+갱신)
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM    WARN [AnnouncementService] 동기화할 공고 데이터 없음
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM    WARN [AnnouncementService] 동기화할 공고 데이터 없음
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM   ERROR [AnnouncementService] API 응답 오류: 500 | url=https://apis.data.go.kr/B552555/lttotPblancList/getAPTLttotPblancList | body=internal error
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM   ERROR [AnnouncementService] DATA_GO_KR_API_KEY 미설정
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM   ERROR [AnnouncementService] DATA_GO_KR_API_KEY 미설정
+[Nest] 30468  - 11/13/2026, 6:11:21 PM     LOG [AnnouncementService] 공공분양 공고 동기화 시작...
+[Nest] 30468  - 11/13/2026, 6:11:21 PM   ERROR [AnnouncementService] API 응답 오류: 502 | url=https://apis.data.go.kr/B552555/lttotPblancList/getAPTLttotPblancList | body=Bad Gateway
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] API responded with status 500 | url=https://apis.data.go.kr/1613000/RTMSDataSvcAptTradeDev/getRTMSDataSvcAptTradeDev | body=Internal Server Error
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] API fetch failed: Network error
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202601
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202602
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202603
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202603, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache hit: 11680/202601
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202602, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202511, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202512, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202601, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:26 PM     LOG [RealPriceService] Cache miss: 11680/202602, fetching from API
+[Nest] 30468  - 11/13/2026, 6:11:26 PM   ERROR [RealPriceService] DATA_GO_KR_API_KEY is not configured
+[Nest] 30468  - 11/13/2026, 6:11:47 PM   ERROR [PaymentService] 결제 확인 오류: 토스페이먼츠 결제 확인 실패
+
+Test Suites: 20 passed, 20 total
+Tests:       217 passed, 217 total
+Snapshots:   0 total
+Time:        172.382 s
+Ran all test suites.

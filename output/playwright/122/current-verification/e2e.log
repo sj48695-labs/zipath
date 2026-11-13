@@ -1,0 +1,20 @@
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+
+Running 8 tests using 1 worker
+
+  ✓  1 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:63:9 › 1280px 청약 복구 › 10초 안내 후 정상 응답으로 전환한다 (14.2s)
+browser console: Failed to load resource: net::ERR_FAILED
+(node:51027) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓  2 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:90:11 › 1280px 청약 복구 › network 후 같은 입력으로 재시도하여 성공한다 (3.3s)
+browser console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+  ✓  3 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:90:11 › 1280px 청약 복구 › http 후 같은 입력으로 재시도하여 성공한다 (2.8s)
+  ✓  4 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:90:11 › 1280px 청약 복구 › timeout 후 같은 입력으로 재시도하여 성공한다 (47.6s)
+  ✓  5 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:63:9 › 390px 청약 복구 › 10초 안내 후 정상 응답으로 전환한다 (13.9s)
+browser console: Failed to load resource: net::ERR_FAILED
+  ✓  6 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:90:11 › 390px 청약 복구 › network 후 같은 입력으로 재시도하여 성공한다 (4.2s)
+browser console: Failed to load resource: the server responded with a status of 503 (Service Unavailable)
+  ✓  7 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:90:11 › 390px 청약 복구 › http 후 같은 입력으로 재시도하여 성공한다 (2.8s)
+  ✓  8 [chromium] › apps/web-e2e/tests/subscription-recovery.spec.ts:90:11 › 390px 청약 복구 › timeout 후 같은 입력으로 재시도하여 성공한다 (49.8s)
+
+  8 passed (2.5m)

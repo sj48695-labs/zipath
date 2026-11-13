@@ -2,7 +2,7 @@
 
 - 플랜식별자: `12878C82` (기존 유지)
 - 출처: [#122 본문](https://github.com/sj48695-labs/zipath/issues/122), [11월 11일 회의](https://github.com/sj48695-labs/zipath/issues/122#issuecomment-6773145905), [최신 11월 13일 회의](https://github.com/sj48695-labs/zipath/issues/122#issuecomment-6845472986), 사용자 PM 지침.
-- plan 재작성: 완료. Phase 1·2 및 운영 수용 조건: 미완료.
+- plan 재작성: 완료. Phase 1: 완료. Phase 2 및 운영 수용 조건: 미완료.
 - 판정: #157 CLOSED·PR #159 MERGED는 확인했으나 운영 배포 성공의 증거는 아니다. 기존 기능을 재구현하지 않고 운영에서 확인한다. subscription 흐름이 없는 audit로 해결 판정하지 않는다.
 - 사용자·할 일·전환: 청약 입문자가 자격 확인 대기를 이해하고, 실패해도 입력을 유지한 채 다시 시도하여 결과를 확인한다.
 - 실행·재개 기록은 옆 `122-subscription-timeout.log.md`에 분리했다. 기본 입력으로 읽지 않으며 특정 실패 증적이 필요할 때만 해당 부분을 읽는다.
@@ -11,9 +11,9 @@
 
 11월 13일 댓글은 기존 10초 안내·45초 timeout·재시도 검증을 유지하면서 **성공·지연·timeout·실패 전반의 입력 보존**을 명시했다. 따라서 기존 테스트를 보강하되 제품 코드의 상태 처리를 그대로 재사용한다. HTTP 실패도 네트워크 실패와 구별해 같은 입력으로 성공까지 복구하는지 확인한다.
 
-- 기존 Phase 1 테스트 작성 커밋 `8bf586b`와 재개 커밋 `caa2302`를 보존한다. 6개 테스트는 존재하지만 GREEN 미확인이므로 Phase 1은 계속 미완료다.
+- 기존 Phase 1 테스트 작성 커밋 `8bf586b`와 재개 커밋 `caa2302`를 보존한다. 당시 6개 테스트는 GREEN 미확인이었다. 이번 /code에서 8개로 보강하고 GREEN을 확보하여 Phase 1을 완료했다.
 - Phase 2 기록 커밋 `8f45968`, `0884b07`, `3c10504`, `6c2fd5f`를 보존한다. 운영 SHA·실제 API 성공이 미확인이라 Phase 2도 미완료다. `[PN]` 커밋만으로 완료 처리하지 않는다.
-- 기존 완료 마커는 없다. Phase 번호를 바꾸거나 기존 테스트·실패 증거를 삭제하지 않는다.
+- 기존 완료 마커는 없었으며 이번 검증으로 Phase 1만 완료했다. Phase 번호를 바꾸거나 기존 테스트·실패 증거를 삭제하지 않는다.
 - 동일 배치 #128·#158은 별도 범위다. Hold PR #155는 재사용·cherry-pick하지 않는다.
 
 ## 현재 구조와 변경 범위
@@ -36,13 +36,14 @@
 
 ## Phase별 구현 계획
 
-### Phase 1: 기존 복구 계약의 입력 보존·실패 검증 보강 (미완료)
+### Phase 1 (완료): 기존 복구 계약의 입력 보존·실패 검증 보강
 
 - 파일: `apps/web-e2e/tests/subscription-recovery.spec.ts` 1개. 한 관심사·한 커밋이며 45 turn 안에서 보강→검증→커밋한다.
 - 기존 6개 테스트와 `success`, `CapturedRequest`, `capture`, `expectSuccess`를 재사용한다. 위 표의 page/error/api 심볼은 읽기 참고이며 재구현하지 않는다.
 - 숫자 입력 31/4500/24/2/36과 두 체크박스가 제출 직후, 10초 대기 중, 오류 후, 성공 후에도 유지되는지 확인한다. 파일 내부의 짧은 assertion 함수가 필요하면 기존 반복만 옮기며 공유 helper를 만들지 않는다.
 - 기존 지연→성공 사례는 `announcements.spec.ts`의 응답 보류 방식 유지. disabled·직후 `role=status`·10초 안내를 확인한 뒤 성공 응답을 해제한다. 성공 시 결과/가점, 버튼 복구, 이전 alert/status 제거를 확인한다.
 - network 사례는 첫 요청 `route.abort('failed')`, 두 번째는 성공. timeout 사례는 첫 요청을 보류해 기존 AbortController가 실제 45초에 중단하게 하고 두 번째는 성공. HTTP 408 주입이나 제품 timeout 단축으로 대체하지 않는다.
+- Next의 빈 route announcer를 제품 오류로 오인하지 않도록 오류 assertion을 `main` 안으로 제한한다.
 - 기존 failure 반복에 HTTP 503 사례를 추가한다(각 viewport 1개, 총 8개). `request-feedback.spec.ts`의 503 fixture 선례를 사용하되 첫 응답만 실패하고 재시도는 `success`를 반환한다. `청약 자격 확인에 실패했어요`·서버 메시지, 입력 유지, 버튼 복구, 재시도 후 성공을 확인한다.
 - 모든 실패 복구에서 첫 payload가 기대값과 일치하고, 재시도 URL/method/body가 첫 요청과 동일한지 검증한다. retry가 성공하면 입력과 결과가 남고 이전 오류/로딩은 사라져야 한다.
 - timeout만 기존 75초 예산을 유지한다. 40초 시점에 오류 없음·버튼 disabled, 약 45초 이후 timeout 전용 안내와 요청 취소를 확인한다. 현재 route handler 진입 후 경과 시간은 요청 시작보다 늦을 수 있으므로 45초 하한은 클릭/요청 직전 기준으로 측정해 정상 동작을 거짓 실패로 만들지 않는다. HTTP 오류나 네트워크 중단을 timeout으로 판정하지 않는다.

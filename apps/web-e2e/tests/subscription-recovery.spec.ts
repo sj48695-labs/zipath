@@ -19,12 +19,21 @@ async function capture(page: Page, info: TestInfo, state: string) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 }
 
+async function expectInputsPreserved(page: Page) {
+  for (const [placeholder, value] of [["만 나이", "31"], ["연소득", "4500"], ["개월 수", "24"], ["본인 제외", "2"], ["미입력 시 나이로 추정", "36"]]) {
+    await expect(page.getByPlaceholder(placeholder)).toHaveValue(value);
+  }
+  await expect(page.getByRole("checkbox", { name: "혼인 상태" })).toBeChecked();
+  await expect(page.getByRole("checkbox", { name: "생애최초 주택 구입" })).toBeChecked();
+}
+
 async function expectSuccess(page: Page, info: TestInfo) {
   await expect(page.getByRole("heading", { name: success.message, exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: "예상 가점: 4점 / 84점" })).toBeVisible();
   await expect(page.getByRole("status")).toHaveCount(0);
-  await expect(page.getByRole("alert")).toHaveCount(0);
+  await expect(page.getByRole("main").getByRole("alert")).toHaveCount(0);
   await expect(page.getByRole("button", { name: "자격 확인하기" })).toBeEnabled();
+  await expectInputsPreserved(page);
   await capture(page, info, "success");
 }
 
@@ -62,10 +71,12 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
         await page.getByRole("button", { name: "자격 확인하기" }).click();
         await expect(page.getByRole("status")).toContainText("청약 자격을 확인하고 있어요");
         await expect(page.getByRole("button", { name: "확인 중...", exact: true })).toBeDisabled();
+        await expectInputsPreserved(page);
         await capture(page, info, "loading");
         await expect(page.getByRole("status")).toContainText("서버가 잠시 준비 중입니다", { timeout: 15_000 });
         await expect(page.getByRole("status")).toContainText(/경과\s+1\d초/);
         await expect(page.getByRole("button", { name: "서버 준비 중...", exact: true })).toBeDisabled();
+        await expectInputsPreserved(page);
         await capture(page, info, "loading-after-10s");
         release();
         await expectSuccess(page, info);
@@ -75,7 +86,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
       }
     });
 
-    for (const failure of ["network", "timeout"] as const) {
+    for (const failure of ["network", "http", "timeout"] as const) {
       test(`${failure} 후 같은 입력으로 재시도하여 성공한다`, async ({ page }, info) => {
         if (failure === "timeout") test.setTimeout(75_000);
         const requests: CapturedRequest[] = [];
@@ -83,29 +94,32 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
         page.on("requestfailed", (request) => {
           if (request.url().endsWith("/subscription/simulate")) failedRequests.push(request.failure()?.errorText ?? "unknown");
         });
-        let startedAt = 0;
         await page.route("**/subscription/simulate", async (route) => {
           requests.push({ url: route.request().url(), method: route.request().method(), body: route.request().postData() });
           if (requests.length > 1) {
             await route.fulfill({ json: success });
           } else {
-            startedAt = performance.now();
             if (failure === "network") await route.abort("failed");
+            if (failure === "http") await route.fulfill({ status: 503, json: { error: "테스트용 서버 오류" } });
             // timeout 요청은 처리하지 않고 기존 AbortController가 취소하게 둔다.
           }
         });
+        const startedAt = performance.now();
         await page.getByRole("button", { name: "자격 확인하기" }).click();
         if (failure === "timeout") {
           await expect(page.getByRole("status")).toContainText("청약 자격을 확인하고 있어요");
+          await expectInputsPreserved(page);
           await capture(page, info, "loading");
           await expect(page.getByRole("status")).toContainText("서버가 잠시 준비 중입니다", { timeout: 15_000 });
+          await expectInputsPreserved(page);
           await capture(page, info, "loading-after-10s");
           await expect.poll(() => performance.now() - startedAt, { timeout: 45_000, intervals: [250] }).toBeGreaterThanOrEqual(40_000);
-          await expect(page.getByRole("alert")).toHaveCount(0);
+          await expect(page.getByRole("main").getByRole("alert")).toHaveCount(0);
           await expect(page.getByRole("button", { name: "서버 준비 중...", exact: true })).toBeDisabled();
         }
-        const alert = page.getByRole("alert");
-        await expect(alert).toContainText(failure === "timeout" ? "서버 준비 중이에요" : "네트워크 연결이 불안정해요", { timeout: failure === "timeout" ? 20_000 : 5000 });
+        const alert = page.getByRole("main").getByRole("alert");
+        await expect(alert).toContainText(failure === "timeout" ? "서버 준비 중이에요" : failure === "http" ? "청약 자격 확인에 실패했어요" : "네트워크 연결이 불안정해요", { timeout: failure === "timeout" ? 20_000 : 5000 });
+        if (failure === "http") await expect(alert).toContainText("테스트용 서버 오류");
         if (failure === "timeout") {
           const elapsed = performance.now() - startedAt;
           expect(elapsed).toBeGreaterThanOrEqual(45_000);
@@ -120,11 +134,7 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
         await retry.scrollIntoViewIfNeeded();
         await expect(retry).toBeInViewport();
         await capture(page, info, failure);
-        for (const [placeholder, value] of [["만 나이", "31"], ["연소득", "4500"], ["개월 수", "24"], ["본인 제외", "2"], ["미입력 시 나이로 추정", "36"]]) {
-          await expect(page.getByPlaceholder(placeholder)).toHaveValue(value);
-        }
-        await expect(page.getByRole("checkbox", { name: "혼인 상태" })).toBeChecked();
-        await expect(page.getByRole("checkbox", { name: "생애최초 주택 구입" })).toBeChecked();
+        await expectInputsPreserved(page);
         expect(requests).toHaveLength(1);
         expect(JSON.parse(requests[0].body ?? "null")).toEqual({ age: 31, income: 4500, homelessMonths: 24, dependents: 2, savingsMonths: 36, isMarried: true, isFirstHome: true });
         await retry.click();
