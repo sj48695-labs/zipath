@@ -167,3 +167,40 @@ clock 수정은 제품 상수나 fetch를 교체하지 않는다. 브라우저�
 
 - 이번 호출 최종 검증: `npm test -w @zipath/api` exit 0 (20 suites / 217 tests), `npm test -w @zipath/web -- --runInBand` exit 0 (11 suites / 51 tests). `npx turbo lint` exit 0 (5 cached tasks), `npx turbo build` exit 0 (3 cached tasks). `npm run typecheck --workspaces --if-present`, `npx tsc --noEmit -p apps/web-e2e/tsconfig.json`, `git diff --check` 모두 exit 0.
 - 로그: `/tmp/158-code-resume-{api,web,lint,build,typecheck,e2e-typecheck}-final.log`. P7은 문서·배포 식별만 수행해 새 로직/TDD RED-GREEN 대상이 없었다. 기존 상태 검증 테스트는 보존했으며 P8의 배포 조건 미충족으로 브라우저 운영 검증을 재실행하지 않았다.
+
+## 두 번째 코드 리뷰: 45초 계약의 오탐 수정 (2026-11-14 KST)
+
+검토 기준은 `01942a8`의 `origin/develop...HEAD`다. 브랜치 차이는 운영 배포 조사 문서·계획·과거 실패 증거이며, 기존 상태 검증 코드는 develop에 이미 병합됐다. 플랜에 `## Spec`/S#가 없어 아래 S1~S5는 최신 이슈 수용 조건 순서로 부여했다. 기존 구현·호출 경로와 상태 검증을 읽었으며 신규 제품 기능은 추가하지 않았다.
+
+### 발견과 수정
+
+- **P2 Improving / 검증 코드:** `real-price-production.spec.ts`가 48초 관찰 안에 종료되면 45초 계약 위반도 통과시킨다. 동일한 모의 페이지에 응답을 47초 지연시켰을 때 수정 전 desktop/390px **2 passed, exit 0**으로 재현했다. 이는 운영 API 성공 증거가 아니다.
+- 최소 수정: 기존 spec 안에서 `MutationObserver`로 조회 버튼의 비활성 시작·복구를 측정한다. `performance.measure`의 실제 지속시간을 JSON 이벤트에 남기고 45,000ms 이내인지 검증한다. 48초는 종료 증거 수집 여유로만 유지한다. soft assertion으로 제한시간 위반을 실패로 남기면서 오류 후 재시도 증거도 수집한다. 측정값 부재도 실패다.
+- 같은 47초 모의 응답은 수정 후 desktop **47,017.1ms**, 390px **47,017.8ms**로 측정되어 **2 failed, exit 1**이다. 실패 원인은 새 45초 assertion이며 정상적인 회귀 검출 결과다.
+- 100ms 모의 정상 응답 **2 passed, exit 0**. 100ms HTTP 500 → 같은 URL의 empty 재시도도 **2 passed, exit 0**. 모두 desktop 1280×900 / mobile 390×844에서 기존 production spec을 임시 모의 페이지로 실행했다. 실제 운영 조회·원래 앱 화면의 네 상태 재검증과 구분한다.
+- 기존 토큰(`globals.css`), 헤더·법적 고지(`SiteHeader.tsx`), `page.tsx`·`real-price-error.ts`·프록시·공통 API와 호출자를 확인했다. 제품·공유 API·디자인·배포·워크플로는 수정하지 않았다. 조회는 읽기 전용이며 DB 쓰기나 응답 계약 변경은 없다.
+
+### 수용 조건 대조
+
+- S1: 미충족(운영 수용) — `real-price-status.spec.ts`의 success/empty 로컬 10건 중 해당 시나리오는 기존 P4에서 통과했다. 운영 정상 응답의 테이블/empty 종료는 기존 P5/P6 이후 새 증거가 없다.
+- S2: 미충족(운영 수용) — `real-price-timeout.spec.ts`의 44,999ms/45,000ms·버튼 복구·재시도·늦은 응답 검증은 기존 P4에서 통과했다. 이번 수정은 운영 검사에서 45초 위반을 놓치던 문제를 해결했으며 운영 pending 자체의 해소는 증명하지 않는다.
+- S3: 충족(로컬 검증 계약) — status/timeout spec에서 empty와 timeout을 서로 다른 메시지로 검증한다. 기존 P4 통과 근거를 유지하며 실제 운영의 두 종료 상태는 미관찰이다.
+- S4: 미충족(운영 수용) — status/timeout spec의 기존 390px 안내·CTA·키보드 검증은 통과했다. 운영 종료 안내·CTA는 기존 P5/P6에서 부재했고 새 운영 증거가 없다.
+- S5: 충족(검증 코드) — 기존 `real-price-status.spec.ts`·`real-price-timeout.spec.ts`의 success/empty/timeout/error 10건 및 P4 통과 기록이 있다. 이번에는 변경한 production spec의 시간 측정과 재시도만 검증했다.
+
+운영 S1/S2/S4가 남아 있으므로 전체 수용 판정은 보류한다. 검증 코드 수정 완료를 운영 통과로 취급하지 않는다. 운영 배포 확인과 승격은 이번 리뷰 범위 밖이며, 미충족 조건을 추측성 timeout 재구현으로 바꾸지 않는다.
+
+### 환경·운영 관찰과 검증 범위
+
+- 읽기 전용 운영 `/real-price`는 HTTP 200, ETag `d32e4a781d1d1285b47e447c3640c59f`, 11,817 bytes였다. HTTP Date `Fri, 13 Nov 2026 16:36:10 GMT`. P7과 ETag가 같고 새 배포·alias SHA 근거는 없다. 이는 조회 요청의 성공 증거가 아니다. P8의 배포 확인 조건을 유지하며 같은 운영 pending 실조회를 반복하지 않았다.
+- 브라우저는 `/tmp/zipath-158-browsers`의 revision 1223을 사용했다. 기본 환경의 존재하지 않는 경로로 한 번 실행 실패했고, 명시 경로에서는 sandbox MachPort 권한으로 실패했다. 승인된 sandbox 밖 launch 후 검증했다. 초기 모의 페이지는 인코딩·select 구조 오류로 두 차례 준비 실패했으며 이후 원본과 수정본을 같은 페이지로 비교했다. 이 준비 실패들은 제품 결과가 아니다.
+- `npx tsc --noEmit -p apps/web-e2e/tsconfig.json` exit 0. `git diff --check` 통과. 제품을 수정하지 않아 전체 테스트·빌드는 반복하지 않았다. 현재 로컬 mock 네 상태 10건도 변경하지 않아 반복하지 않았다.
+- 로그: `output/playwright/158-review-contract.log`. 재현 소스: `output/playwright/158-review-contract-check.ts`. 새 스크린샷·HTML 보고서는 텍스트 결과 보존 후 제거했으며 커밋하지 않는다.
+
+재현 소스를 `apps/web-e2e/tests/158-review-contract-check.spec.ts`로 임시 복사한 후 아래 명령으로 실행한다. 기본 47초 응답은 **exit 1 / 2 failed**여야 하며, `REVIEW_RESPONSE_DELAY_MS=100`이면 **exit 0 / 2 passed**여야 한다. `REVIEW_FIRST_ERROR=1 REVIEW_RESPONSE_DELAY_MS=100`은 HTTP 오류 후 동일 조건 재시도다. 완료 후 임시 spec을 제거한다. 원본 비교는 수정 전 spec을 임시 파일로 복사해 import 대상을 바꿔 실행했다.
+
+```sh
+PLAYWRIGHT_BROWSERS_PATH=/tmp/zipath-158-browsers ZIPATH_BASE_URL=https://zipath-web.vercel.app npm test -w @zipath/web-e2e -- 158-review-contract-check.spec.ts --workers=2
+```
+
+이 명령의 URL은 production spec의 대상 제한을 유지하기 위한 것이며, 재현 소스는 페이지와 API를 모의 응답으로 대체한다. 실제 운영 결과로 기록하면 안 된다.

@@ -1,0 +1,120 @@
+수정 전: 47초 지연을 잘못 통과
+
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+
+> @zipath/web-e2e@0.0.0 test
+> playwright test 158-review-contract-check.spec.ts --workers=2 --output=../../output/playwright/158-review-contract/기존결과
+
+
+Running 2 tests using 2 workers
+
+  ✓  1 [chromium] › tests/158-original-production.ts:6:9 › 390px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (48.0s)
+  ✓  2 [chromium] › tests/158-original-production.ts:6:9 › 1280px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (48.0s)
+
+  2 passed (48.7s)
+
+
+수정 후: 47초 계약 위반 검출
+
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+
+> @zipath/web-e2e@0.0.0 test
+> playwright test 158-review-fixed-check.spec.ts --workers=2 --output=../../output/playwright/158-review-contract/수정결과
+
+
+Running 2 tests using 2 workers
+
+  ✘  2 [chromium] › tests/real-price-production.spec.ts:6:9 › 390px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (47.5s)
+  ✘  1 [chromium] › tests/real-price-production.spec.ts:6:9 › 1280px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (47.5s)
+
+
+  1) [chromium] › tests/real-price-production.spec.ts:6:9 › 1280px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다
+
+    Error: 관찰 여유와 무관하게 조회는 45초 이내에 종료되어야 한다
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 45000
+    Received:    47017.10000002384
+
+      105 |             events.push({ type: "recovery-duration", attempt: attempt + 1, recoveryMs });
+      106 |             expect.soft(recoveryMs, "버튼 비활성 구간의 실측값이 있어야 한다").toBeDefined();
+    > 107 |             expect.soft(recoveryMs, "관찰 여유와 무관하게 조회는 45초 이내에 종료되어야 한다").toBeLessThanOrEqual(45_000);
+          |                                                                         ^
+      108 |           } finally {
+      109 |             events.push({ type: "terminal", attempt: attempt + 1, outcome, elapsedMs: Date.now() - started, at: new Date().toISOString(), searchEnabled: await page.getByRole("button", { name: "조회", exact: true }).isEnabled({ timeout: 1_000 }).catch(() => false) });
+      110 |             await capture(`attempt-${attempt + 1}-terminal`);
+        at /Users/sujeong/personal/github/sj48695-labs/zipath/.worktrees/158-p1-pending-timeout-empty/apps/web-e2e/tests/real-price-production.spec.ts:107:73
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../output/playwright/158-review-contract/수정결과/158-review-fixed-check-128-e71e8-가-요청은-결과-또는-복구-가능한-안내로-종료된다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../output/playwright/158-review-contract/수정결과/158-review-fixed-check-128-e71e8-가-요청은-결과-또는-복구-가능한-안내로-종료된다-chromium/error-context.md
+
+  2) [chromium] › tests/real-price-production.spec.ts:6:9 › 390px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다
+
+    Error: 관찰 여유와 무관하게 조회는 45초 이내에 종료되어야 한다
+
+    expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 45000
+    Received:    47017.800000071526
+
+      105 |             events.push({ type: "recovery-duration", attempt: attempt + 1, recoveryMs });
+      106 |             expect.soft(recoveryMs, "버튼 비활성 구간의 실측값이 있어야 한다").toBeDefined();
+    > 107 |             expect.soft(recoveryMs, "관찰 여유와 무관하게 조회는 45초 이내에 종료되어야 한다").toBeLessThanOrEqual(45_000);
+          |                                                                         ^
+      108 |           } finally {
+      109 |             events.push({ type: "terminal", attempt: attempt + 1, outcome, elapsedMs: Date.now() - started, at: new Date().toISOString(), searchEnabled: await page.getByRole("button", { name: "조회", exact: true }).isEnabled({ timeout: 1_000 }).catch(() => false) });
+      110 |             await capture(`attempt-${attempt + 1}-terminal`);
+        at /Users/sujeong/personal/github/sj48695-labs/zipath/.worktrees/158-p1-pending-timeout-empty/apps/web-e2e/tests/real-price-production.spec.ts:107:73
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    ../../output/playwright/158-review-contract/수정결과/158-review-fixed-check-390-c6cb8-가-요청은-결과-또는-복구-가능한-안내로-종료된다-chromium/test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: ../../output/playwright/158-review-contract/수정결과/158-review-fixed-check-390-c6cb8-가-요청은-결과-또는-복구-가능한-안내로-종료된다-chromium/error-context.md
+
+  2 failed
+    [chromium] › tests/real-price-production.spec.ts:6:9 › 1280px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다
+    [chromium] › tests/real-price-production.spec.ts:6:9 › 390px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다
+npm error Lifecycle script `test` failed with error:
+npm error code 1
+npm error path /Users/sujeong/personal/github/sj48695-labs/zipath/.worktrees/158-p1-pending-timeout-empty/apps/web-e2e
+npm error workspace @zipath/web-e2e@0.0.0
+npm error location /Users/sujeong/personal/github/sj48695-labs/zipath/.worktrees/158-p1-pending-timeout-empty/apps/web-e2e
+npm error command failed
+npm error command sh -c playwright test 158-review-fixed-check.spec.ts --workers=2 --output=../../output/playwright/158-review-contract/수정결과
+
+
+수정 후: 100ms 정상 종료
+
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+
+> @zipath/web-e2e@0.0.0 test
+> playwright test 158-review-fixed-check.spec.ts --workers=2 --output=../../output/playwright/158-review-contract/정상결과
+
+
+Running 2 tests using 2 workers
+
+  ✓  1 [chromium] › tests/real-price-production.spec.ts:6:9 › 390px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (441ms)
+  ✓  2 [chromium] › tests/real-price-production.spec.ts:6:9 › 1280px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (449ms)
+
+  2 passed (1.0s)
+
+
+수정 후: HTTP 오류와 같은 조건 재시도
+
+npm warn Unknown project config "auto-install-peers". This will stop working in the next major version of npm.
+
+> @zipath/web-e2e@0.0.0 test
+> playwright test 158-review-retry-check.spec.ts --workers=2 --output=../../output/playwright/158-review-contract/재시도결과
+
+
+Running 2 tests using 2 workers
+
+  ✓  2 [chromium] › tests/real-price-production.spec.ts:6:9 › 390px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (644ms)
+  ✓  1 [chromium] › tests/real-price-production.spec.ts:6:9 › 1280px › 실제 실거래가 요청은 결과 또는 복구 가능한 안내로 종료된다 (705ms)
+
+  2 passed (1.3s)

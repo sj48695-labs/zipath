@@ -47,6 +47,21 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
         const consent = page.getByRole("button", { name: "동의", exact: true });
         if (await consent.isVisible()) await consent.click();
         for (let attempt = 0; attempt < 2; attempt++) {
+          await page.locator("main").evaluate((main) => {
+            performance.clearMeasures("real-price-recovery");
+            let loadingStarted: number | undefined;
+            // 관찰 여유와 분리해 실제 버튼의 비활성 구간을 측정한다.
+            const observer = new MutationObserver(() => {
+              const buttons = Array.from(main.querySelectorAll("button"));
+              const loading = buttons.some((button) => button.textContent?.trim() === "조회 중...");
+              if (loading && loadingStarted === undefined) loadingStarted = performance.now();
+              if (loadingStarted !== undefined && !loading && buttons.some((button) => button.textContent?.trim() === "조회" && !button.disabled)) {
+                performance.measure("real-price-recovery", { start: loadingStarted, end: performance.now() });
+                observer.disconnect();
+              }
+            });
+            observer.observe(main, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ["disabled"] });
+          });
           let started: number;
           if (attempt === 0) {
             started = Date.now();
@@ -86,6 +101,10 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
               : await page.getByText("검색 결과가 없습니다").count() ? "empty" : "success";
             await expect(page.getByRole("button", { name: "조회", exact: true })).toBeEnabled();
             await expect(page.getByRole("status")).toHaveCount(0);
+            const recoveryMs = await page.evaluate(() => performance.getEntriesByName("real-price-recovery", "measure")[0]?.duration);
+            events.push({ type: "recovery-duration", attempt: attempt + 1, recoveryMs });
+            expect.soft(recoveryMs, "버튼 비활성 구간의 실측값이 있어야 한다").toBeDefined();
+            expect.soft(recoveryMs, "관찰 여유와 무관하게 조회는 45초 이내에 종료되어야 한다").toBeLessThanOrEqual(45_000);
           } finally {
             events.push({ type: "terminal", attempt: attempt + 1, outcome, elapsedMs: Date.now() - started, at: new Date().toISOString(), searchEnabled: await page.getByRole("button", { name: "조회", exact: true }).isEnabled({ timeout: 1_000 }).catch(() => false) });
             await capture(`attempt-${attempt + 1}-terminal`);
