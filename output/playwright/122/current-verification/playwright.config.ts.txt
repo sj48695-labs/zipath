@@ -1,0 +1,7 @@
+import { defineConfig } from "/Users/sujeong/personal/github/sj48695-labs/zipath/.worktrees/122-subscription-timeout/node_modules/@playwright/test";
+export default defineConfig({
+ testDir: "/Users/sujeong/personal/github/sj48695-labs/zipath/.worktrees/122-subscription-timeout/apps/web-e2e/tests",
+ reporter: [["list"], ["json", { outputFile: "/tmp/122-e2e-results.json" }]],
+ use: { baseURL: process.env.ZIPATH_BASE_URL || "http://127.0.0.1:3124", screenshot: "only-on-failure", launchOptions: { executablePath: "/Users/sujeong/Library/Caches/ms-playwright/chromium-1228/chrome-mac-arm64/Google Chrome for Testing.app/Contents/MacOS/Google Chrome for Testing" } },
+ projects: [{ name: "chromium", use: { browserName: "chromium" } }]
+});
