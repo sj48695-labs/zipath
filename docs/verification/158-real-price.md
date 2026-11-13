@@ -107,3 +107,49 @@ clock 수정은 제품 상수나 fetch를 교체하지 않는다. 브라우저�
 - **Skip:** telemetry·신규 차트·새 UI·배포 변경·workflow dispatch·worktree/브랜치 정리. P5 실행은 마쳤으나 운영 수용은 미완료다. 완료 헤딩으로 바꾸지 않는다.
 - 증거: `output/playwright/158-code-production/`, `output/playwright/158-code-production-report/` (screenshot/HTML 내 JSON), `/tmp/158-code-production.log`, `/tmp/158-prod-headers.txt`. 새 바이너리는 커밋하지 않는다.
 - 최종 전체 검증: API 20 suites / 217 tests, web 11 suites / 51 tests, turbo lint/build, workspace typecheck, E2E tsc 모두 exit 0. 변경 후 lint·typecheck/E2E tsc도 exit 0. `git diff --check` 통과. P5 운영 실패와 분리한다.
+
+
+## 코드 리뷰 및 P6 (2026-11-13 KST)
+
+기준 브랜치 HEAD `5d56c465636d0f826187c58ef451225913c02a0e`, `origin/develop...HEAD` 변경분과 호출 경로를 대조했다. 플랜/이슈에 `## Spec` 또는 S#가 없어 최신 수용 조건 및 11월 13일 범위를 기준으로 검토했다. 다음 번호는 리뷰용 수용 조건 번호다. 운영 통과 또는 이슈 종료를 승인하지 않는다.
+
+### 발견과 수정
+
+- **P1 Blocking / 검증 코드:** pending에서 버튼 이름이 `조회 중...`으로 바뀐다. 종료 기록의 `조회` locator `isEnabled()`가 대상을 기다려 48초 관찰 실패를 150초 테스트 만료로 확대했다. 이 증거용 검사에 1초 제한을 적용했다.
+- **P2 Improving / 검증 코드:** 부가 스크린샷에 별도 제한이 없고 캡처 실패가 재시도/JSON 수집을 중단한다. 캡처를 5초로 제한하고 실패 이벤트를 남긴다. 최초 진단의 캡처 지연 외에 위 locator 대기가 직접 원인임을 재실행으로 확인했다.
+- **P2 Improving / 검증 코드:** 재시도 측정 시작점에 스크롤·탭 탐색 시간이 포함됐다. Enter 직전부터 측정한다. 새 배포의 쿠키 배너가 390px 재시도 클릭을 막지 않도록 기존 timeout 검사의 실제 동의 절차를 적용한다.
+- 제품 코드는 기존 디자인 토큰·헤더·조회/오류 UI와 공통 API 경로를 읽어 확인했다. 로컬에서 재현된 제품 결함이 없어 수정하지 않았다. 데이터 쓰기·DB·API 계약 변경은 없다.
+
+### 수용 조건 대조
+
+- S1: 미충족(운영) — 정상 응답의 테이블/empty는 `real-price-status.spec.ts`의 두 viewport 모의 응답에서 통과했다. 실제 운영 조회는 종료를 확인하지 못했다.
+- S2: 미충족(운영) — `real-price-timeout.spec.ts`에서 44,999ms loading/45,000ms 버튼 복구·재시도가 통과했다. 실제 운영 pending은 제한시간 뒤에도 유지된다.
+- S3: 충족(로컬 계약) — status/timeout spec에서 empty·HTTP 오류·timeout 메시지와 상호 배타 조건을 검증했다. 운영에서 해당 세 종료 상태를 관찰한 증거는 없다.
+- S4: 미충족(운영) — 로컬 390px 상태 안내·재시도 CTA·키보드는 통과했다. 운영은 종료 안내·CTA가 없어 수용 미완료다.
+- S5: 충족(검증 코드) — 기존 status/timeout spec의 success/empty/timeout/error 10건 통과. 실제 운영과 모의 결과는 아래처럼 분리한다.
+
+### 리뷰 검증
+
+- 준비된 서버: `WATCHPACK_POLLING=true npm run dev -w @zipath/web -- --port 3116`, `/real-price` 컴파일 완료 및 HTTP 200 확인 후 실행.
+- 로컬 모의 응답: `PLAYWRIGHT_BROWSERS_PATH=/tmp/zipath-158-browsers ZIPATH_BASE_URL=http://localhost:3116 npm test -w @zipath/web-e2e -- real-price-status.spec.ts real-price-timeout.spec.ts --workers=1 --output=../../output/playwright/158-review-local` → exit 0, **10 passed (9.0s)**. 상태별 캡처를 직접 확인했고 390px의 안내·동의 후 timeout CTA 줄바꿈/가로 잘림에 추가 결함은 없었다.
+- 증거 수집 자체 검사: 임시 `158-review-check.spec.ts`에서 운영 spec의 페이지 리소스를 준비된 로컬 서버로 전달하고, 첫 캡처 실패 및 HTTP 500→empty 응답을 주입했다. `screenshot-error` 1개와 terminal `[error, empty]`를 assertion으로 확인, 두 viewport **2 passed (28.0s), exit 0**. 실제 운영 API 증거가 아니다. 임시 파일은 테스트 검색 대상에서 제거하고 `output/playwright/158-review-self-check.ts`에 보존했다.
+- E2E `npx tsc --noEmit -p apps/web-e2e/tsconfig.json` → exit 0. `git diff --check` 확인. 제품 코드가 바뀌지 않아 API/웹 전체 테스트·전체 빌드를 반복하지 않았다.
+- 최초 브라우저 launch는 sandbox MachPort 거부로 실패했다. 승인된 sandbox 밖 Chromium으로 실행한 위 결과와 구분한다.
+- 첫 운영 재실행은 두 건 모두 150초 테스트 제한으로 실패했다. 부가 캡처 제한만으로 해결되지 않아 `조회` locator의 대기 원인을 확인하고 1초 제한을 추가했다. 이 실행을 성공으로 계산하지 않는다.
+- 로컬 아티팩트: `output/playwright/158-review-local{,-report}/`, 자체 검사: `158-review-self-check{,-report}/`, 첫 운영: `158-review-production{,-report}/`. 새 바이너리는 커밋하지 않는다.
+
+
+### 수정 후 실제 운영 결과
+
+`PLAYWRIGHT_BROWSERS_PATH=/tmp/zipath-158-browsers ZIPATH_BASE_URL=https://zipath-web.vercel.app npm test -w @zipath/web-e2e -- real-price-production.spec.ts --workers=2 --output=../../output/playwright/158-review-production-final` → **exit 1, 2 failed**. 테스트는 각각 54.2초/54.1초에 종료되어 기존 150초 만료가 사라졌고, 종료 캡처와 실제 요청/terminal JSON을 모두 보존했다. JSON 추출 후 두 테스트가 60초 안에 종료되고 pending·searchEnabled=false를 기록했는지 assert 자체 검사도 통과했다. 검증 코드 수정의 효과이며 운영 UI 성공이 아니다.
+
+| 화면 | 실제 요청 UTC | 종료 관찰 UTC | 경과(관찰값) | 결과 |
+| --- | --- | --- | --- | --- |
+| 1280×900 | 2026-11-13 14:46:24.320 | 14:47:12.039 | 47,764ms | pending, 조회 비활성 |
+| 390×844 | 2026-11-13 14:46:24.320 | 14:47:11.912 | 47,639ms | pending, 조회 비활성 |
+
+- 조건: 서울 강남구 `11680` / `202611`, 실제 `/api/real-price?LAWD_CD=11680&DEAL_YMD=202611&numOfRows=50`. 관찰 시점까지 HTTP 응답/requestfailed 없음. 종료 기록 이름 `terminal`은 성공 종료를 뜻하지 않는다.
+- 390px 실패 캡처를 직접 확인: 조회 중 비활성 버튼·spinner 유지, 상태 안내·timeout·재시도·법적 고지 없음. 두 viewport의 법적 고지 assertion도 실패했다. 따라서 **S1/S2/S4 운영 미충족**, 이슈 수용/승인 보류다. CTA가 없으므로 운영 재시도와 운영 네 종료 상태는 미검증이다.
+- 소스/운영 SHA 일치는 확정하지 못했다. 운영에서 현재 소스에 있는 고지·상태 안내가 보이지 않아도 배포 원인을 추측하여 제품 timeout을 재구현하지 않는다. 배포 소유자의 실제 alias/SHA 확인 후 운영을 재검증해야 한다. 이번 요청 범위에 배포 변경은 없다.
+- 증거: `output/playwright/158-review-production-final/1280px-observations.json`, `390px-observations.json`, 같은 디렉터리의 두 실패 캡처, `158-review-production-final-report/`의 loading/종료 캡처·JSON. React #425×5/#418/#423도 두 실행에 남아 있으며 #128 형제 범위로 분리한다.
+- 제외: telemetry·신규 차트·직전 거래월 추천·공유 API 재구현·전체 테스트/빌드·배포. 검증 코드 수정만 커밋하며 운영 미충족을 통과로 바꾸지 않는다.

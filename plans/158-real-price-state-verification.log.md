@@ -71,3 +71,14 @@
 - **Skip:** telemetry·신규 차트·새 UI·배포 변경·workflow dispatch·worktree/브랜치 정리. P5 실행은 마쳤으나 운영 수용은 미완료다. 완료 헤딩으로 바꾸지 않는다.
 - 증거: `output/playwright/158-code-production/`, `output/playwright/158-code-production-report/` (screenshot/HTML 내 JSON), `/tmp/158-code-production.log`, `/tmp/158-prod-headers.txt`. 새 바이너리는 커밋하지 않는다.
 - 최종 전체 검증: API 20 suites / 217 tests, web 11 suites / 51 tests, turbo lint/build, workspace typecheck, E2E tsc 모두 exit 0. 변경 후 lint·typecheck/E2E tsc도 exit 0. `git diff --check` 통과. P5 운영 실패와 분리한다.
+
+
+## 2026-11-13 코드 리뷰 P6
+
+- 기준 HEAD `5d56c46`. Spec/S# 없음: 최신 수용 조건으로 대조. 제품 재현 결함 없이 검증 코드의 대기·캡처·측정 문제만 수정했다.
+- RED: 운영 두 건에서 48초 관찰 실패 뒤 증거용 `조회` 버튼 isEnabled가 150초까지 대기. pending 중 이름은 `조회 중...`이다.
+- 수정: 증거용 isEnabled 1초 제한, 부가 캡처 5초 제한/오류 이벤트, 쿠키 실제 동의, 재시도 Enter 직전 측정 시작.
+- 로컬 기존 10건 통과(exit 0, 9.0초). 캡처 실패+HTTP 오류→재시도→empty 주입 2건 통과(exit 0, 28.0초), 운영 성공 증거로 쓰지 않는다. E2E tsc/diff 검사 통과. 새 전체 테스트/빌드는 실행하지 않았다.
+- 최종 운영은 2 failed(exit 1): 두 viewport pending. 각 54.2초/54.1초에 종료하고 실제 요청/terminal JSON·캡처 보존. 60초 이내 종료와 pending JSON 보존 assert 통과로 검증 코드 대기 수정은 확인했다.
+- 운영 S1/S2/S4 미충족, S3 로컬 메시지 계약과 S5 네 상태 E2E는 충족. P5 운영 수용 미완료를 유지한다. 배포·telemetry·차트·제품 timeout 재구현 없음.
+- 상세 명령/요청 시각/미검증/아티팩트는 `docs/verification/158-real-price.md`의 코드 리뷰/P6 절 참조. 새 바이너리는 커밋하지 않는다.

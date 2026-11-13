@@ -17,6 +17,16 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
           events.push({ type: "response", url: response.url(), status: response.status(), at: new Date().toISOString() });
         }
       });
+      const capture = async (name: string) => {
+        try {
+          await testInfo.attach(name, {
+            body: await page.screenshot({ fullPage: true, animations: "disabled", timeout: 5_000 }),
+            contentType: "image/png",
+          });
+        } catch (error) {
+          events.push({ type: "screenshot-error", name, error: String(error) });
+        }
+      };
       const requestUrls: string[] = [];
       page.on("request", (request) => {
         if (new URL(request.url()).pathname === "/api/real-price") {
@@ -32,11 +42,14 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
         const region = page.locator("label", { hasText: "지역" }).locator("xpath=following-sibling::select");
         await expect(month).toHaveValue(/^\d{6}$/);
         events.push({ type: "conditions", region: await region.inputValue(), month: await month.inputValue() });
-        // Keep collecting the actual request even when an older deployment lacks the disclaimer.
+        // 구버전 배포에 법적 고지가 없어도 실제 조회 증거는 수집한다.
         await expect.soft(page.getByText("참고용이며 법적 효력 없음", { exact: false }).first()).toBeVisible();
+        const consent = page.getByRole("button", { name: "동의", exact: true });
+        if (await consent.isVisible()) await consent.click();
         for (let attempt = 0; attempt < 2; attempt++) {
-          const started = Date.now();
+          let started: number;
           if (attempt === 0) {
+            started = Date.now();
             await page.getByRole("button", { name: "조회", exact: true }).click();
           } else {
             const retry = page.locator("main").getByRole("alert").getByRole("button", { name: "다시 시도" });
@@ -51,10 +64,11 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
               await page.keyboard.press("Tab");
             }
             await expect(retry).toBeFocused();
+            started = Date.now();
             await page.keyboard.press("Enter");
           }
           await expect.poll(() => requestUrls.length).toBe(attempt + 1);
-          await testInfo.attach(`attempt-${attempt + 1}-loading`, { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+          await capture(`attempt-${attempt + 1}-loading`);
           let outcome = "pending";
           try {
             await expect.poll(async () => {
@@ -73,8 +87,8 @@ for (const viewport of [{ width: 1280, height: 900 }, { width: 390, height: 844 
             await expect(page.getByRole("button", { name: "조회", exact: true })).toBeEnabled();
             await expect(page.getByRole("status")).toHaveCount(0);
           } finally {
-            events.push({ type: "terminal", attempt: attempt + 1, outcome, elapsedMs: Date.now() - started, at: new Date().toISOString(), searchEnabled: await page.getByRole("button", { name: "조회", exact: true }).isEnabled().catch(() => false) });
-            await testInfo.attach(`attempt-${attempt + 1}-terminal`, { body: await page.screenshot({ fullPage: true }), contentType: "image/png" });
+            events.push({ type: "terminal", attempt: attempt + 1, outcome, elapsedMs: Date.now() - started, at: new Date().toISOString(), searchEnabled: await page.getByRole("button", { name: "조회", exact: true }).isEnabled({ timeout: 1_000 }).catch(() => false) });
+            await capture(`attempt-${attempt + 1}-terminal`);
           }
           if (attempt === 1) expect(requestUrls[1]).toBe(requestUrls[0]);
           if (outcome === "success" || outcome === "empty") break;
