@@ -91,3 +91,9 @@
 - PM 원문 `/tmp/pm-meeting-ww5VhN`은 파일 없음. 사용자 제공 PM 지침과 최신 GitHub PM 댓글로 범위를 확인했다. 추측으로 회의록을 보충하지 않았다.
 - dirty index에 기존 운영 실패 증거 8개가 있어 rebase하지 않았다. 작업 디렉터리 전환·정리 없음. 제품 코드/테스트 실행/배포/PR 변경 없음. ui-design match mode와 ponytail 적용, 직접 탐색으로 완료.
 - plan 자체 검토 2회: 최신 범위·phase 크기/의존·정확한 심볼/선례·45초 기준·운영/mock 구분·기록 보존 확인. plan 갱신 완료이며 이슈 수용은 미완료다.
+
+## /code 재개 잔여 보존 (2026-11-14 KST)
+
+- soft-reset으로 복원된 staged 8개를 그대로 보존한다. `158-review-production` 및 `158-review-production-final`의 desktop/mobile 실패 screenshot·error-context이며 P5 운영 수용 미완료 증거다. 새 성공 증거가 아니다.
+- targeted 확인: `git diff --cached --check` exit 0, error-context의 법적 고지 부재 및 pending 관찰 실패 확인. 제품·테스트 코드 변경이 없어 TDD RED/GREEN 대상은 없다.
+- 커밋은 미완료 P5의 증거 체크포인트로 남긴다. 운영 수용/phase 완료 표시는 하지 않는다.
