@@ -52,3 +52,13 @@
 - 기존 matrix에는 React #425/#418/#423 및 서버 202605/클라이언트 202611 불일치가 있다. 기존 states에는 재시도 0회가 기록돼 있어 이번 검증으로 대체해야 한다.
 - `git diff --cached --check`: exit 0. 본 커밋은 과거 자료 보존이며 Phase 2 완료 판정이 아니다.
 - 제품 코드·설정·테스트·fixture·export 변경 없음. 현재 요구는 기존 계약 테스트 실행과 읽기 전용 검증이므로 새로운 RED/GREEN 구현은 추가하지 않는다.
+
+## 2026-11-13 Phase 1: 읽기 전용 배포 확인 (미합격)
+
+- 시각: 2026-11-13 14:46:23 UTC / 23:46:23 KST.
+- PR #154 OPEN / Draft=true / head `97c100e2e174c7f4d64da2dcc01c7a915819fd93`. 로컬 시작 HEAD `9841ecd60161ed322cbb3b4be29c097ffd7cbda7`. #157 CLOSED.
+- `vercel inspect https://zipath-web.vercel.app --no-color`: 인증 정보가 없어 로그인 대기 진입, 인증하지 않고 Ctrl-C (130). `VERCEL_TOKEN` 미설정, `.vercel/project.json` 없음, 연결된 Vercel 도구 없음.
+- GitHub deployment 4588149208: 2026-05-05 / SHA `e42afda31ec08f5969f9796315232ec92f1b9cd9`, 최신 status inactive, URL `https://zipath-fp76nizas-sj48695s-projects.vercel.app`. 현재 alias 연결을 보여주지 않아 운영 SHA 증거로 채택하지 않는다.
+- 기존 workflow run 43445855204 읽기 확인: verify failure / smoke skipped. 이 호출에서 workflow 실행·재실행·배포를 하지 않았다.
+- 판정: alias → deployment → SHA 연결 및 #147/#150 수정 포함 여부 미확인. Phase 1 미완료 유지. 독립적인 Phase 2는 계속 진행.
+- targeted 확인: gh PR/issue/deployment/run 조회 exit 0. Vercel 인증 제약은 제품 회귀가 아니다.
